@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["vite/client", "vite-plugin-svgr/client"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -23,6 +24,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/redux/features/classroom-slice"],
   "exclude": ["node_modules"]
 }
