@@ -34,6 +34,7 @@ function Classwork({id}:{id:string}) {
   const [assignment,setassignment]=useState<any>([])
   const[state,setstate]=useState(false)
   const [topic,settopic]=useState<any>('Topics')
+  const creator=useAppSelector((state)=>state.classroomReducer.creator);
   const {data,loading}=useQuery(GROUPED_ASSIGNMENT,{
     client:assignmentClient,
     variables:{
@@ -185,10 +186,14 @@ function Classwork({id}:{id:string}) {
                 <div className='flex justify-between items-center'>
                 <p className='text-3xl text text-[#3b6a87] mx-4'>Assignments</p>
                 <Dropdown menu={{ items }} placement="bottomLeft">
-                <div className='mx-3'>
+                
+                {
+                  creator && 
+                  <div className='mx-3'>
                 <AddIcon className='text-[#3b6a87] md:hidden mx-4'/>
-                <button className='bg-[#3b6a87] text-white p-2 rounded-full pr-4 md:flex items-center hidden'><AddIcon/>Create</button>
+                  <button className='bg-[#3b6a87] text-white p-2 rounded-full pr-4 md:flex items-center hidden'><AddIcon/>Create</button>
                 </div>
+                }
                 </Dropdown>
                 </div>
            <hr className='border-1 rounded-full border-[#3b6a87] mb-6 mt-3'/>

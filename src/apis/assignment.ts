@@ -100,3 +100,17 @@ export const EDIT_ASSIGNMENT_DETAILS=gql`
     }
   }
 `
+
+export const DUE_DATES=gql`
+query getDueDates($id: String!){
+  getDueDates(id: $id){
+      title,
+      dueDate{
+   day,
+   time
+  },
+  creator,
+  class_id
+  }
+}
+`

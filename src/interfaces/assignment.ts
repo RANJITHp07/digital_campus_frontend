@@ -4,3 +4,14 @@ export interface Question{
     answers:string[],
     edit:boolean
 }
+
+
+export interface Event{
+    title:string,
+    dueDate:{
+        day:string,
+        time:string
+    },
+    creator:string,
+    class_id:string[]
+}

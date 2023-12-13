@@ -64,7 +64,7 @@ function Classroom({ params }: { params: { id: string } }) {
         </div>
         {
             chatOpen&&
-            <div className=' fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10/12 h-3/4 z-50 bg-white box_shadow'>
+            <div className=' fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 md:w-10/12 h-3/4 z-50 bg-white box_shadow'>
     {
         socket .current  && <Chat socket={socket.current} length={length} id={id} classId={params.id} />
     }
