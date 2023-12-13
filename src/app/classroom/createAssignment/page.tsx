@@ -113,6 +113,9 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
 
    // to handle the Subjects
   const handleChecked=(c:string)=>{
+    if(c==id){
+      return
+    }
     if(checked.includes(c)){
        setchecked((prev)=>{
         return prev.filter((p)=>p!=c)
@@ -133,7 +136,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
         return prev.filter((p)=>p!=s)
        })
     }else{
-      setchecked((prev)=>[...prev,s])
+      setStudentchecked((prev)=>[...prev,s])
     }
 
   }
@@ -204,9 +207,22 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
             const imageRef = ref(storage, `images/${file.name + v4()}`);
           uploadBytes(imageRef, file).then((snapshot) => {
             getDownloadURL(snapshot.ref).then(async(url) => {
-             
+              const fileType=file.type
+              let type;
+
+              if (fileType.startsWith('image/')) {
+                type='photo'
+              } else if (fileType.startsWith('video/')) {
+                type='vedio'
+              } else if (fileType === 'application/pdf') {
+                 type='pdf'
+              } else if (fileType.startsWith('audio/')) {
+                type='audio'
+              } else {
+                message.info('Only audio,vedio,photo and pdf allowed')
+              }
               assignment.attachment={
-                type:"photo",
+                type:type,
                 content:url
               }
               console.log(assignment)
@@ -251,7 +267,6 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
               onChange={(e:ChangeEvent<HTMLInputElement>)=>settitle(e.target.value)}/>
               <textarea  className="w-full h-3/4 bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text" placeholder='Instruction (optional)'
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setinstruction(e.target.value)}/>
-              
             </div>
             <div className=' mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[8rem] box_shadow my-5 px-3'>
               <p className="text p-2">Attach {file && file.name}</p>
@@ -349,7 +364,25 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                    <p className='text text-slate-700'>Points</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
                   {
-                    pointstate ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 'defaultValue={point}/>
+                    pointstate ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 ' value={point} 
+                    onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                      const isValidKey = /^[0-9]$/.test(e.key);
+                      if (!isValidKey) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onChange={(e:ChangeEvent<HTMLInputElement>)=>
+                      {
+                        if( parseInt(e.target.value)>0 && parseInt(e.target.value)<101){
+                          setpoint(parseInt(e.target.value) )
+                        }else{
+                          message.info("Mark between 1 to 100")
+                        }
+                        
+                      }
+                      }
+                    
+                    />
                     :<p className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 '>ungraded</p>
                   }
                   
@@ -359,9 +392,10 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                     state.state2 && <div className='absolute bg-white box_shadow  cursor-pointer rounded-md p-3'>
                     <p className='text' onClick={()=>{
                       handleState('state2',false);
-                      setpoint('ungraded')
-                      setpointstate(false)
-                    }}>Ungraded</p>
+                      pointstate ? setpoint('ungraded'): setpoint(100)
+                      
+                      setpointstate(!pointstate)
+                    }}>{pointstate ? "Ungraded" : "Points"}</p>
                   </div>
 
                 }
