@@ -20,7 +20,6 @@ import {
 import { storage } from "../../../services/config/firebase"
 import { v4 } from "uuid";
 import { ASSIGNMENT_DETAILS, CREATE_ASSIGNMENT, EDIT_ASSIGNMENT, EDIT_ASSIGNMENT_DETAILS, FETCH_MAINTOPIC } from '@/apis/assignment';
-import ListIcon from '@mui/icons-material/List';
 import { assignmentClient } from '@/app/providers/ApolloProvider';
 import CloseIcon from '@mui/icons-material/Close';
 // import { CREATE_ASSIGNMENT } from '@/apis/assignment';
@@ -39,19 +38,12 @@ function CreateAssignment() {
   const searchParams = useSearchParams()
   const classId=searchParams.get('classroom')
   const id = searchParams.get('assignment') as string
-  const type=searchParams.get('type')
   const router=useRouter()
 
 
     // details of the assignment
     const [point,setpoint]=useState<string | number>(100)
     const [pointstate,setpointstate]=useState(true)
-    const [date,setdate]=useState<any>()
-    const [time,duetime]=useState<any>()
-    const [topic,settopic]=useState<string | null>()
-    const[title,settitle]=useState('')
-    const [instruction,setinstruction]=useState('')
-    const [link,setlink]=useState<string>('')
     const [modal,setmodal]=useState(false)
     const[file,setfile]=useState<File | null>(null)
     const [details,setdetails]=useState<any>({})
@@ -70,7 +62,6 @@ function CreateAssignment() {
   const {data} = useQuery(FETCH_CLASSROOM_QUERY, { // to edit assignment details
     variables: { id: token.id },
     onCompleted:(data)=>{
-      console.log(data.getCreatorClassroom)
        data.getCreatorClassroom.map((m:any)=>{
          if(m._id===classId) {
           setname(m.className)
@@ -95,13 +86,11 @@ const {data:assignment}=useQuery(EDIT_ASSIGNMENT_DETAILS,{
     id:id
   },
   onError(err){
-    console.log(id)
     console.log(err)
   },
   onCompleted:(data)=>{
-    setdate(data.getOneassignment.dueDate.date)
+    console.log(data.getOneassignment)
     setStudentchecked(data.getOneassignment.students)
-    setchecked(data.getOneassignment.class_id)
     setdetails(data.getOneassignment)
   }
 })
@@ -156,7 +145,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
   const handleDateChange = (date:any,dateString:any) => {
    setdetails({...details,dueDate:{
     day:dateString,
-    time
+    time:details.dueDate.time
    }})
 
   }  
@@ -175,78 +164,78 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
     })
 
 
-  const handleAssign=async()=>{
-    if(studentChecked.length===0){
-      message.info("Atleast one student must be there in the clasroom")
-      return 
-    }
-    if(title.trim().length>0){
-      const assignment:any={
-         title:title,
-         class_id:checked,
-         students:studentChecked,
-         assignmentType:type,
-         creator:token.name
-      }
+  // const handleAssign=async()=>{
+  //   if(studentChecked.length===0){
+  //     message.info("Atleast one student must be there in the clasroom")
+  //     return 
+  //   }
+  //   if(title.trim().length>0){
+  //     const assignment:any={
+  //        title:title,
+  //        class_id:checked,
+  //        students:studentChecked,
+  //        assignmentType:type,
+  //        creator:token.name
+  //     }
       
-      if(instruction.trim().length>0) assignment.instruction=instruction
-      if(link.trim().length>0){
-        assignment.attachment={
-          type:"link",
-          content:link
-        }
-      } 
-      if(date){
-         if(time){
-          assignment.dueDate={
-            day:date,
-            time:time
-          }
-         }else{
-          assignment.dueDate={
-            day:date,
-            time:'23:59'
-          }
-         }
-      }
-      if(topic) assignment.mainTopic=topic
+  //     if(instruction.trim().length>0) assignment.instruction=instruction
+  //     if(link.trim().length>0){
+  //       assignment.attachment={
+  //         type:"link",
+  //         content:link
+  //       }
+  //     } 
+  //     if(date){
+  //        if(time){
+  //         assignment.dueDate={
+  //           day:date,
+  //           time:time
+  //         }
+  //        }else{
+  //         assignment.dueDate={
+  //           day:date,
+  //           time:'23:59'
+  //         }
+  //        }
+  //     }
+  //     if(topic) assignment.mainTopic=topic
 
-          if(file){
-            const imageRef = ref(storage, `images/${file.name + v4()}`);
-          uploadBytes(imageRef, file).then((snapshot) => {
-            getDownloadURL(snapshot.ref).then(async(url) => {
+  //         if(file){
+  //           const imageRef = ref(storage, `images/${file.name + v4()}`);
+  //         uploadBytes(imageRef, file).then((snapshot) => {
+  //           getDownloadURL(snapshot.ref).then(async(url) => {
              
-              assignment.attachment={
-                type:"photo",
-                content:url
-              }
-              console.log(assignment)
-              await createAssignment({
-                client:assignmentClient,
-                variables:{
-                  assignment:assignment
-                }
-              })
-              return 
-            });
-          });
-          }else{
-            await createAssignment({
-              client:assignmentClient,
-              variables:
-                {
-                  assignment
-                }
+  //             assignment.attachment={
+  //               type:"photo",
+  //               content:url
+  //             }
+  //             console.log(assignment)
+  //             await createAssignment({
+  //               client:assignmentClient,
+  //               variables:{
+  //                 assignment:assignment
+  //               }
+  //             })
+  //             return 
+  //           });
+  //         });
+  //         }else{
+  //           await createAssignment({
+  //             client:assignmentClient,
+  //             variables:
+  //               {
+  //                 assignment
+  //               }
               
-            })
-          }
+  //           })
+  //         }
           
 
-    }else{
-      message.info("Title is must")
-    }
+  //   }else{
+  //     message.info("Title is must")
+  //   }
      
-  }
+  // }
 
   const [updateAssignment]=useMutation(EDIT_ASSIGNMENT,{
     client:assignmentClient,
@@ -281,7 +270,10 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
               
             </div>
             <div className=' mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[8rem] box_shadow my-5 px-3'>
-              <p className="text p-2">Attach { details.attachment && details.attachment.type}</p>
+              <div className='flex items-center'>
+              <p className="text p-2 text-sm">{ details.attachment && details.attachment.type[0].toUpperCase() + details.attachment.type.slice(1,details.attachment.type.length)} has been attached with the assignment</p>
+              <a href={details.attachment && details.attachment.content} className='text-xs text text-blue-600 underline'>Click here</a>
+              </div>
               <div className='flex justify-center items-center'>
                 <div>
                 <div className='flex justify-center items-center p-2 border-2 rounded-full cursor-pointer' onClick={()=>router.push('https://www.youtube.com/')}><YouTubeIcon className="text-red-500 text-3xl"/></div>
@@ -321,30 +313,10 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                 <div className='flex justify-center items-center'>
                    <div className='w-1/2'>
                    <p className='text text-slate-700'>For</p>
-                <div className='bg-slate-100 p-2 flex justify-between items-center'>
-                  <p className='text text-slate-700'>{checked.length>1 ? `${checked.length} classes` :(name.length>0 && name[0].toUpperCase() + name.slice(1,name.length).toLowerCase())}</p>
-                  <ArrowDropDownIcon className='cursor-pointer' onClick={()=>handleState('state1',!state.state1)}/>
-                  
+                <div className='bg-slate-100 p-2 flex justify-between items-center h-10'>
+                  <p className='text text-slate-700'>{(name.length>0 && name[0].toUpperCase() + name.slice(1,name.length).toLowerCase())}</p>                  
                 </div>
-                {
-                  state.state1 && 
-                  <div className='absolute bg-white box_shadow  rounded-md w-44'>
-                    
-                  {
-                   data &&  data.getCreatorClassroom.map((c:any)=>{
-                    return (
-                      <div key={c._id}>
-                      <div className={`flex my-1 items-center ${c._id==classId && 'bg-slate-200'} p-2`}>
-                        <input type='checkbox' className='w-4 h-4 mx-1 cursor-pointer' checked={ c._id===classId ? true : checked.includes(c._id)}  onChange={()=>handleChecked(c._id)}/>
-                        <p className='text text-slate-700 '>{c.className[0].toUpperCase() + c.className.slice(1,name.length).toLowerCase()}</p>
-                      </div>
-                      <hr/>
-                      </div>
-                    )
-                   })
-                  }
-                  </div>
-                }
+              
                    </div>
                    <div className='w-1/2 ml-3 mt-6'>
                    <div className='bg-slate-100 p-2 flex justify-between items-center'>
