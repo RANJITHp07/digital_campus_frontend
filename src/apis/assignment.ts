@@ -14,7 +14,7 @@ export const CREATE_ASSIGNMENT = gql`
 
 
 export const EDIT_ASSIGNMENT = gql`
-  mutation updateAssignment( $id:String!,$update: AssignmentInput) {
+  mutation updateAssignment($id:String!,$update:AssignmentInput) {
     updateAssignment(id:$id,update:$update) {
       title,
     }
@@ -99,4 +99,18 @@ export const EDIT_ASSIGNMENT_DETAILS=gql`
        assignmentType
     }
   }
+`
+
+export const DUE_DATES=gql`
+query getDueDates($id: String!){
+  getDueDates(id: $id){
+      title,
+      dueDate{
+   day,
+   time
+  },
+  creator,
+  class_id
+  }
+}
 `

@@ -10,11 +10,12 @@ import { FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM
 import LoadinPage from '../component/common/loadinPage';
 import Profile from '../component/classroom/profile';
 import BasicCalendar from '../component/classroom/calendar';
-import { Pagination } from 'antd';
-import { ClassroomProps } from '@/interfaces/classroom';
-
-
-
+import { Pagination, Popover } from 'antd';
+import { ClassroomProps } from '@/@types/classroom';
+import { DUE_DATES } from '@/apis/assignment';
+import { assignmentClient } from '../providers/ApolloProvider';
+import moment from "moment";
+import { Event } from '@/@types/assignment';
 
 const Classroom=()=>{
 
@@ -26,12 +27,13 @@ const Classroom=()=>{
   const [pagination,setpagination]=useState(1)
   const token=useAppSelector((state) => state.authReducer.token);
   const type=useAppSelector((state) => state.classroomReducer.type)
+  const [event,setevent]=useState<Event[]>([])
 
 
   //to fetch all the classrooms
   const { data:allClassroom} = useQuery(FETCH_ALL_CLASSROOM_QUERY, {
     variables: { id: token.id },
-  });
+});
 
   //to fetch all class added into
   const { data:addedClassroom} = useQuery(FETCH_ADDED_CLASSROOM_QUERY, {
@@ -61,6 +63,39 @@ const Classroom=()=>{
       }
   });
 
+
+  //to fetch all the due dates
+  const { data:due_dates } = useQuery(DUE_DATES, {
+    client:assignmentClient,
+    variables: { 
+      id:token.id,
+    },
+      onCompleted:(data)=>{
+        let result: { [key: string]: { name: string } } = {};
+        allClassroom.getAllTheClassroom.forEach((m: any) => {
+        result[m._id] = { name: m.className };
+      });
+      
+       const e:Event[]=data.getDueDates.map((d:Event)=>{
+          return {
+            start: moment(`${d.dueDate.day}T00:00:00`).toDate(),
+            end: moment(`${d.dueDate.day}T${d.dueDate.time}`).toDate(),
+            title: 
+            <Popover placement="right" content={
+              <div>
+                <p>Classroom: {result[d.class_id[0]].name}</p>
+                <p>Created By {d.creator[0].toUpperCase() + d.creator.slice(1,d.creator.length)}</p>
+              </div>
+            } title={<p>{d.title.toUpperCase()}</p>} trigger="hover">
+              <p>{d.title}</p>
+            </Popover>
+          }
+        })
+        console.log(e)
+        setevent(e)
+      }
+  });
+
   return (
     <div>
           <Navbar />
@@ -72,7 +107,7 @@ const Classroom=()=>{
             { 
               type==='calendar' && 
              <div className="w-full text-[#3b6a87]">
-            <BasicCalendar/>
+            <BasicCalendar events={event}/>
             </div> 
             }
             <div className={`${type!=='calendar' && 'w-full'}`}>

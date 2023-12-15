@@ -71,6 +71,7 @@ function CreateAssignment() {
     onCompleted:(data)=>{
        data.getCreatorClassroom.map((m:any)=>{
          if(m._id===id) {
+          console.log(m.className)
           setname(m.className)
          }
        })
@@ -309,7 +310,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                    <div className='w-1/2'>
                    <p className='text text-slate-700'>For</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
-                  <p className='text text-slate-700'>{checked.length>1 ? `${checked.length} classes` :(name.length>0 && name[0].toUpperCase() + name.slice(1,name.length).toLowerCase())}</p>
+                  <p className='text text-slate-700'>{checked.length>1 ? `${checked.length} classes` :(name.length > 0 && name[0].toUpperCase() + name.slice(1,name.length).toLowerCase())}</p>
                   <ArrowDropDownIcon className='cursor-pointer' onClick={()=>handleState('state1',!state.state1)}/>
                   
                 </div>
@@ -323,7 +324,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                       <div key={c._id}>
                       <div className={`flex my-1 items-center ${c._id===id && 'bg-slate-200'} p-2`}>
                         <input type='checkbox' className='w-4 h-4 mx-1 cursor-pointer' checked={ c._id===id ? true : checked.includes(c._id)}  onChange={()=>handleChecked(c._id)}/>
-                        <p className='text text-slate-700 '>{c.className[0].toUpperCase() + c.className.slice(1,name.length).toLowerCase()}</p>
+                        <p className='text text-slate-700 '>{c.className[0].toUpperCase() + c.className.slice(1,c.className.length).toLowerCase()}</p>
                       </div>
                       <hr/>
                       </div>

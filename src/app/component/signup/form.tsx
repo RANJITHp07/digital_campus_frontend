@@ -7,50 +7,49 @@ import { AppDispatch,useAppSelector} from '@/redux/store';
 import { useDispatch } from 'react-redux';
 import { senduserEmail, userlogin } from '@/redux/features/user-auth-slice/action';
 import { useRouter } from 'next/navigation';
-import { Modal, message } from 'antd';
+import {message } from 'antd';
 import { signInnWithGooogle } from '@/services/config/firebase';
-import { SendEmail, emailVerification, getUser, updatePassword, updateUser, userSignup } from '@/apis/user';
+import { SendEmail, getUser,userSignup } from '@/apis/user';
 import { openModal, setEmail } from '@/redux/features/user-auth-slice/reducer';
-
+import {useForm,Resolver} from 'react-hook-form'
+import { UserForm} from '@/@types/users';
+import { resolver } from '@/services/formValidator/signupForm';
 
 function Form({page}:{page:boolean}) {
 
+  const customResolver: Resolver<UserForm> = async(values)=>{
+    const resolve=await resolver(values)
+    return resolve
+  }
+
   const dispatch=useDispatch<AppDispatch>()
   const navigation=useRouter()
-
+  const [email,setemail]=useState('')
+  const [open,setopen]=useState(false)
+  const [text,settext]=useState(false)
   const loading:boolean=useAppSelector((state)=>state.userReducer.loading)
-  const error:null | any=useAppSelector((state)=>state.userReducer.error)
+  const resend=useAppSelector((state)=>state.userReducer.resend)
+  const { register, handleSubmit,
+    formState: { errors },
+} = useForm<UserForm>({
+  resolver:customResolver,
+});
 
-   //user details
-   const [open,setopen]=useState(false)
-   const username=useRef<HTMLInputElement>(null);
-   const firstName=useRef<HTMLInputElement>(null);
-   const lastName=useRef<HTMLInputElement>(null);
-   const email=useRef<HTMLInputElement>(null);
-   const password=useRef<HTMLInputElement>(null);
-   const confirm_password=useRef<HTMLInputElement>(null);
-
-
-   const [text,settext]=useState(false)
 
 
    //to handle signin submission
-   const handleSubmit=(e:React.FormEvent<HTMLFormElement>)=>{
+   const handleSignup=(data:UserForm)=>{
     try{
-      e.preventDefault()
-          if(username.current && firstName.current && lastName.current && email.current && password.current && confirm_password.current){
-             const user={
-              firstName:firstName.current.value,
-              lastName:lastName.current.value,
-              email:email.current.value,
-              username:username.current.value,
-              password:password.current.value,
-              confirm_password:confirm_password.current.value
-             } 
+        const user={
+          firstName:data.firstName as string,
+          lastName:data.lastName as string,
+          confirm_password:data.confirm_password as string,
+          username:data.username as string,
+          email:data.email,
+          password:data.password 
+        }
             dispatch(senduserEmail(user))
-          }
     }catch(err:any){
-
       message.info(err.response.data.message)
     }
    }
@@ -59,14 +58,12 @@ function Form({page}:{page:boolean}) {
 
    //to handle the forgetpassword
    const handleForgetPassword=async()=>{
-    if(email.current){
-       if(email.current.value !==''){
-          setopen(true)
-          const user=await getUser(email.current.value)
+       if(email.trim().length>0){
+          const user=await getUser(email)
           if(user.data.success){
-             dispatch(setEmail(email.current.value))
-          Cookies.set('forgetPassword', JSON.stringify({email:email.current.value,id:user.data.data.id}));
-          await SendEmail(email.current.value,'user')
+             dispatch(setEmail(email))
+          Cookies.set('forgetPassword', JSON.stringify({email:email ,id:user.data.data.id}));
+          await SendEmail(email,'user')
           message.success("Email sent")
           dispatch(openModal())
           }
@@ -74,23 +71,15 @@ function Form({page}:{page:boolean}) {
 
         message.info("Enter your email")
       }
-    }
    }
 
    //handle login submission
-   const handleLogin=async(e:React.FormEvent<HTMLFormElement>)=>{
+   const handleLogin=async(data:UserForm)=>{
     try{
-      e.preventDefault()
-      if(email.current && password.current){
-        const user={
-          email:email.current.value,
-          password:password.current.value
-        }
-        const res=await dispatch(userlogin(user))
+      console.log(data)
+        const res=await dispatch(userlogin(data))
         res.payload && res.payload.success && Cookies.set('accessToken', JSON.stringify(res.payload.data));
         res.payload && res.payload.success && navigation.push('/classroom')
-      }
-
     }catch(err:any){
       message.info(err.response.data.message)
     }
@@ -128,33 +117,35 @@ function Form({page}:{page:boolean}) {
 
   return (
     <div className="mx-6 my-9 md:my-7 xm:my-4  lg:my-7">
-        <form onSubmit={page ? handleSubmit : handleLogin}>
+        <form onSubmit={handleSubmit( (data)=>page ? handleSignup(data) : handleLogin(data))}>
           {
             page &&  <div className='md:flex justify-center'>
             <div className='md:w-1/2 md:mr-3'>
             <label className='text-xs font-medium text-gray-400'>
-        Firstname<span className='text-red-500'>*</span>
+        {!errors.firstName && "FirstName"}<span className='text-red-500'>{errors.firstName? errors.firstName.message :"*"}</span>
             </label>
             <input
               id="firstname"
               type="text"
               placeholder="Enter your firstname"
-              className=" block p-3 w-full md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              ref={firstName}
-              required
+              className=" block p-3 w-full md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm"
+              {... register('firstName')} 
+              
             />
+            
             </div>
+            
             <div className='md:w-1/2'>
             <label className='text-xs font-medium text-gray-400'>
-        Lastname<span className='text-red-500'>*</span>
+            {!errors.lastName && "LastName"}<span className='text-red-500'>{errors.lastName? errors.lastName.message :"*"}</span>
             </label>
             <input
               id="lastname"
               type="text"
               placeholder="Enter your lastname"
-              className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              ref={lastName}
-              required
+              className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm"
+              { ... register('lastName')} 
+              
             />
             </div>
           </div>
@@ -162,29 +153,30 @@ function Form({page}:{page:boolean}) {
           
           <div className=" md:my-4 xm:my-3 lg:my-4">
           <label className='text-xs font-medium text-gray-400'>
-         email<span className='text-red-500'>*</span>
+          {!errors.email && "email"}<span className='text-red-500'>{errors.email? errors.email.message :"*"}</span>
             </label>
             <input
               id="email"
               type="email"
               placeholder="Enter your email"
-              className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              ref={email}
-              required
+              className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm"
+              {... register('email')} 
+              onChange={(e:ChangeEvent<HTMLInputElement>)=>setemail(e.target.value)}
+              
             />
           </div>
           {
             page &&  <div className="md:my-4 xm:my-3 lg:my-4">
             <label className='text-xs font-medium text-gray-400'>
-           username<span className='text-red-500'>*</span>
-              </label>
+            {!errors.username && "username"}<span className='text-red-500'>{errors.username? errors.username.message :"*"}</span>             
+             </label>
               <input
                 id="username"
                 type="text"
                 placeholder="Enter your username"
-                className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                ref={username}
-                required
+                className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm"
+                {... register('username')} 
+                
               />
             </div>
           }
@@ -192,44 +184,51 @@ function Form({page}:{page:boolean}) {
           <div className='md:flex justify-center'>
             <div className={` ${!page? 'w-full': 'md:w-1/2 md:mr-3'}`}>
             <label className='text-xs font-medium text-gray-400'>
-        password<span className='text-red-500'>*</span>
+            {!errors.password && "password"}<span className='text-red-500'>{errors.password? errors.password.message :"*"}</span>             
             </label>
             <input
               id="password"
               type="password"
               placeholder="Enter your password"
-              className=" block p-3 w-full md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              ref={password}
+              className=" block p-3 w-full md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm"
+              {... register('password')} 
               onChange={(e:ChangeEvent<HTMLInputElement>)=>{
                 e.target.value.length>=8 ? settext(false) :settext(true)
               }}
               
-              required
+              
             />
-            { text && page  &&
-              <p className='text-xs text-red-500'>minimum 8 charcters must be there</p>
+               
+            { 
+              errors.confirm_password && errors.confirm_password.type ?
+              <p className='text-xs text-red-500'>{errors.confirm_password.message}</p>
+              :
+            (text && page  &&
+              <p className='text-xs text-red-500'>minimum 8 charcters must be there</p>)
+              
+              
             }
             </div>
             {
               page &&  <div className='md:w-1/2'>
               <label className='text-xs font-medium text-gray-400'>
-           confirmpassword<span className='text-red-500'>*</span>
+              {!errors.confirm_password && "confirm_password"}<span className='text-red-500'>{errors.confirm_password? errors.confirm_password.message :"*"}</span>             
               </label>
               <input
                 id="password"
                 type="password"
                 placeholder="Confirm your password"
-                className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                ref={confirm_password}
+                className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm"
+                {... register('confirm_password')} 
                 onCopy={(e) => e.preventDefault()}
                 onCut={(e) => e.preventDefault()}
-                required
+                
               />
               </div>
             }
             
           </div>
-          <button className={`bg-[#194866] ${page ? "my-5" : "mt-5"} w-full text-white p-3 rounded-md`}>{page ? (loading ? <CircularProgress className='text-white'/> : "Signup") :(loading ? <CircularProgress className='text-white'/> : "Login")}</button>
+          <button  type='submit' className={`bg-[#194866] ${page ? "my-5" : "mt-5"} w-full text-white p-3 rounded-md`}>{page ? (loading ? <CircularProgress className='text-white'/> : ( resend? "Resend Otp" :"Signup")) :(loading ? <CircularProgress className='text-white'/> : "Login")}</button>
         </form>
         {!page && <p className='text cursor-pointer mb-5 mt-1 text-xs mx-2 text-[#194866] underline text-end' onClick={()=>handleForgetPassword()}>Forget Password?</p> }
         <p className='text-center text-xs font-serif text-slate-500'> {page ? "Also signup using": "Also login using"}</p>

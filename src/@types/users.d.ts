@@ -11,6 +11,16 @@ export interface UsersProps {
     about?: string;
     education?: string;
   }
+
+export interface UserForm{
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    email: string;
+    password:string,
+    confirm_password?: string;
+}  
+
   
 
 export interface AdminProps{

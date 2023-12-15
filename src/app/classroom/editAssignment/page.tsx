@@ -47,7 +47,6 @@ function CreateAssignment() {
     const [modal,setmodal]=useState(false)
     const[file,setfile]=useState<File | null>(null)
     const [details,setdetails]=useState<any>({})
-    const [checked,setchecked]=useState<string[]>([id])
     const [studentChecked,setStudentchecked]=useState<string[]>([])
     const [name,setname]=useState('')
     const [state,setstate]=useState({
@@ -114,17 +113,6 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
   },
 })
 
-   // to handle the Subjects
-  const handleChecked=(c:string)=>{
-    if(checked.includes(c)){
-       setchecked((prev)=>{
-        return prev.filter((p)=>p!=c)
-       })
-    }else{
-      setchecked((prev)=>[...prev,c])
-    }
-  }
-
   //to handle all the students
   const handleStudentchecked=(s:string)=>{
     if(studentChecked.includes(s)){
@@ -136,7 +124,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
         return prev.filter((p)=>p!=s)
        })
     }else{
-      setchecked((prev)=>[...prev,s])
+      setStudentchecked((prev)=>[...prev,s])
     }
 
   }
@@ -145,112 +133,41 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
   const handleDateChange = (date:any,dateString:any) => {
    setdetails({...details,dueDate:{
     day:dateString,
-    time:details.dueDate.time
+    time:details.dueDate.time || ''
    }})
 
   }  
 
-  //create assignment
-  const [createAssignment]=useMutation(CREATE_ASSIGNMENT,
-    {
-      onError(err){
-        console.log(err.message)
-        
-      },
-      onCompleted:()=>{
-        message.info("Successfully created");
-        router.push(`/classroom/${id}`)
-      }
-    })
-
-
-  // const handleAssign=async()=>{
-  //   if(studentChecked.length===0){
-  //     message.info("Atleast one student must be there in the clasroom")
-  //     return 
-  //   }
-  //   if(title.trim().length>0){
-  //     const assignment:any={
-  //        title:title,
-  //        class_id:checked,
-  //        students:studentChecked,
-  //        assignmentType:type,
-  //        creator:token.name
-  //     }
-      
-  //     if(instruction.trim().length>0) assignment.instruction=instruction
-  //     if(link.trim().length>0){
-  //       assignment.attachment={
-  //         type:"link",
-  //         content:link
-  //       }
-  //     } 
-  //     if(date){
-  //        if(time){
-  //         assignment.dueDate={
-  //           day:date,
-  //           time:time
-  //         }
-  //        }else{
-  //         assignment.dueDate={
-  //           day:date,
-  //           time:'23:59'
-  //         }
-  //        }
-  //     }
-  //     if(topic) assignment.mainTopic=topic
-
-  //         if(file){
-  //           const imageRef = ref(storage, `images/${file.name + v4()}`);
-  //         uploadBytes(imageRef, file).then((snapshot) => {
-  //           getDownloadURL(snapshot.ref).then(async(url) => {
-             
-  //             assignment.attachment={
-  //               type:"photo",
-  //               content:url
-  //             }
-  //             console.log(assignment)
-  //             await createAssignment({
-  //               client:assignmentClient,
-  //               variables:{
-  //                 assignment:assignment
-  //               }
-  //             })
-  //             return 
-  //           });
-  //         });
-  //         }else{
-  //           await createAssignment({
-  //             client:assignmentClient,
-  //             variables:
-  //               {
-  //                 assignment
-  //               }
-              
-  //           })
-  //         }
-          
-
-  //   }else{
-  //     message.info("Title is must")
-  //   }
-     
-  // }
 
   const [updateAssignment]=useMutation(EDIT_ASSIGNMENT,{
     client:assignmentClient,
     onError(err){
       console.log(details)
       console.log(err)
+    },
+    onCompleted:()=>{
+      console.log("HIi")
     }
   })
+
   const handleUpdate=async()=>{
-     await updateAssignment({
-      variables:{
-        id:id,
-        update:details
-      }
-     })
+    const { __typename, ...detailsWithoutTypename } = details;
+
+    const attachment = {
+      type: detailsWithoutTypename.attachment.type,
+      content: detailsWithoutTypename.attachment.content,
+    };
+
+    const assignment={ ...detailsWithoutTypename, attachment }
+    console.log(assignment)
+    
+    await updateAssignment({
+      variables: {
+        id: id,
+        update: assignment,
+      },
+    });
+    
   }
 
   return (
@@ -272,7 +189,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
             <div className=' mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[8rem] box_shadow my-5 px-3'>
               <div className='flex items-center'>
               <p className="text p-2 text-sm">{ details.attachment && details.attachment.type[0].toUpperCase() + details.attachment.type.slice(1,details.attachment.type.length)} has been attached with the assignment</p>
-              <a href={details.attachment && details.attachment.content} className='text-xs text text-blue-600 underline'>Click here</a>
+              <a href={details.attachment && details.attachment.content}  target="_blank" rel="noopener noreferrer" className='text-xs text text-blue-600 underline'>Click here</a>
               </div>
               <div className='flex justify-center items-center'>
                 <div>
@@ -368,7 +285,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                 <div className=' my-5 '>
                    <p className='text text-slate-700'>Due Date</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
-                  <p className='text text-slate-700'>{details.dueDate ? details.dueDate.day : "No due date"}</p>
+                  <p className='text text-slate-700'>{ (details.dueDate && details.dueDate.day) ? details.dueDate.day : "No due date"}</p>
                   <ArrowDropDownIcon className='cursor-pointer' onClick={()=>handleState('state4',!state.state4)}/>
                 </div>
                 {
