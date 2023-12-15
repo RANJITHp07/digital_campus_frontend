@@ -70,7 +70,7 @@ function Navbar() {
       refetchQueries: [{ query: FETCH_ADDED_CLASSROOM_QUERY ,variables:{id:token.id}},
         { query: FETCH_ALL_CLASSROOM_QUERY ,variables:{id:token.id}}
       ],
-      onCompleted: (data) => {
+      onCompleted: () => {
         dispatch({type:"SET_OPEN2",value:false})
         message.info("Succesfully joined")
       }
@@ -86,7 +86,7 @@ function Navbar() {
     refetchQueries: [{ query: FETCH_CLASSROOM_QUERY ,variables:{id:token.id}},
       { query: FETCH_ALL_CLASSROOM_QUERY ,variables:{id:token.id}}
     ],
-    onCompleted: (data) => {
+    onCompleted: () => {
       dispatch({type:"SET_OPEN1",value:false})
       message.info("Succesfully created")
     }

@@ -31,7 +31,7 @@ function SidePanel() {
   const checked = useAppSelector((state) => state.classroomReducer.category);
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useRouter();
-  const { loading, data } = useQuery(FETCH_CLASSROOM_QUERY, {
+  const { data } = useQuery(FETCH_CLASSROOM_QUERY, {
     variables: { id: token.id },
   });
   const { data: addedClasroom } = useQuery(FETCH_ADDED_CLASSROOM_QUERY, {
