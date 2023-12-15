@@ -11,11 +11,11 @@ import LoadinPage from '../component/common/loadinPage';
 import Profile from '../component/classroom/profile';
 import BasicCalendar from '../component/classroom/calendar';
 import { Pagination, Popover } from 'antd';
-import { ClassroomProps } from '@/interfaces/classroom';
+import { ClassroomProps } from '@/@types/classroom';
 import { DUE_DATES } from '@/apis/assignment';
 import { assignmentClient } from '../providers/ApolloProvider';
 import moment from "moment";
-import { Event } from '@/interfaces/assignment';
+import { Event } from '@/@types/assignment';
 
 const Classroom=()=>{
 

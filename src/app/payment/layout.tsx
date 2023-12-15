@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
+import ApolloProvider from '../providers/ApolloProvider'
 
 
 export const metadata: Metadata = {
-  title: 'Login',
+  title: 'Payment',
   description: '  This is a learning mangment system',
 }
 
@@ -13,10 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-
-      <body>
-        {children}
-        </body>
+      <body>{children}</body>
     </html>
   )
 }

@@ -14,7 +14,7 @@ export const CREATE_ASSIGNMENT = gql`
 
 
 export const EDIT_ASSIGNMENT = gql`
-  mutation updateAssignment( $id:String!,$update: AssignmentInput) {
+  mutation updateAssignment($id:String!,$update:AssignmentInput) {
     updateAssignment(id:$id,update:$update) {
       title,
     }

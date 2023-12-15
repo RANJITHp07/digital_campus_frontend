@@ -8,6 +8,7 @@ interface InitialState {
     error: null | any;
     email:string
     user:any,
+    resend:boolean
 
 }
 
@@ -23,6 +24,7 @@ export const initialState: InitialState = {
         email:'',
         password:'',
   },
+  resend:false
 
 };
 
@@ -38,6 +40,9 @@ export const user = createSlice({
     },
     setEmail:(state,action)=>{
       state.email =action.payload
+    },
+    setResend:(state,action)=>{
+      state.resend =action.payload
     },
   },
   extraReducers(builder) {
@@ -55,7 +60,7 @@ export const user = createSlice({
             ...state,
              user:action.payload,
              loading:false,
-             modal:true
+             modal:true,
           }
       })
 
@@ -95,5 +100,5 @@ export const user = createSlice({
   },
 });
 
-export const { openModal, closeModal,setEmail } = user.actions;
+export const { openModal, closeModal,setEmail,setResend } = user.actions;
 export default user.reducer;

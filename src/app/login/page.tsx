@@ -31,7 +31,7 @@ function Login() {
      </div>
   </div>
   {
-    modal &&  <Otp page={true}/>
+    modal &&  <Otp page={false}/>
   }
 </div>
 </div>

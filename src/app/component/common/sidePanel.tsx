@@ -44,7 +44,7 @@ function SidePanel() {
   };
 
   return (
-    <div className="bg-white py-5 w-56">
+    <div className={`bg-white py-5 ${state && "w-56"}`}>
       <div className={`flex items-center p-1 cursor-pointer hover:bg-slate-200 hover:mr-3 hover:rounded-r-full`}>
         <HomeIcon className="mr-6  text-[#3b6a87] ml-4 " />
         {state && (

@@ -6,7 +6,7 @@ import { message } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { CircularProgress } from '@mui/material';
-import { closeModal } from '@/redux/features/user-auth-slice/reducer';
+import { closeModal, setResend } from '@/redux/features/user-auth-slice/reducer';
 
 function Otp({page}:{page:boolean}) {
 
@@ -51,7 +51,7 @@ function Otp({page}:{page:boolean}) {
         setotp(true)
       } 
     }catch(err){
-        throw err
+      setotp(true)
     }
   };
 
@@ -63,11 +63,9 @@ function Otp({page}:{page:boolean}) {
        if(response.data.success){
         dispatch(closeModal())
         navigate.push('/forgetpassword')
-      }else{
-        setotp(true)
       } 
-    }catch(err){
-        throw err
+    }catch(err:any){
+      setotp(true)
     }
   };
 
@@ -87,6 +85,7 @@ function Otp({page}:{page:boolean}) {
   useEffect(() => {
     // Close the OTP modal after 1 minute
     const modalCloseTimer = setTimeout(() => {
+      dispatch(setResend(true))
       dispatch(closeModal())
     }, 60000);
 
