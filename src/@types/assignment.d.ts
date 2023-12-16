@@ -15,3 +15,13 @@ export interface Event{
     creator:string,
     class_id:string[]
 }
+
+export interface Polling{
+    __typename:string,
+    title:string,
+    polling:{
+        __typename?:string,
+        answers:string[]
+    },
+    students:string[]
+}

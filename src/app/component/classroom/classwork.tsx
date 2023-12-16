@@ -1,5 +1,5 @@
 'use client'
-import React,{ChangeEvent, useEffect, useState} from 'react'
+import React,{ChangeEvent, useState} from 'react'
 import Image from 'next/image';
 import AddIcon from '@mui/icons-material/Add';
 import { Dropdown, MenuProps, Modal, Tooltip, message } from 'antd';
@@ -13,16 +13,15 @@ import { CREATE_ASSIGNMENT, FETCH_MAINTOPIC, GROUPED_ASSIGNMENT } from '@/apis/a
 import LoadinPage from '../common/loadinPage';
 import { assignmentClient } from '@/app/providers/ApolloProvider';
 import PollIcon from '@mui/icons-material/Poll';
-import { Polling } from '@/interfaces/classroom';
+import { Polling } from '@/@types/classroom';
 import { FETCH_CLASSROOM_DETAILS} from '@/apis/classroom';
 import { useAppSelector } from '@/redux/store';
 import Material from './material';
 
 function Classwork({id}:{id:string}) {
 
-  
+  const options=["A","B","C","D"]
   const [open,setopen]=useState(false) 
-  
   const [pollingquestion,setpollingquestion]=useState('')
   const [question,setquestion]=useState({
     question1:'',
@@ -82,8 +81,9 @@ function Classwork({id}:{id:string}) {
   };
   
   const handleChange = () => {
-    if(polling.length>4){
+    if(polling.length>=4){
       message.info("Maximum 4 options")
+      return
     }
     if (pollingquestion.trim().length > 0) {
       setpolling([...polling, { number: polling.length + 1, question: pollingquestion }]);
@@ -182,19 +182,23 @@ function Classwork({id}:{id:string}) {
 
   return (
     <div className='flex justify-center'>
+      {
+        loading ? <LoadinPage/>:
+        <>
         <div className=' w-full md:w-3/4 my-9'>
                 <div className='flex justify-between items-center'>
                 <p className='text-3xl text text-[#3b6a87] mx-4'>Assignments</p>
-                <Dropdown menu={{ items }} placement="bottomLeft">
-                
+                <>
                 {
                   creator && 
+                  <Dropdown menu={{ items }} placement="bottomLeft">
                   <div className='mx-3'>
                 <AddIcon className='text-[#3b6a87] md:hidden mx-4'/>
                   <button className='bg-[#3b6a87] text-white p-2 rounded-full pr-4 md:flex items-center hidden'><AddIcon/>Create</button>
                 </div>
-                }
                 </Dropdown>
+                   }
+                </>
                 </div>
            <hr className='border-1 rounded-full border-[#3b6a87] mb-6 mt-3'/>
            {
@@ -259,10 +263,16 @@ function Classwork({id}:{id:string}) {
             </>
       }
         </div>
-        <Modal title='Polling for the students' open={open} footer={null} onCancel={()=>
+
+        <Modal title={<span className='text font-normal text-[#3b6a87]'>Polling for the students</span>} open={open} footer={null} onCancel={()=>
           {
             setopen(false)
-            setquestion
+            setadd(false)
+            setpolling([])
+            setquestion({
+    question1:'',
+    question2:''
+  })
           }
           }>
          <div className='flex items-center justify-between border-slate-300 rounded-md border-2 px-1'>
@@ -287,20 +297,20 @@ function Classwork({id}:{id:string}) {
          </div>
          { add && question.question2.trim().length>0 &&  <p className='text mt-5 mb-2'>{question.question2[0].toUpperCase()+ question.question2.slice(1,question.question2.length)}</p>}
          {
-          polling.map((p)=>{
+          polling.map((p,index)=>{
             return (
               <div className='my-5 flex items-center w-full'>
-              <input type="radio" className="transform scale-150 mr-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={false} />
+                <p className='text'>{options[index]} .</p>
                 <p className='text '>{p.question}</p>
               </div>
             )
           })
          }
          {
-          add && 
+          add && polling.length<4 &&
           <div className='my-5 flex items-center w-full'>
         <input type="radio" className="transform scale-150 mr-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked />
-          <input type='text' placeholder='Enter the answer' className='border-b-2 w-full text border-slate-500 focus:outline-none' value={pollingquestion} onChange={(e:ChangeEvent<HTMLInputElement>)=>setpollingquestion(e.target.value)}
+          <input type='text' placeholder={`Option ${options[polling.length]}`} className='border-b-2 w-full text border-slate-500 focus:outline-none' value={pollingquestion} onChange={(e:ChangeEvent<HTMLInputElement>)=>setpollingquestion(e.target.value)}
           onKeyDown={handleKeyDown}
           />
         </div>
@@ -309,6 +319,9 @@ function Classwork({id}:{id:string}) {
               <button type='submit' className="text-white p-2 border-2 bg-[#3b6a87] rounded-md px-4 text " onClick={hanldeSubmitPolling}>Submit</button>
           </div>
         </Modal>
+        </>
+}
+
     </div>
   )
 }

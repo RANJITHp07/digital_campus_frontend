@@ -33,11 +33,11 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import type { MenuProps } from 'antd';
 import { Dropdown} from 'antd';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import DoDisturbIcon from '@mui/icons-material/DoDisturb';
+import ShareIcon from '@mui/icons-material/Share';
 
 function Assignment({id}:{id:string}) {
 
-
-  
  const dispatch=useDispatch<AppDispatch>()
  const assign=useAppSelector((state)=>state.classroomReducer.creator)
  const token=useAppSelector((state)=>state.authReducer.token)
@@ -55,13 +55,19 @@ const [annocument,setannouncment]=useState('')
     {
       key: '1',
       label: (
-        <p onClick={handleBlock}>Stop entry</p>
+        <p onClick={handleBlock}><DoDisturbIcon className='text-sm'/> Stop entry</p>
       ),
     },
     {
       key: '3',
       label: (
-        <p onClick={handleCopyClick} >Copy the code</p>
+        <p onClick={handleCopyClick} ><ContentCopyOutlinedIcon className='text-sm'/> Copy the code</p>
+      ),
+    },
+    {
+      key: '4',
+      label: (
+        <p ><ShareIcon className='text-sm'/> Share the code</p>
       ),
     }
     

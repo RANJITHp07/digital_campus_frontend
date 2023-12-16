@@ -30,7 +30,7 @@ function People({id,code}:{id:string,code:string}) {
           message.info("Some error ocuured")
          },
          refetchQueries: [{ query: GET_PARTICIPANTS ,variables:{id:id}}],
-         onCompleted:(data)=>{
+         onCompleted:()=>{
           message.info("Added to admin")
          }
       } 
@@ -54,7 +54,7 @@ function People({id,code}:{id:string,code:string}) {
           message.info("Some error ocuured")
          },
          refetchQueries: [{ query: GET_PARTICIPANTS ,variables:{id:id}}],
-         onCompleted:(data)=>{
+         onCompleted:()=>{
               message.info("Removed from admin")
          }
       } 
@@ -82,7 +82,7 @@ function People({id,code}:{id:string,code:string}) {
         message.info("Some error ocuured")
        },
        refetchQueries: [{ query: GET_PARTICIPANTS ,variables:{id:id}}],
-       onCompleted:(data)=>{
+       onCompleted:()=>{
             message.info("Removed from the participants")
        }
     } 

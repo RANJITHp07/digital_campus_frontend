@@ -114,3 +114,17 @@ query getDueDates($id: String!){
   }
 }
 `
+
+
+export const EDIT_POLLING=gql`
+  query getOneassignment($id: String!) {
+    getOneassignment(id: $id) {
+      title,
+    polling {
+      answers
+    },
+    students
+    }
+  }
+
+`
