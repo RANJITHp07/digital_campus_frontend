@@ -200,9 +200,7 @@ function Form({page}:{page:boolean}) {
             />
                
             { 
-              errors.confirm_password && errors.confirm_password.type ?
-              <p className='text-xs text-red-500'>{errors.confirm_password.message}</p>
-              :
+            
             (text && page  &&
               <p className='text-xs text-red-500'>minimum 8 charcters must be there</p>)
               

@@ -80,7 +80,7 @@ function Navbar() {
   // to create class
   const [createClass]=useMutation(CREATE_CLASS,{
     onError(err) {
-      console.log(category)
+      console.log(err)
       message.info("Some error occured")
     },
     refetchQueries: [{ query: FETCH_CLASSROOM_QUERY ,variables:{id:token.id}},

@@ -11,6 +11,7 @@ export interface ClassroomProps{
     createdAt?:Date
     category?:string,
     block?:boolean
+    profile?:string
 }
 
 

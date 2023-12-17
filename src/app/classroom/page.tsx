@@ -46,6 +46,9 @@ const Classroom=()=>{
   //to fetch all the class  created
   const { loading, data } = useQuery(FETCH_CLASSROOM_QUERY, {
     variables: { id: token.id },
+    onError(err){
+     console.log(err)
+    },
     onCompleted:()=>{
       setcreatedClasroom(data.getCreatorClassroom.length)
    }
@@ -58,9 +61,8 @@ const Classroom=()=>{
       category:category
     },
       onError(err){
-        console.log(token.id)
         console.log(err)
-      }
+      },
   });
 
 
@@ -91,7 +93,6 @@ const Classroom=()=>{
             </Popover>
           }
         })
-        console.log(e)
         setevent(e)
       }
   });
@@ -121,13 +122,13 @@ const Classroom=()=>{
                 <Suspense fallback={loading}>
               { (filteredClassroom && filteredClassroom.getFilteredClassroom.length > 0) ? (filteredClassroom.getFilteredClassroom.map((c:ClassroomProps) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
-                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} />
+                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} profile={c.profile as string} />
                 </div>)
                 
               )) :
               <div className='flex justify-center w-full'>
                 <div>
-                { filteredClassroom && <Image src={'/noaddedclassroom.png'} width={500} height={500} alt='classroom'/>} 
+                { filteredClassroom && <Image src={'/filter.jpg'} width={500} height={500} alt='classroom'/>} 
                
                 </div>
               </div>
@@ -147,7 +148,7 @@ const Classroom=()=>{
                 <Suspense fallback={loading}>
               { (allClassroom && allClassroom.getAllTheClassroom.length > 0) ? (allClassroom.getAllTheClassroom.map((c:ClassroomProps) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
-                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} />
+                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} profile={c.profile as string} />
                 </div>)
                 
               )) :
@@ -169,12 +170,12 @@ const Classroom=()=>{
               
               <div className={` flex-wrap flex lg:ml-7 xl:ml-12 md:ml-12 ${!state && 'xm:ml-0'}`}>
               {
-                true ? <LoadinPage/> 
+                loading ? <LoadinPage/> 
                 :
                 <Suspense fallback={loading}>
               { (data && data.getCreatorClassroom.length > 0) ? (data.getCreatorClassroom.map((c:ClassroomProps) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
-                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={true} bg={c.backgroundPicture as string} subject={c.classSubject as string} section={c.classSection as string} code={c.classCode} />
+                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={true} bg={c.backgroundPicture as string} subject={c.classSubject as string} section={c.classSection as string} code={c.classCode} profile={c.profile as string} />
                 </div>)
                 
               )) :
@@ -201,7 +202,7 @@ const Classroom=()=>{
               { (addedClassroom  && addedClassroom.getAllClassroom.length>0 ) ?addedClassroom.getAllClassroom.slice(pagination * 9 - 9, pagination * 9).map((c: any) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
                     
-                     <Class className={c.className} creator={c.creator} id={c._id} code={c.classCode} type={false} bg={c.backgroundPicture} />
+                     <Class className={c.className} creator={c.creator} id={c._id} code={c.classCode} type={false} bg={c.backgroundPicture}  profile={c.profile as string}/>
                 </div>
               )):
               <div className='flex justify-center w-full'>
@@ -221,7 +222,7 @@ const Classroom=()=>{
              </div>
             }
             {
-             type!=="calendar" && <Pagination defaultCurrent={1} total={(Math.ceil(data && data.getCreatorClassroom.length / 9) * 10)} onChange={(e:number) => {
+             type!=="calendar" && ((data && data.getCreatorClassroom.length) || (filteredClassroom && filteredClassroom.getFilteredClassroom.length > 0) || (addedClassroom  && addedClassroom.getAllClassroom.length>0 ))  && <Pagination defaultCurrent={1} total={(Math.ceil(data && data.getCreatorClassroom.length / 9) * 10)} onChange={(e:number) => {
               setpagination(e);
             }}  className='text-center mt-4' />
 

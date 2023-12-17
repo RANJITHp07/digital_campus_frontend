@@ -13,7 +13,8 @@ export const FETCH_CLASSROOM_QUERY = gql`
       classSubject,
       classCode
       backgroundPicture,
-      themeColor
+      themeColor,
+      profile
     }
   }
 `;
@@ -29,7 +30,8 @@ export const FETCH_ADDED_CLASSROOM_QUERY = gql`
       classCode,
       classSubject,
       backgroundPicture,
-      themeColor
+      themeColor,
+      profile
     }
   }
 `;
@@ -45,7 +47,8 @@ export const FETCH_ALL_CLASSROOM_QUERY = gql`
       students_enrolled,
       classSubject,
       backgroundPicture,
-      classCode
+      classCode,
+      profile
     }
   }
 `;

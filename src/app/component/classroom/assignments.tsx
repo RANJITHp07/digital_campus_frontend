@@ -35,6 +35,8 @@ import { Dropdown} from 'antd';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import ShareIcon from '@mui/icons-material/Share';
+import {EmailIcon, EmailShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon,WhatsappShareButton} from 'react-share'
+import { useRouter } from 'next/navigation';
 
 function Assignment({id}:{id:string}) {
 
@@ -45,11 +47,13 @@ const [file,setFile]=useState<File | null>(null)
 const [text,setText]=useState<string[]>([ 'color: #3b6a87;','#3b6a87'])
 const [color,setColor]=useState<any>(themeColor); // choosing theme color
 const [detail,setdetail]=useState(false) // detail of the classroom
+const [share,setshare]=useState(false) // to open and close sharing model
 const [open,setopen]=useState(false)
 const [bg,setbg]=useState('/bg4.png')
 const [modal,setmodal]=useState(false)
 const [background,setbackground]=useState('')
 const [annocument,setannouncment]=useState('')
+const navigate=useRouter()
 
   const items: MenuProps['items'] = [
     {
@@ -67,7 +71,7 @@ const [annocument,setannouncment]=useState('')
     {
       key: '4',
       label: (
-        <p ><ShareIcon className='text-sm'/> Share the code</p>
+        <p onClick={()=>setshare(true)} ><ShareIcon className='text-sm' /> Share the code</p>
       ),
     }
     
@@ -77,12 +81,13 @@ const [annocument,setannouncment]=useState('')
 const { loading, data } = useQuery(FETCH_CLASSROOM_DETAILS, {
   variables: { id: id },
   onCompleted:(data)=>{
-  dispatch( changeToCreator( data.getClassroomDetails.admins.includes(token.id)))
-   setbackground(data.getClassroomDetails.backgroundPicture)
-   setbg(data.getClassroomDetails.backgroundPicture)
-   const themeColorKey = data.getClassroomDetails.themeColor as keyof typeof themeText;
-   const textColorClass = themeText[themeColorKey];
-   setText([textColorClass, themeColorKey]);   
+    console.log(data.getClassroomDetails)
+      dispatch( changeToCreator( data.getClassroomDetails.admins.includes(token.id)))
+      setbackground(data.getClassroomDetails.backgroundPicture)
+      setbg(data.getClassroomDetails.backgroundPicture)
+      const themeColorKey = data.getClassroomDetails.themeColor as keyof typeof themeText;
+      const textColorClass = themeText[themeColorKey];
+      setText([textColorClass, themeColorKey]); 
   }
 });
 
@@ -411,6 +416,22 @@ style={{ backgroundColor: c }}
         </Modal>
         </>
        }
+       <Modal title={<span className='text font-normal'>Share</span>} open={share} footer={null} onCancel={()=>setshare(false)}>
+        <div className="flex justify-center mb-6">
+        <WhatsappShareButton title={ data && `Classroom code of ${data && data.getClassroomDetails.className} is \n`} url={data && data.getClassroomDetails.classCode}>
+         <WhatsappIcon size={44} round={true} />
+         <p className='text-xs text-center'>Whatsapp</p>
+         </WhatsappShareButton>
+         <TelegramShareButton title={`Classroom code of ${data && data.getClassroomDetails.className} is \n`} url={data && data.getClassroomDetails.classCode}>
+         <TelegramIcon size={44} round={true} className='mx-12' />
+         <p className='text-xs text-center'>Telegram</p>
+         </TelegramShareButton>
+         <EmailShareButton title={`Classroom code of ${data && data.getClassroomDetails.className} is \n`} url={data && data.getClassroomDetails.classCode}>
+          <EmailIcon size={44} round={true}/>
+          <p className='text-xs text-center'>Email</p>
+         </EmailShareButton>
+        </div>
+       </Modal>
     </div>
   )
 }

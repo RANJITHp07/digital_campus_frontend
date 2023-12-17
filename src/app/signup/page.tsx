@@ -4,16 +4,19 @@ import Image from 'next/image';
 import Form from '../component/signup/form';
 import Link from 'next/link'
 import Otp from '../component/signup/otp';
-import {  useAppSelector } from '@/redux/store';
+import { AppDispatch, useAppSelector } from '@/redux/store';
+import { useDispatch } from 'react-redux';
+import { setResend } from '@/redux/features/user-auth-slice/reducer';
 
 
 function Signup() {
   const modal:boolean=useAppSelector((state)=>state.userReducer.modal)
+  const dispatch=useDispatch<AppDispatch>()
   
   return (
     <div>
       <div className='lg:absolute right-0 m-3 flex justify-end'>
-           <Link href="/login" className=' border-2 rounded-md py-1 px-3 text-[#194866] border-[#194866] '>Login</Link>
+           <Link href="/login" className=' border-2 rounded-md py-1 px-3 text-[#194866] border-[#194866]' onClick={()=>dispatch(setResend(false))} >Login</Link>
       </div>
     <div  className="grid place-content-center xm:h-screen">
   <div  className={`  xm:flex  rounded-lg bg-white ${modal && 'blur'}`}>

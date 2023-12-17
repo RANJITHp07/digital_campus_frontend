@@ -11,7 +11,7 @@ import { DELETE_CLASS, FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_QUERY, F
 import { useAppSelector } from '@/redux/store';
 import { useMutation } from '@apollo/client';
 
-function Class({className,creator,id,code,type,bg,subject,section}:{className:string,creator:string,id:string,code?:string,type:boolean,bg:string,subject?:string,section?:string}) {
+function Class({className,creator,id,code,type,bg,subject,section,profile}:{className:string,creator:string,id:string,code?:string,type:boolean,bg:string,subject?:string,section?:string,profile:string}) {
 
   const token=useAppSelector((state)=>state.authReducer.token)
   const navigation=useRouter()
@@ -19,7 +19,8 @@ function Class({className,creator,id,code,type,bg,subject,section}:{className:st
   const [classroom,setclassroom]=useState({
     className:className,
     classSection:section,
-    classSubject:subject
+    classSubject:subject,
+    profile:profile
   })
 
   //items of the class menu
@@ -132,7 +133,7 @@ function Class({className,creator,id,code,type,bg,subject,section}:{className:st
           </Dropdown>
           </div>
         <div className="absolute top-16 left-5 w-full" onClick={()=>navigation.push(`/classroom/${id}?code=${code}`)}>
-          <Image src={'/profile-logo.jpg'} width={120} height={120} alt='vv' className='rounded-full z-50' />
+          <Image src={classroom.profile!==''?'/profile-logo.jpg' : classroom.profile} width={120} height={120} alt='' className='rounded-full z-50 ' />
         </div>
       </div>
       <div className="flex justify-end mx-2" onClick={()=>navigation.push(`/classroom/${id}`)}>

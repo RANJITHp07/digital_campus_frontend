@@ -1,4 +1,5 @@
 'use client'
+import axios from 'axios';
 import React, { useState } from 'react';
 
 
@@ -16,7 +17,7 @@ function loadScript(src: string): Promise<boolean> {
     });
 }
 
-const __DEV__ = document.domain === 'localhost';
+
 
 function App() {
     const [name, setName] = useState('Mehul');
@@ -29,29 +30,25 @@ function App() {
             return;
         }
 
-        const data = await fetch('http://localhost:6003/v1/api/payment/subscription', { method: 'POST' }).then((t) =>
-            t.json()
-        );
-
-        console.log(data);
-
+        
+            const response = await axios.post('http://localhost:6003/v1/api/payment/subscription', {
+              planName: '6months',
+              interval: 6,
+              amount: 900,
+              username: 'Ranjith',
+              email: 'ranjith@gmail.com',
+              plan_id: '89890',
+            });
+          
+            const data = response.data;
+            console.log(data.data);
+          
         const options = {
-            key: __DEV__ ? 'rzp_test_uGoq5ABJztRAhk' : 'PRODUCTION_KEY',
-            currency: data.currency,
-            amount: data.amount.toString(),
-            order_id: data.id,
-            name: 'Donation',
-            description: 'Thank you for nothing. Please give us some money',
-            handler: function (response: any) {
-                alert(response.razorpay_payment_id);
-                alert(response.razorpay_order_id);
-                alert(response.razorpay_signature);
-            },
-            prefill: {
-                name,
-                email: 'sdfdsjfh2@ndsfdf.com',
-                phone_number: '9899999999',
-            },
+            key:"rzp_test_f2VkhZBqoeOqME" ,
+            name:"6months subscription",
+            description:"6 months plan in digital ocean",
+            subscription_id:data.data.id,
+            callback_url:data.data.short_url
         };
 
         const paymentObject = new (window as any).Razorpay(options);

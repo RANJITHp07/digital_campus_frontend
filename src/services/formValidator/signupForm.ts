@@ -50,7 +50,7 @@ export const resolver=async (values:UserForm) => {
   
     // Check if passwords match
     if (values.password !== values.confirm_password && currentPath !== '/login') {
-      errors.passwordmatch = {
+      errors.confirm_password = {
         type: 'passwordMatch',
         message: 'Passwords do not match.',
       };
