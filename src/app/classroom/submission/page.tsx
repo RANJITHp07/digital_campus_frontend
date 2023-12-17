@@ -48,9 +48,10 @@ function Submission() {
           <hr/>
           <div className='flex'>
             {
-                data && <div className='my-6 mx-3 w-2/3'>
+                data && 
+                <div className='my-6 mx-3 w-2/3'>
                 
-          <p className='text text-2xl text-[#3b6a87] mx-6'>
+          {/* <p className='text text-2xl text-[#3b6a87] mx-6'>
             Question : What is you favourite color
           </p>
           <div className='my-5 flex items-center w-full mx-6'>
@@ -68,7 +69,13 @@ function Submission() {
         <div className='my-5 flex items-center w-full mx-6'>
         <input type="radio" className="transform scale-150 mr-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]"/>
           <p className=' w-full text text-slate-600'> Brown</p>
-        </div>
+        </div> */}
+        <p className='text text-2xl text-[#3b6a87] mx-6'>
+            Title: Home worrk-1
+          </p>
+          <p className='text text-sm my-3 text-[#3b6a87] mx-6'>
+            This is a task you need to complete within 24 hrs of time or else you will be terminated
+          </p>
         <button className='text-white bg-[#3b6a87] p-3 w-3/4 my-5 mx-3 text-center text rounded-md'>Submit</button>
         <div className='box_shadow p-3 mx-3 w-3/4 rounded-md'>
           <div className='flex items-center mb-6'>

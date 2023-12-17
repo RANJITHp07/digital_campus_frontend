@@ -59,6 +59,9 @@ function Quiz() {
     const token=useAppSelector((state)=>state.authReducer.token)
       
       //quiz details
+      const [timer,settimer]=useState<string[]>([]);
+      const [date,setdate]=useState('')
+      const [topic,settopic]=useState<string | null >(null)
       const [number,setnumber]=useState(1)
       const [questions,setquestions]=useState<Question[]>([])
       const [question,setquestion]=useState('')
@@ -188,34 +191,46 @@ function Quiz() {
            return 
         }
 
+        if(date.trim().length==0 || timer.length!=2){
+          message.info("Date and time is must");
+          return
+        }
+
         let q=questions.map(({ edit, ...rest }) => rest)
         if(question.trim().length>0 && options.length>0){
           q = [...q, { question: question, answers: options, type: type as string }];
         }
-        const assignment:any={
+        let assignment:any={
           title:title,
           class_id:[id],
           students: classroom && classroom.getClassroomDetails.students_enrolled,
           assignmentType:"Quiz",
           creator:token.name,
+          dueDate:{
+            day:date,
+            timer:timer
+          },
           quiz:q
        }
+       if(topic && topic.trim().length>0){
+         assignment={...assignment,mainTopic:topic}
+       }
        console.log(assignment)
-      //  await createAssignment({
-      //   client:assignmentClient,
-      //   variables:
-      //     {
-      //       assignment
-      //     }
+       await createAssignment({
+        client:assignmentClient,
+        variables:
+          {
+            assignment
+          }
         
-      // })
+      })
       }
 
   return (
     <div>
         <Navbar/>
         <hr/>
-        <Title title={title} settitle={settitle}/>
+        <Title id={id} settitle={settitle} topic={topic} settopic={settopic} settimer={settimer} setdate={setdate}/>
         {
   Array.from({ length: number }).map((_, index) => (
     <div key={index} className="w-11/12 mx-auto my-8 box_shadow rounded-md p-4">
