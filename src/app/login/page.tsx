@@ -3,10 +3,13 @@ import React from 'react';
 import Image from 'next/image';
 import Form from '../component/signup/form';
 import Link from 'next/link'
-import Otp from '../component/signup/otp';
+import dynamic from 'next/dynamic';
 import {  AppDispatch, useAppSelector } from '@/redux/store';
 import { useDispatch } from 'react-redux';
 import { setResend } from '@/redux/features/user-auth-slice/reducer';
+
+// Use next/dynamic to lazily load the Otp component
+const Otp = dynamic(() => import('../component/signup/otp'), { ssr: false });
 
 
 function Login() {
