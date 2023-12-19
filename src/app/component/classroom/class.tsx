@@ -11,10 +11,14 @@ import { DELETE_CLASS, FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_QUERY, F
 import { useAppSelector } from '@/redux/store';
 import { useMutation } from '@apollo/client';
 
-function Class({className,creator,id,code,type,bg,subject,section,profile}:{className:string,creator:string,id:string,code?:string,type:boolean,bg:string,subject?:string,section?:string,profile:string}) {
+function Class({className,creator,id,code,type,bg,subject,section,profile,block}:{className:string,creator:string,id:string,code?:string,type:boolean,bg:string,subject?:string,section?:string,profile:string,block?:boolean}) {
 
+  console.log(block)
   const token=useAppSelector((state)=>state.authReducer.token)
   const navigation=useRouter()
+  const[report,setReport]=useState(false);
+  const[title,settitle]=useState('');
+  const[description,setdescription]=useState('');
   const [open,setopen]=useState(false)
   const [classroom,setclassroom]=useState({
     className:className,
@@ -34,7 +38,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile}:{clas
     {
       key: '3',
       label: (
-        <p onClick={type ? handleEdit : deleteClass}>{ type ? "Edit" : "Report Abuse"}</p>
+        <p onClick={type ? handleEdit : ()=>setReport(true)}>{ type ? "Edit" : "Report Abuse"}</p>
       ),
     }
     
@@ -98,10 +102,6 @@ function Class({className,creator,id,code,type,bg,subject,section,profile}:{clas
 
    //to update the classroom
  const [updateClassroom]=useMutation(UPDATE_CLASSROOM_DETAILS,{
-  variables:{
-    id:id,
-    update:classroom
-  },
   onError(err){
       console.log(err)
   },
@@ -113,8 +113,35 @@ function Class({className,creator,id,code,type,bg,subject,section,profile}:{clas
 
  const handleUpdate=async(e:React.FormEvent<HTMLFormElement>)=>{
   e.preventDefault()
-  await updateClassroom()
+  await updateClassroom({
+    variables:{
+      id:id,
+      update:classroom
+    }
+  })
  }
+
+ const handleReport=async()=>{
+  const update={
+    reported:true,
+    reason:{
+      title:title,
+      description:description,
+      reporter:token.name
+    }
+  }
+  await updateClassroom({
+    variables:{
+      id:id,
+      update:update
+    }
+  })
+
+  setReport(false)
+  settitle('');
+  setdescription('')
+
+}
 
 
   return (
@@ -132,11 +159,11 @@ function Class({className,creator,id,code,type,bg,subject,section,profile}:{clas
           <MoreVertIcon className="text-white"/>
           </Dropdown>
           </div>
-        <div className="absolute top-16 left-5 w-full" onClick={()=>navigation.push(`/classroom/${id}?code=${code}`)}>
-          <Image src={classroom.profile!==''?'/profile-logo.jpg' : classroom.profile} width={120} height={120} alt='' className='rounded-full z-50 ' />
+        <div className="absolute top-16 left-5 w-full" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}`)}>
+          <Image src={'/bg3.png' } width={120} height={120} alt='' className='rounded-full z-50 aspect-square	' />
         </div>
       </div>
-      <div className="flex justify-end mx-2" onClick={()=>navigation.push(`/classroom/${id}`)}>
+      <div className="flex justify-end mx-2" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}`)}>
         <div>
           <p>{classroom.className.length >0 && (classroom.className[0].toUpperCase() + classroom.className.slice(1,className.length).toLowerCase())}</p>
           <p className="text-xs">{creator}</p>
@@ -163,6 +190,24 @@ function Class({className,creator,id,code,type,bg,subject,section,profile}:{clas
           </div>
 
          </form>
+      </Modal>
+      <Modal title={<span className='text font-normal'>Report classroom</span>} open={report} footer={null} onCancel={()=>{
+          setReport(false)
+          settitle('');
+          setdescription('')        
+      }}>
+         <select className="w-full p-3 rounded-md border-2 text-md focus:outline-none border-slate-300" onChange={(e:ChangeEvent<HTMLSelectElement>)=>settitle(e.target.value)}>
+  <option value="improperContents">Inappropriate Contents</option>
+  <option value="hateSpeech">Hate Speech</option>
+  <option value="harassment">Harassment</option>
+  <option value="violence">Violence or Threats</option>
+         </select>
+         <textarea rows={10} cols={10} placeholder="Describe the problem the problem" className='w-full border-2 focus:outline-none rounded-md border-slate-300 mt-5 p-2'
+         onChange={(e:ChangeEvent<HTMLTextAreaElement>)=>setdescription(e.target.value)}
+         ></textarea>
+         <div className="flex justify-end my-2">
+              <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text " onClick={handleReport}>Submit</button>
+          </div>
       </Modal>
     </div>
   );

@@ -13,14 +13,18 @@ import HelpIcon from '@mui/icons-material/Help';
 import SecurityIcon from '@mui/icons-material/Security';
 import GroupIcon from '@mui/icons-material/Group';
 import Image from 'next/image'
+import Polling from '@/app/component/submission/polling'
+import { useAppSelector } from '@/redux/store'
+import Material from '@/app/component/submission/material'
 
 function Submission() {
 
     const search=useSearchParams()
-
+     const token=useAppSelector((state)=>state.authReducer.token)
     const id=search.get('assignment')
     const type=search.get('type')
-    console.log(id)
+    const [text,settext]=useState('')
+    const [comment,setcomment]=useState<string[]>([])
    
     const {data}=useQuery(ASSIGNMENT_DETAILS,{
       client:assignmentClient,
@@ -32,6 +36,12 @@ function Submission() {
       }
     })
 
+    const handleKeyPress = (e:any) => {
+      if (e.key === 'Enter') {
+         setcomment([...comment,text])
+         settext('')
+      }
+    };
   return (
     <div>
         <Navbar/>
@@ -51,38 +61,38 @@ function Submission() {
                 data && 
                 <div className='my-6 mx-3 w-2/3'>
                 
-          {/* <p className='text text-2xl text-[#3b6a87] mx-6'>
-            Question : What is you favourite color
-          </p>
-          <div className='my-5 flex items-center w-full mx-6'>
-        <input type="radio" className="transform scale-150 mr-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" />
-          <p className=' w-full text text-slate-600'> Red</p>
-        </div>
-        <div className='my-5 flex items-center w-full mx-6'>
-        <input type="radio" className="transform scale-150 mr-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]"  />
-          <p className=' w-full text text-slate-600'> Green</p>
-        </div>
-        <div className='my-5 flex items-center w-full mx-6'>
-        <input type="radio" className="transform scale-150 mr-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" />
-          <p className=' w-full text text-slate-600'> Yellow</p>
-        </div>
-        <div className='my-5 flex items-center w-full mx-6'>
-        <input type="radio" className="transform scale-150 mr-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]"/>
-          <p className=' w-full text text-slate-600'> Brown</p>
-        </div> */}
-        <p className='text text-2xl text-[#3b6a87] mx-6'>
-            Title: Home worrk-1
-          </p>
-          <p className='text text-sm my-3 text-[#3b6a87] mx-6'>
-            This is a task you need to complete within 24 hrs of time or else you will be terminated
-          </p>
+          {
+            type==='Polling' && <Polling details={data && data.getOneassignment}/>
+          }
+          {
+            (type==='Assignment' || type==='Material' ) && <Material/>
+          }
         <button className='text-white bg-[#3b6a87] p-3 w-3/4 my-5 mx-3 text-center text rounded-md'>Submit</button>
         <div className='box_shadow p-3 mx-3 w-3/4 rounded-md'>
           <div className='flex items-center mb-6'>
             <GroupIcon className='text-slate-400 mr-3'/>
-          <input placeholder='Add comment to the class' className='placeholder:text focus:outline-none w-full'/>
+          <input placeholder='Add comment to the class' className='placeholder:text focus:outline-none w-full'
+           onChange={(e:any)=>settext(e.target.value)}
+           onKeyPress={handleKeyPress}
+          />
           </div>
-          <div className='border-2 p-3 rounded-md my-3'>
+          {
+            comment.map((m)=>{
+                return (
+                  <div className='border-2 p-3 rounded-md my-3'>
+          <div className='flex items-end '>
+                    <Image src={'/profile.jpg'} width={20} height={20} alt='profile' className='rounded-full'/>
+                    <p className='text-xs text mx-1 text-slate-500'>{token.name}</p>
+                    </div>
+             <p className='text text-slate-600 text-xs'>
+                {m}
+             </p>
+          </div>
+                )
+            })
+          }
+          
+          {/* <div className='border-2 p-3 rounded-md my-3'>
           <div className='flex items-end '>
                     <Image src={'/profile.jpg'} width={20} height={20} alt='profile' className='rounded-full'/>
                     <p className='text-xs text mx-1 text-slate-500'>James</p>
@@ -99,16 +109,7 @@ function Submission() {
              <p className='text text-slate-600 text-xs'>
                 is this the task we need to complete by today
              </p>
-          </div>
-          <div className='border-2 p-3 rounded-md my-3'>
-          <div className='flex items-end '>
-                    <Image src={'/profile.jpg'} width={20} height={20} alt='profile' className='rounded-full'/>
-                    <p className='text-xs text mx-1 text-slate-500'>James</p>
-                    </div>
-             <p className='text text-slate-600 text-xs'>
-                is this the task we need to complete by today
-             </p>
-          </div>
+          </div> */}
         </div>
           {/* {
             data.getOneassignment.attachment ?

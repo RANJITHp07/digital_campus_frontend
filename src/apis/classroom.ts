@@ -48,7 +48,8 @@ export const FETCH_ALL_CLASSROOM_QUERY = gql`
       classSubject,
       backgroundPicture,
       classCode,
-      profile
+      profile,
+      blockClassroom
     }
   }
 `;
@@ -97,12 +98,29 @@ export const GET_PARTICIPANTS = gql`
 `
 
 // to fetch all the classrooms
+export const GET_REPORTED_CLASSROOMS = gql`
+  query reportedClassroom {
+    reportedClassroom {
+      className
+      classCode
+      reason {
+        title
+        description
+      }
+    }
+  }
+`;
+
+
+// to fetch all reported the classrooms
 export const GET_CLASSROOMS = gql`
   query getclassrooms {
     getclassroom {
+      _id
       className
       classCode
       creator
+      blockClassroom
     }
   }
 `;

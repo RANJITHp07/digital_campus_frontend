@@ -12,6 +12,7 @@ export interface ClassroomProps{
     category?:string,
     block?:boolean
     profile?:string
+    blockClassroom?:boolean
 }
 
 

@@ -28,6 +28,11 @@ function SidePanel() {
         </div>
         <hr/>
         <div className='flex items-center cursor-pointer hover:bg-slate-200 hover:rounded-r-full'>
+        <SummarizeRoundedIcon className="text-3xl my-4 mr-7 text-slate-500"/>
+        <p className='text-xl font-semibold text-slate-700' onClick={()=>navigation.push('/admin/dashboard/reported')}>Reported</p>
+        </div>
+        <hr/>
+        <div className='flex items-center cursor-pointer hover:bg-slate-200 hover:rounded-r-full'>
         <PaidRoundedIcon className="text-3xl my-4 mr-7 text-slate-500"/>
         <p className='text-xl font-semibold text-slate-700'>Payments</p>
         </div>

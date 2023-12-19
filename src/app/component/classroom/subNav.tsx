@@ -66,7 +66,7 @@ function SubNav({id}:{id:string}) {
                       }>{creator && "Grades" }</p>
                         </div>
                         <div className='mx-5 items-center flex'>
-                          <VideocamOutlinedIcon className='text-[#3b6a87] cursor-pointer text-3xl mx-3' onClick={()=>router.push(`/classroom/vediocall/${id}`)}/>
+                          {creator && <VideocamOutlinedIcon className='text-[#3b6a87] cursor-pointer text-3xl mx-3' onClick={()=>router.push(`/classroom/vediocall/${id}`)}/>}
                           <Tooltip placement="topLeft" title={"Chat"}>
                         <ForumIcon className='text-[#3b6a87] cursor-pointer' onClick={()=>dispatch(changeChatState(true))}/>
                         </Tooltip>

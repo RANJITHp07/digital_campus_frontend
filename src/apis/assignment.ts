@@ -74,7 +74,10 @@ export const ASSIGNMENT_DETAILS=gql`
        content
        type
        }
-       assignmentType
+       assignmentType,
+       polling{
+         answers
+       }
     }
   }
 `

@@ -10,6 +10,7 @@ export interface UsersProps {
     blocked?: boolean;
     about?: string;
     education?: string;
+    created_at:string
   }
 
 export interface UserForm{

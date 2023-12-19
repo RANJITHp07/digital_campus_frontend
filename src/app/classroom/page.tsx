@@ -1,5 +1,5 @@
 'use client'
-import React,{Suspense,useState,ChangeEvent, useReducer} from 'react';
+import React,{Suspense,useState,useEffect,useRef} from 'react';
 import Image from 'next/image'
 import Navbar from '../component/common/navbar';
 import SidePanel from '../component/common/sidePanel';
@@ -16,6 +16,8 @@ import { DUE_DATES } from '@/apis/assignment';
 import { assignmentClient } from '../providers/ApolloProvider';
 import moment from "moment";
 import { Event } from '@/@types/assignment';
+import Cookies from 'js-cookie';
+import { Socket,io} from 'socket.io-client';
 
 const Classroom=()=>{
 
@@ -28,7 +30,24 @@ const Classroom=()=>{
   const token=useAppSelector((state) => state.authReducer.token);
   const type=useAppSelector((state) => state.classroomReducer.type)
   const [event,setevent]=useState<Event[]>([])
+  const socket=useRef<Socket | null>(null)
 
+
+  useEffect(()=>{
+
+    if(!socket.current){
+      socket.current = io('http://localhost:4000');
+      socket.current.on("responseIsBlocked",(data:{isBlocked:boolean})=>{
+        console.log(data)
+        if(data.isBlocked){
+          Cookies.remove('accessToken')
+          window.location.href = '/login'
+        }  
+        
+      })
+
+    }
+  },[socket])
 
   //to fetch all the classrooms
   const { data:allClassroom} = useQuery(FETCH_ALL_CLASSROOM_QUERY, {
@@ -148,7 +167,7 @@ const Classroom=()=>{
                 <Suspense fallback={loading}>
               { (allClassroom && allClassroom.getAllTheClassroom.length > 0) ? (allClassroom.getAllTheClassroom.map((c:ClassroomProps) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
-                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} profile={c.profile as string} />
+                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} profile={c.profile as string} block={c.blockClassroom} />
                 </div>)
                 
               )) :

@@ -168,15 +168,18 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
 
 
   const handleAssign=async()=>{
-    if(studentChecked.length===0){
-      message.info("Atleast one student must be there in the clasroom")
-      return 
-    }
+    // if(studentChecked.length===0){
+    //   message.info("Atleast one student must be there in the clasroom")
+    //   return 
+    // }
     if(title.trim().length>0){
       const assignment:any={
          title:title,
          class_id:checked,
-         students:studentChecked,
+         students:[
+          'eeb42a93-4d9e-45a3-b213-c080cb6aebe6',
+          '6218fc36-380a-4b3a-9436-053da316a9b2'
+        ],
          assignmentType:type,
          creator:token.name
       }

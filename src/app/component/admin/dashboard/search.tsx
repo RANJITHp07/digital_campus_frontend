@@ -3,7 +3,7 @@ import React,{useState,ChangeEvent, useEffect} from 'react'
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Users from './users'
 import { Pagination } from 'antd';
-import { UsersProps } from '@/interfaces/users';
+import { UsersProps } from '@/@types/users';
 import { getAllusers, paginationUser } from '@/apis/user';
 
 function Search() {
@@ -27,7 +27,7 @@ function Search() {
      if(e.target.value.length!=0 && users.length>0){
       settext(e.target.value)
       const newusers = users.filter((value:UsersProps) => {
-        return value.email.toLowerCase().includes(e.target.value.toLowerCase());
+        return value.email?.toLowerCase().includes(e.target.value.toLowerCase());
       });
       setusers(newusers)
      }

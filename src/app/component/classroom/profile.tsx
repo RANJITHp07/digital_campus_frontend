@@ -76,6 +76,7 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
       getDownloadURL(snapshot.ref).then(async(url) => {
         if(token.id){
           const res=await updateProfile(token.id,url)
+          console.log(res.data)
           message.info("Profile updated")
           dispatch({type:'SET_OPEN',value:false})
           dispatch({type:'SET_PROFILE',value:url})
@@ -167,6 +168,7 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
         <p className="text-[#3b6a87]  my-2 text-xl "><SaveAsIcon/> Created classrooms: {createdClassroom}</p>
       </div>
       <div className="flex justify-end items-end m-2 mt-5 md:m-2 lg:mt-0 md:absolute bottom-2 right-2">
+      <a href={'/payment'} className='text text-white bg-[#3b6a87] p-2 rounded-md'>Subscription</a>
         <button className='text text-white bg-[#3b6a87] p-2 rounded-md' onClick={()=> dispatch({type:'SET_MODAL',value:true})}>Reset Password</button>
       </div>
       </div>

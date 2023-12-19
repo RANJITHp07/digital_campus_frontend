@@ -30,7 +30,6 @@ function Classroom({ params }: { params: { id: string } }) {
     if(!socket.current){
         socket.current = io('http://localhost:8000');
         socket.current.emit('join-room', params.id);
-        
     }
     
   }, [socket]);

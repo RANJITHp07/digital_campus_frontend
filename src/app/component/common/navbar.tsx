@@ -61,6 +61,7 @@ function Navbar() {
 
    const [addStudent]=useMutation(ADD_STUDENT,{
       onError(err){
+        console.log(err)
            message.info(err.graphQLErrors[0].message)
       },
       variables:{
