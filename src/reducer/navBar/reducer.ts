@@ -1,7 +1,5 @@
 import { NavbarState } from "./initalState";
 
-
-
 export const reducer = (state: NavbarState, action: NavbarAction): NavbarState => {
     switch (action.type) {
       case 'SET_FIELD':

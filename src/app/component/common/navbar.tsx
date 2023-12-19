@@ -58,7 +58,6 @@ function Navbar() {
   })
 
    //to  join into the class
-
    const [addStudent]=useMutation(ADD_STUDENT,{
       onError(err){
         console.log(err)
