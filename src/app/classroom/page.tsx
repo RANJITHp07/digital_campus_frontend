@@ -2,14 +2,12 @@
 import React,{Suspense,useState,useEffect,useRef} from 'react';
 import Image from 'next/image'
 import Navbar from '../component/common/navbar';
-import SidePanel from '../component/common/sidePanel';
 import Class from '../component/classroom/class';
 import {  useAppSelector } from '@/redux/store';
 import { useQuery} from '@apollo/react-hooks';
 import { FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM_QUERY, GET_FILTRED_CLASSROOM } from '@/apis/classroom';
 import LoadinPage from '../component/common/loadinPage';
 import Profile from '../component/classroom/profile';
-import BasicCalendar from '../component/classroom/calendar';
 import { Pagination, Popover } from 'antd';
 import { ClassroomProps } from '@/@types/classroom';
 import { DUE_DATES } from '@/apis/assignment';
@@ -18,18 +16,29 @@ import moment from "moment";
 import { Event } from '@/@types/assignment';
 import Cookies from 'js-cookie';
 import { Socket,io} from 'socket.io-client';
+import dynamic from 'next/dynamic';
+
+//dynamic imports
+const SidePanel = dynamic(()=>import('../component/common/sidePanel'))
+const BasicCalendar = dynamic(()=>import('../component/classroom/calendar'))
+
+
+
 
 const Classroom=()=>{
 
+  //redux state
   const state = useAppSelector((state) => state.classroomReducer.open);
   const categoryType=useAppSelector((state)=>state.classroomReducer.categoryType)
   const category=useAppSelector((state)=>state.classroomReducer.category)
-  const [addedClasroom,setaddedClasroom]=useState(0)
-  const [createdClasroom,setcreatedClasroom]=useState(0)
-  const [pagination,setpagination]=useState(1)
   const token=useAppSelector((state) => state.authReducer.token);
   const type=useAppSelector((state) => state.classroomReducer.type)
-  const [event,setevent]=useState<Event[]>([])
+
+  //states
+  const [addedClasroom,setAddedClasroom]=useState(0)
+  const [createdClasroom,setCreatedClasroom]=useState(0)
+  const [pagination,setPagination]=useState(1)
+  const [event,setEvent]=useState<Event[]>([])
   const socket=useRef<Socket | null>(null)
 
 
@@ -58,7 +67,7 @@ const Classroom=()=>{
   const { data:addedClassroom} = useQuery(FETCH_ADDED_CLASSROOM_QUERY, {
     variables: { id: token.id },
     onCompleted:()=>{
-       setaddedClasroom(addedClassroom.getAllClassroom.length)
+       setAddedClasroom(addedClassroom.getAllClassroom.length)
     }
   });
 
@@ -69,7 +78,7 @@ const Classroom=()=>{
      console.log(err)
     },
     onCompleted:()=>{
-      setcreatedClasroom(data.getCreatorClassroom.length)
+      setCreatedClasroom(data.getCreatorClassroom.length)
    }
   });
 
@@ -112,7 +121,7 @@ const Classroom=()=>{
             </Popover>
           }
         })
-        setevent(e)
+        setEvent(e)
       }
   });
 
@@ -242,7 +251,7 @@ const Classroom=()=>{
             }
             {
              type!=="calendar" && ((data && data.getCreatorClassroom.length) || (filteredClassroom && filteredClassroom.getFilteredClassroom.length > 0) || (addedClassroom  && addedClassroom.getAllClassroom.length>0 ))  && <Pagination defaultCurrent={1} total={(Math.ceil(data && data.getCreatorClassroom.length / 9) * 10)} onChange={(e:number) => {
-              setpagination(e);
+              setPagination(e);
             }}  className='text-center mt-4' />
 
           }

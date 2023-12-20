@@ -13,6 +13,7 @@ export interface ClassroomProps{
     block?:boolean
     profile?:string
     blockClassroom?:boolean
+    themeColor?:string
 }
 
 

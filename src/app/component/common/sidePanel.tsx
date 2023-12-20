@@ -21,6 +21,7 @@ import {
 } from "@/apis/classroom";
 import { useQuery } from "@apollo/client";
 import CategoryIcon from "@mui/icons-material/Category";
+import { ClassroomProps } from "@/@types/classroom";
 
 function SidePanel() {
   const state = useAppSelector((state) => state.classroomReducer.open); //to open and close the sidepanel
@@ -154,7 +155,7 @@ function SidePanel() {
           <hr className="my-3" />
           <div className="mb-6">
             {data &&
-              data.getCreatorClassroom.map((c: any) => {
+              data.getCreatorClassroom.map((c: ClassroomProps) => {
                 return (
                   <div
                     className="flex items-center mb-4 cursor-pointer"
@@ -164,7 +165,7 @@ function SidePanel() {
                       className={`flex w-7 h-7  ml-6 rounded-full justify-center items-center text text-white text-xs`}
                       style={{backgroundColor: c.themeColor}}
                     >
-                      {c.className[0].toUpperCase()}
+                       { c.className && c.className[0].toUpperCase()}
                     </div>
                     <div className="mx-4">
                       <p className="text-sm text text-[#3b6a87]">
@@ -208,7 +209,7 @@ function SidePanel() {
           <hr className="my-3" />
           <div className="mb-6">
             {addedClasroom &&
-              addedClasroom.getAllClassroom.map((c: any) => {
+              addedClasroom.getAllClassroom.map((c: ClassroomProps) => {
                 return (
                   <div
                     className="flex items-center mb-4 cursor-pointer"
@@ -218,7 +219,7 @@ function SidePanel() {
                       className={`flex w-7 h-7  ml-6 rounded-full justify-center items-center text text-white text-xs`}
                       style={{backgroundColor: c.themeColor}}
                     >
-                      {c.className[0].toUpperCase()}
+                      { c.className && c.className[0].toUpperCase()}
                     </div>
                     <div className="mx-4">
                       <p className="text-sm text text-[#3b6a87]">

@@ -12,15 +12,14 @@ import { useAppSelector } from '@/redux/store';
 import { useMutation } from '@apollo/client';
 
 function Class({className,creator,id,code,type,bg,subject,section,profile,block}:{className:string,creator:string,id:string,code?:string,type:boolean,bg:string,subject?:string,section?:string,profile:string,block?:boolean}) {
-
-  console.log(block)
+  
   const token=useAppSelector((state)=>state.authReducer.token)
   const navigation=useRouter()
   const[report,setReport]=useState(false);
   const[title,settitle]=useState('');
-  const[description,setdescription]=useState('');
-  const [open,setopen]=useState(false)
-  const [classroom,setclassroom]=useState({
+  const[description,setDescription]=useState('');
+  const [open,setOpen]=useState(false)
+  const [classroom,setClassroom]=useState({
     className:className,
     classSection:section,
     classSubject:subject,
@@ -44,9 +43,9 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
     
   ]
 
-  //setopen
+  //setOpen
  async function handleEdit(){
-    setopen(true)
+    setOpen(true)
   }
 
   //to remove student query
@@ -106,7 +105,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
       console.log(err)
   },
   onCompleted:()=>{
-    setopen(false);
+    setOpen(false);
     message.info('Updated')
   }
  })
@@ -139,7 +138,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
 
   setReport(false)
   settitle('');
-  setdescription('')
+  setDescription('')
 
 }
 
@@ -180,11 +179,11 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
         </Tooltip>
         </div>
       </div>
-      <Modal title={`Create Class`} open={open} footer={null}onCancel={()=>setopen(false)} >
+      <Modal title={`Create Class`} open={open} footer={null}onCancel={()=>setOpen(false)} >
          <form className="mt-5" onSubmit={handleUpdate} >
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text" placeholder='Class name(max 20 character)' defaultValue={classroom.className} onChange={(e:ChangeEvent<HTMLInputElement>)=>setclassroom({...classroom,className:e.target.value})}/>
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300   border-2 my-2 text" placeholder='Class section' defaultValue={classroom.classSection} onChange={(e:ChangeEvent<HTMLInputElement>)=>setclassroom({...classroom,classSubject:e.target.value})}/>
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none  border-slate-300  border-2 my-2 text" placeholder='Class subject' defaultValue={classroom.classSubject} onChange={(e:ChangeEvent<HTMLInputElement>)=>setclassroom({...classroom,classSection:e.target.value})}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text" placeholder='Class name(max 20 character)' defaultValue={classroom.className} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,className:e.target.value})}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300   border-2 my-2 text" placeholder='Class section' defaultValue={classroom.classSection} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,classSubject:e.target.value})}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none  border-slate-300  border-2 my-2 text" placeholder='Class subject' defaultValue={classroom.classSubject} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,classSection:e.target.value})}/>
           <div className="flex justify-end my-2">
               <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text ">Update</button>
           </div>
@@ -194,7 +193,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
       <Modal title={<span className='text font-normal'>Report classroom</span>} open={report} footer={null} onCancel={()=>{
           setReport(false)
           settitle('');
-          setdescription('')        
+          setDescription('')        
       }}>
          <select className="w-full p-3 rounded-md border-2 text-md focus:outline-none border-slate-300" onChange={(e:ChangeEvent<HTMLSelectElement>)=>settitle(e.target.value)}>
   <option value="improperContents">Inappropriate Contents</option>
@@ -203,7 +202,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
   <option value="violence">Violence or Threats</option>
          </select>
          <textarea rows={10} cols={10} placeholder="Describe the problem the problem" className='w-full border-2 focus:outline-none rounded-md border-slate-300 mt-5 p-2'
-         onChange={(e:ChangeEvent<HTMLTextAreaElement>)=>setdescription(e.target.value)}
+         onChange={(e:ChangeEvent<HTMLTextAreaElement>)=>setDescription(e.target.value)}
          ></textarea>
          <div className="flex justify-end my-2">
               <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text " onClick={handleReport}>Submit</button>

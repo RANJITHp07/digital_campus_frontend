@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { initialState } from '@/reducer/navBar/initalState';
 import { reducer } from '@/reducer/navBar/reducer';
 import SearchIcon from '@mui/icons-material/Search';
+import { ClassroomProps } from '@/@types/classroom';
 
 function Navbar() {
 
@@ -143,8 +144,8 @@ function Navbar() {
       if (e.target.value.length !== 0 && filter.length > 0) {
         dispatch({ type: 'SET_STATE', value: true });
         dispatch({ type: 'SET_TEXT', value: e.target.value });
-        const newFilter = data.getAllTheClassroom.filter((value: any) => {
-          return value.className.toLowerCase().includes(e.target.value.toLowerCase());
+        const newFilter = data.getAllTheClassroom.filter((value: ClassroomProps) => {
+          return value.className?.toLowerCase().includes(e.target.value.toLowerCase());
         });
         dispatch({ type: 'SET_FILTER', value: newFilter });
 
@@ -204,12 +205,12 @@ function Navbar() {
           state && 
           <div className='absolute top-16 mx-5 w-[26rem] bg-white box_shadow p-2 rounded-lg z-50'>
            {
-             filter.length >0 ?filter.map((m:any)=>{
+             filter.length >0 ?filter.map((m:ClassroomProps)=>{
                return(
-                <>
+                <div key={m._id}>
                 <p className='text-slate-500 text my-3  cursor-pointer' onClick={()=>navigate.push(`/classroom/${m._id}`)}>{m.className}</p>
                 <hr/>
-                </>
+                </div>
                )
              }):<p className='text-slate-300 text cursor-pointer'>No such classroom</p>
            }
