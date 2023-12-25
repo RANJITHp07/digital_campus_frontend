@@ -16,7 +16,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
   const token=useAppSelector((state)=>state.authReducer.token)
   const navigation=useRouter()
   const[report,setReport]=useState(false);
-  const[title,settitle]=useState('');
+  const[title,setTitle]=useState('');
   const[description,setDescription]=useState('');
   const [open,setOpen]=useState(false)
   const [classroom,setClassroom]=useState({
@@ -137,7 +137,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
   })
 
   setReport(false)
-  settitle('');
+  setTitle('');
   setDescription('')
 
 }
@@ -159,7 +159,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
           </Dropdown>
           </div>
         <div className="absolute top-16 left-5 w-full" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}`)}>
-          <Image src={'/bg3.png' } width={120} height={120} alt='' className='rounded-full z-50 aspect-square	' />
+          <Image src={'/profile-logo.jpg' } width={120} height={120} alt='' className='rounded-full z-50 	' />
         </div>
       </div>
       <div className="flex justify-end mx-2" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}`)}>
@@ -192,10 +192,10 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
       </Modal>
       <Modal title={<span className='text font-normal'>Report classroom</span>} open={report} footer={null} onCancel={()=>{
           setReport(false)
-          settitle('');
+          setTitle('');
           setDescription('')        
       }}>
-         <select className="w-full p-3 rounded-md border-2 text-md focus:outline-none border-slate-300" onChange={(e:ChangeEvent<HTMLSelectElement>)=>settitle(e.target.value)}>
+         <select className="w-full p-3 rounded-md border-2 text-md focus:outline-none border-slate-300" onChange={(e:ChangeEvent<HTMLSelectElement>)=>setTitle(e.target.value)}>
   <option value="improperContents">Inappropriate Contents</option>
   <option value="hateSpeech">Hate Speech</option>
   <option value="harassment">Harassment</option>

@@ -47,14 +47,12 @@ const Classroom=()=>{
     if(!socket.current){
       socket.current = io('http://localhost:4000');
       socket.current.on("responseIsBlocked",(data:{isBlocked:boolean})=>{
-        console.log(data)
         if(data.isBlocked){
           Cookies.remove('accessToken')
           window.location.href = '/login'
         }  
         
       })
-
     }
   },[socket])
 

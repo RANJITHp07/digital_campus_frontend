@@ -1,4 +1,4 @@
-import { UsersProps } from "@/interfaces/users";
+import { UsersProps } from "@/@types/users";
 
 export interface ProfileState {
     user: UsersProps;
@@ -13,6 +13,7 @@ export interface ProfileState {
       about: string | null;
     };
     state: boolean
+    hover: boolean
   }
 
 const initialState:ProfileState={
@@ -27,7 +28,8 @@ const initialState:ProfileState={
     education:null,
     about:null
    },
-   state:false
+   state:false,
+   hover:false
 
 }
 

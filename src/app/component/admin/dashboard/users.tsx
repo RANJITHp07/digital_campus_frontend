@@ -46,8 +46,6 @@ function Users({props}:{props:UsersProps}) {
           socket.current.emit('join-room',props.email);
           socket.current.emit("isBlocked",{email:props.email})
         }
-       
-        
       }
     }catch(err){
       throw err
