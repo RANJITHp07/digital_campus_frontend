@@ -35,6 +35,7 @@ function Submission() {
         console.log(err)
       }
     })
+    console.log(data && data.getOneassignment)
 
     const handleKeyPress = (e:any) => {
       if (e.key === 'Enter') {
@@ -65,7 +66,7 @@ function Submission() {
             type==='Polling' && <Polling details={data && data.getOneassignment}/>
           }
           {
-            (type==='Assignment' || type==='Material' ) && <Material/>
+            (type==='Assignment' || type==='Material' ) && <Material assignment={data && data.getOneassignment}/>
           }
         <button className='text-white bg-[#3b6a87] p-3 w-3/4 my-5 mx-3 text-center text rounded-md'>Submit</button>
         <div className='box_shadow p-3 mx-3 w-3/4 rounded-md'>
@@ -129,7 +130,7 @@ function Submission() {
             }
             <div className='w-1/3'>
               <div className='box_shadow  mr-9 p-3 rounded-md  my-6'>
-                <p className='text text-[#3b6a87]'>Created By Ranjith</p>
+                <p className='text text-[#3b6a87]'>Created By {data && data.getOneassignment.creator}</p>
                 <p className='text text-[#3b6a87] text-xs'>27 seconds ago</p>
                 <div className='flex mt-4'>
                   <SecurityIcon className='text-slate-400 mr-3'/>

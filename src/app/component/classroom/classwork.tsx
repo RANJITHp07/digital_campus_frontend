@@ -161,7 +161,7 @@ function Classwork({id}:{id:string}) {
     {
       key: '3',
       label: (
-        <a href={`/classroom/quiz?classroom=${id}&type=Quiz`} className='text text-[#3b6a87] my-2'><AppRegistrationIcon  className='text-lg'/> Quiz</a>
+        <a href={`/classroom/quiz?classroom=${id}&type=Quiz`} ><span className='text text-[#3b6a87] my-2'><AppRegistrationIcon  className='text-lg'/> Quiz</span></a>
       ),
     },{
         key: '4',

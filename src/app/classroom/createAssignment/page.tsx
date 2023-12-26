@@ -183,6 +183,10 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
          assignmentType:type,
          creator:token.name
       }
+
+      if(type !=='Material' ){
+        assignment.points=point
+      }
       
       if(instruction.trim().length>0) assignment.instruction=instruction
       if(link.trim().length>0){
@@ -313,7 +317,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                    <div className='w-1/2'>
                    <p className='text text-slate-700'>For</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
-                  <p className='text text-slate-700'>{checked.length>1 ? `${checked.length} classes` :(name.length > 0 && name[0].toUpperCase() + name.slice(1,name.length).toLowerCase())}</p>
+                  <p className='text text-slate-700 overflow-hidden'>{checked.length>1 ? `${checked.length} classes` :(name.length > 0 && name[0].toUpperCase() + name.slice(1,(name.length>15 ? 15 : name.length)).toLowerCase()+(name.length>15 ? '...' :''))}</p>
                   <ArrowDropDownIcon className='cursor-pointer' onClick={()=>handleState('state1',!state.state1)}/>
                   
                 </div>
@@ -327,7 +331,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                       <div key={c._id}>
                       <div className={`flex my-1 items-center ${c._id===id && 'bg-slate-200'} p-2`}>
                         <input type='checkbox' className='w-4 h-4 mx-1 cursor-pointer' checked={ c._id===id ? true : checked.includes(c._id)}  onChange={()=>handleChecked(c._id)}/>
-                        <p className='text text-slate-700 '>{c.className[0].toUpperCase() + c.className.slice(1,c.className.length).toLowerCase()}</p>
+                        <p className='text text-slate-700 '>{c.className[0].toUpperCase() + c.className.slice(1,(c.className.length>15 ? 15 : c.className.length)).toLowerCase()+(c.className.length>15 ? '...' :'')}</p>
                       </div>
                       <hr/>
                       </div>
