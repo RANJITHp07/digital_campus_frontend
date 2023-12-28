@@ -74,10 +74,16 @@ export const ASSIGNMENT_DETAILS=gql`
        content
        type
        }
+       dueDate{
+        day
+        time
+       }
+       creator
        assignmentType,
        polling{
          answers
        }
+       createdAt
     }
   }
 `

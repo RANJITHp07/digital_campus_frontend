@@ -4,18 +4,20 @@ import Navbar from '@/app/component/common/navbar'
 import SidePanel from '@/app/component/common/sidePanel'
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { ASSIGNMENT_DETAILS } from '@/apis/assignment'
 import { assignmentClient } from '@/app/providers/ApolloProvider'
-import AssignmentIcon from '@mui/icons-material/Assignment';
 import PollIcon from '@mui/icons-material/Poll';
-import HelpIcon from '@mui/icons-material/Help';
 import SecurityIcon from '@mui/icons-material/Security';
 import GroupIcon from '@mui/icons-material/Group';
 import Image from 'next/image'
 import Polling from '@/app/component/submission/polling'
 import { useAppSelector } from '@/redux/store'
 import Material from '@/app/component/submission/material'
+import {format} from "timeago.js"
+import {pdfjs,Document,Page} from 'react-pdf'
+import { CREATE_COMMENT, GET_ALLCOMMENTS } from '@/apis/comment'
+import { Comment } from '@/@types/assignment'
 
 function Submission() {
 
@@ -24,8 +26,34 @@ function Submission() {
     const id=search.get('assignment')
     const type=search.get('type')
     const [text,settext]=useState('')
-    const [comment,setcomment]=useState<string[]>([])
+    const [comment,setcomment]=useState<Comment[]>([])   
+    const [numPages, setNumPages] = useState(null);
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      'pdfjs-dist/build/pdf.worker.min.js',
+      import.meta.url,
+    ).toString();
+    
+  
+  
+    const onDocumentLoadSuccess = ({ numPages }:{numPages:any}) => {
+      setNumPages(numPages);
+    };
    
+    //get all the comment details
+    const {data:comments}=useQuery(GET_ALLCOMMENTS,{
+      client:assignmentClient,
+      variables:{
+        id:id
+      },
+      onCompleted:(data)=>{
+        console.log(data)
+        const {__typename,...comment}=data.getAllcomments
+        console.log(comment)
+        setcomment(comment.publicMessages);
+      }
+    })
+
+    // get all assignment details
     const {data}=useQuery(ASSIGNMENT_DETAILS,{
       client:assignmentClient,
       variables:{
@@ -35,14 +63,40 @@ function Submission() {
         console.log(err)
       }
     })
-    console.log(data && data.getOneassignment)
 
-    const handleKeyPress = (e:any) => {
+    const handleKeyPress = async(e:any) => {
       if (e.key === 'Enter') {
-         setcomment([...comment,text])
+         setcomment([...comment,{username:token.name as string,comment:text}])
+         await handleComment('public')
          settext('')
       }
     };
+
+    // create comment
+
+    const [createComment]=useMutation(CREATE_COMMENT,
+      {
+        client:assignmentClient,
+        onError(err){
+          console.log(err)
+        }
+      })
+
+
+    const handleComment=async(type:string)=>{
+      const comment={
+        username:token.name,
+        assignment_id:id,
+        comment:text,
+        type:type
+      }
+      console.log(comment)
+      await createComment({
+        variables:{
+          comment
+        }
+      })
+    }  
   return (
     <div>
         <Navbar/>
@@ -70,9 +124,10 @@ function Submission() {
           }
         <button className='text-white bg-[#3b6a87] p-3 w-3/4 my-5 mx-3 text-center text rounded-md'>Submit</button>
         <div className='box_shadow p-3 mx-3 w-3/4 rounded-md'>
-          <div className='flex items-center mb-6'>
+          <div className={`flex items-center ${comment.length>0 && 'mb-6'}`}>
             <GroupIcon className='text-slate-400 mr-3'/>
-          <input placeholder='Add comment to the class' className='placeholder:text focus:outline-none w-full'
+          <input placeholder='Add comment to the class' className='placeholder:text focus:outline-none w-full text text-slate-500'
+          value={text}
            onChange={(e:any)=>settext(e.target.value)}
            onKeyPress={handleKeyPress}
           />
@@ -83,55 +138,52 @@ function Submission() {
                   <div className='border-2 p-3 rounded-md my-3'>
           <div className='flex items-end '>
                     <Image src={'/profile.jpg'} width={20} height={20} alt='profile' className='rounded-full'/>
-                    <p className='text-xs text mx-1 text-slate-500'>{token.name}</p>
+                    <p className='text-xs text mx-1 text-slate-500'>{m.username}</p>
                     </div>
              <p className='text text-slate-600 text-xs'>
-                {m}
+                {m.comment}
              </p>
           </div>
                 )
             })
           }
           
-          {/* <div className='border-2 p-3 rounded-md my-3'>
-          <div className='flex items-end '>
-                    <Image src={'/profile.jpg'} width={20} height={20} alt='profile' className='rounded-full'/>
-                    <p className='text-xs text mx-1 text-slate-500'>James</p>
-                    </div>
-             <p className='text text-slate-600 text-xs'>
-                is this the task we need to complete by today
-             </p>
-          </div>
-          <div className='border-2 p-3 rounded-md my-3'>
-          <div className='flex items-end '>
-                    <Image src={'/profile.jpg'} width={20} height={20} alt='profile' className='rounded-full'/>
-                    <p className='text-xs text mx-1 text-slate-500'>James</p>
-                    </div>
-             <p className='text text-slate-600 text-xs'>
-                is this the task we need to complete by today
-             </p>
-          </div> */}
+          
         </div>
-          {/* {
-            data.getOneassignment.attachment ?
-            <div>
-                <p className='text text-xl'>Attachment:</p>
-                <img src={data.getOneassignment.attachment.content}/>
-            </div>
-            :<p className='text text-xl'>No attachment</p>
-          }
-          {
-           data.getOneassignment.dueData && 
-            <div className='flex'>
-                <p className='text text-xl'>DueDate: {data.getOneassignment.dueDate.day}</p>
-            </div>
-          } */}
                 </div>
             }
             <div className='w-1/3'>
               <div className='box_shadow  mr-9 p-3 rounded-md  my-6'>
-                <p className='text text-[#3b6a87]'>Created By {data && data.getOneassignment.creator}</p>
-                <p className='text text-[#3b6a87] text-xs'>27 seconds ago</p>
+                <p className='text text-[#3b6a87]'>Created By {data && (data.getOneassignment.creator[0].toUpperCase() +data.getOneassignment.creator.slice(1,data.getOneassignment.creator.length).toLowerCase())}</p>
+                <p className='text text-[#3b6a87] text-xs'>{data && format(data.getOneassignment.createdAt)}</p>
+                {
+                  data && data.getOneassignment.attachment
+                  &&
+                  <>
+                  <p className='text text-[#3b6a87] text-xs mt-2 mx-2'>Attachment</p>
+                  <a href={data.getOneassignment.attachment.content} target="_blank" rel="noopener noreferrer"  className='border-2 inline-block mb-2 rounded-md p-1 cursor-pointer'>
+                  {
+                    data.getOneassignment.attachment.type==='pdf' 
+                    && 
+                    <Document file={data.getOneassignment.attachment.content} onLoadSuccess={onDocumentLoadSuccess}>
+                    <Page pageNumber={1}
+                      renderTextLayer={false}
+                      renderAnnotationLayer={false}
+                      height={100}
+                      width={100}
+                    />
+                  </Document>
+                  }
+                  {
+                    data.getOneassignment.attachment.type==='photo' 
+                    &&
+                    <img src='mfl3,l;,4e'/>
+                  }
+                  
+      </a>
+      </>
+                }
+                
                 <div className='flex mt-4'>
                   <SecurityIcon className='text-slate-400 mr-3'/>
                 <input placeholder='Add private comment' className='placeholder:text focus:outline-none'/>

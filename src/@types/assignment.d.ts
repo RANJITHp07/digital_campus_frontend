@@ -26,3 +26,8 @@ export interface Polling{
     students:string[]
 }
 
+export interface Comment{
+    username:string,
+    comment:string
+}
+
