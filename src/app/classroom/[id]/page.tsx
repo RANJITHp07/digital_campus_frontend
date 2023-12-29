@@ -10,6 +10,7 @@ import Classwork from '@/app/component/classroom/classwork';
 import {  useSearchParams } from 'next/navigation';
 import Chat from '@/app/component/classroom/chat';
 import { io, Socket } from 'socket.io-client';
+import Request from '@/app/component/classroom/request';
 
 
 
@@ -54,6 +55,9 @@ function Classroom({ params }: { params: { id: string } }) {
                 }
                 {
                  assign==='people' && <People id={params.id} code={code}/>
+                }
+                {
+                 assign==='request' && <Request/>
                 }
                 {/* {
                  assign==='stream' && <Assignment id={params.id}/>

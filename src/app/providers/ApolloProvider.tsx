@@ -8,11 +8,11 @@ import {
 } from "@apollo/client";
 
 export const classlink = createHttpLink({
-  uri: "http://localhost:5000/classroom",
+  uri: "https://www.digitalcampus.shop/classroom",
 });
 
 export const assignmentlink = createHttpLink({
-  uri: "http://localhost:6001/assignment",
+  uri: "https://www.digitalcampus.shop/assignment",
 });
 
 export const classClient = new ApolloClient({

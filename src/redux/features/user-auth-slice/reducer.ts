@@ -68,7 +68,6 @@ export const user = createSlice({
           return {
             ...state,
              loading:false,
-             modal:false,
              error:action.error
           }
       })

@@ -1,5 +1,5 @@
 import axios from "axios";
 
-const Api = axios.create({ baseURL:"www.digitalcampus.shop" });
+const Api = axios.create({ baseURL:"https://www.digitalcampus.shop" });
 
 export default Api;

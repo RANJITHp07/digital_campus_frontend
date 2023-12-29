@@ -79,6 +79,18 @@ export const FETCH_CLASSROOM_DETAILS = gql`
   }
 `;
 
+
+export const FETCH_REQUEST_DETAILS = gql`
+  query getClassroomDetails($id: String!) {
+    getClassroomDetails(id: $id) {
+      request{
+        id
+        name
+      }
+    }
+  }
+`;
+
 // to fetch all the participants
 export const GET_PARTICIPANTS = gql`
  query getAllClassroomparticipants($id: String!){
@@ -190,6 +202,15 @@ export const ADD_STUDENT = gql`
     }
   }
 `;
+
+//to add student into a add student request
+export const ADD_REQUEST=gql`
+ mutation addRequest($request:RequestInput){
+     addRequest(request:$request){
+     message
+     }
+ }
+`
 
 // to delete the classroom
 export const DELETE_CLASS = gql`

@@ -12,7 +12,7 @@ import { changeModalState } from '@/redux/features/classroom-slice/reducer';
 import SidePanel from './sidePanel';
 import { Modal } from 'antd';
 import { useMutation, useQuery } from '@apollo/client';
-import { ADD_STUDENT, CREATE_CLASS, FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_NAMES, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM_QUERY } from '@/apis/classroom';
+import { ADD_REQUEST, ADD_STUDENT, CREATE_CLASS, FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_NAMES, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM_QUERY } from '@/apis/classroom';
 import { message } from 'antd';
 import { useRouter } from 'next/navigation';
 import { initialState } from '@/reducer/navBar/initalState';
@@ -58,24 +58,44 @@ function Navbar() {
     }
   })
 
-   //to  join into the class
-   const [addStudent]=useMutation(ADD_STUDENT,{
+  //  //to  join into the class
+  //  const [addStudent]=useMutation(ADD_STUDENT,{
+  //     onError(err){
+  //       console.log(err)
+  //          message.info(err.graphQLErrors[0].message)
+  //     },
+  //     variables:{
+  //       userId:token.id,
+  //       code:code
+  //     },
+  //     refetchQueries: [{ query: FETCH_ADDED_CLASSROOM_QUERY ,variables:{id:token.id}},
+  //       { query: FETCH_ALL_CLASSROOM_QUERY ,variables:{id:token.id}}
+  //     ],
+  //     onCompleted: () => {
+  //       dispatch({type:"SET_OPEN2",value:false})
+  //       message.info("Succesfully joined")
+  //     }
+  //  })
+
+  //to add the students reuest
+
+  const [addRequest]=useMutation(ADD_REQUEST,{
+      variables:{
+        request:{
+          id:token.id,
+        name:token.name,
+        code:code
+        }
+      },
       onError(err){
         console.log(err)
-           message.info(err.graphQLErrors[0].message)
+        message.info(err.graphQLErrors[0].message)
       },
-      variables:{
-        userId:token.id,
-        code:code
-      },
-      refetchQueries: [{ query: FETCH_ADDED_CLASSROOM_QUERY ,variables:{id:token.id}},
-        { query: FETCH_ALL_CLASSROOM_QUERY ,variables:{id:token.id}}
-      ],
-      onCompleted: () => {
+      onCompleted:()=>{
         dispatch({type:"SET_OPEN2",value:false})
-        message.info("Succesfully joined")
+        message.info("Invitation send to the admin")
       }
-   })
+  })
 
 
   // to create class
@@ -129,7 +149,7 @@ function Navbar() {
   const handleJoin=async()=>{
     try{
        if(code){
-          await addStudent()
+          await addRequest()
        }else{
         message.info("Enter the code")
        }
