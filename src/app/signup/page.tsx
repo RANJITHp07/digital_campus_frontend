@@ -3,16 +3,15 @@ import Image from 'next/image';
 import Form from '../component/signup/form';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { AppDispatch, useAppSelector } from '@/redux/store';
-import { useDispatch } from 'react-redux';
 import { setResend } from '@/redux/features/user-auth-slice/reducer';
+import { useNavDispatch} from '@/hook/useNavDispatch';
 
 // Use next/dynamic to lazily load the Otp component
 const Otp = dynamic(() => import('../component/signup/otp'), { ssr: false });
 
 function Signup() {
-  const modal: boolean = useAppSelector((state) => state.userReducer.modal);
-  const dispatch = useDispatch<AppDispatch>();
+  const {dispatch,appSelector} = useNavDispatch()
+  const modal: boolean = appSelector((state) => state.userReducer.modal);
 
   return (
     <div>

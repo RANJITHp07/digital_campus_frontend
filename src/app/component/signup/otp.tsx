@@ -1,22 +1,18 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useAppSelector } from '@/redux/store';
 import { emailVerification, userSignup } from '@/apis/user';
 import { message } from 'antd';
-import { useDispatch } from 'react-redux';
-import { useRouter } from 'next/navigation';
 import { CircularProgress } from '@mui/material';
 import { closeModal, setResend } from '@/redux/features/user-auth-slice/reducer';
+import { useNavDispatch} from '@/hook/useNavDispatch';
 
 interface OtpProps {
   page: boolean;
 }
 
 const Otp: React.FC<OtpProps> = ({ page }) => {
-  const dispatch = useDispatch();
-  const navigate = useRouter();
-  const email = useAppSelector((state) => state.userReducer.email);
-  const { user, loading } = useAppSelector((state) => state.userReducer);
+  const { navigation, dispatch,appSelector } = useNavDispatch();
+  const { user, loading,email } = appSelector((state) => state.userReducer);
   const [otpValues, setOtpValues] = useState<Array<string>>(Array(6).fill(''));
   const [otpError, setOtpError] = useState(false);
   const [currentInputIndex, setCurrentInputIndex] = useState(0);
@@ -52,7 +48,7 @@ const Otp: React.FC<OtpProps> = ({ page }) => {
         if (res.data.success) {
           message.success('Signup successful');
           dispatch(closeModal());
-          navigate.push('/login');
+          navigation.push('/login');
         }
       } else {
         setOtpError(true);
@@ -69,7 +65,7 @@ const Otp: React.FC<OtpProps> = ({ page }) => {
       const response = await emailVerification(otpSum, email);
       if (response.data.success) {
         dispatch(closeModal());
-        navigate.push('/forgetpassword');
+        navigation.push('/forgetpassword');
       }
     } catch (err) {
       setOtpError(true);

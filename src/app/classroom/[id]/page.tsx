@@ -57,7 +57,7 @@ function Classroom({ params }: { params: { id: string } }) {
                  assign==='people' && <People id={params.id} code={code}/>
                 }
                 {
-                 assign==='request' && <Request/>
+                 assign==='request' && <Request id={params.id} code={code}/>
                 }
                 {/* {
                  assign==='stream' && <Assignment id={params.id}/>

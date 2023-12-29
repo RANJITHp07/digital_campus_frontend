@@ -1,33 +1,35 @@
 'use client'
-import React,{ChangeEvent, useReducer, useState} from 'react'
+import React,{ChangeEvent, Suspense, useReducer, useState} from 'react'
 import Image from 'next/image'
 import AddIcon from '@mui/icons-material/Add';
 import {  Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
 import Link from 'next/link';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useDispatch } from 'react-redux';
-import { AppDispatch, useAppSelector } from '@/redux/store';
 import { changeModalState } from '@/redux/features/classroom-slice/reducer';
-import SidePanel from './sidePanel';
 import { Modal } from 'antd';
 import { useMutation, useQuery } from '@apollo/client';
-import { ADD_REQUEST, ADD_STUDENT, CREATE_CLASS, FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_NAMES, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM_QUERY } from '@/apis/classroom';
+import { ADD_REQUEST,CREATE_CLASS,FETCH_ALL_CLASSROOM_NAMES, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM_QUERY } from '@/apis/classroom';
 import { message } from 'antd';
-import { useRouter } from 'next/navigation';
 import { initialState } from '@/reducer/navBar/initalState';
 import { reducer } from '@/reducer/navBar/reducer';
 import SearchIcon from '@mui/icons-material/Search';
 import { ClassroomProps } from '@/@types/classroom';
+import { useNavDispatch } from '@/hook/useNavDispatch';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import dynamic from 'next/dynamic';
+
+// Lazy-loaded components
+const SidePanel = dynamic(() => import('./sidePanel'));
+
 
 function Navbar() {
 
-  const navigate=useRouter()
-  const token=useAppSelector((state)=>state.authReducer.token)
+  const {navigation,appSelector,dispatch:dispatched}=useNavDispatch()
+  const token=appSelector((state)=>state.authReducer.token)
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [initalstate, dispatch] = useReducer(reducer, initialState);
   const {name,subject,section,code,category,state,text,filter,open,open1,open2}=initalstate
-  const dispatched=useDispatch<AppDispatch>()
   const items: MenuProps['items'] = [  // items of the dropdown
     {
       key: '1',
@@ -58,24 +60,7 @@ function Navbar() {
     }
   })
 
-  //  //to  join into the class
-  //  const [addStudent]=useMutation(ADD_STUDENT,{
-  //     onError(err){
-  //       console.log(err)
-  //          message.info(err.graphQLErrors[0].message)
-  //     },
-  //     variables:{
-  //       userId:token.id,
-  //       code:code
-  //     },
-  //     refetchQueries: [{ query: FETCH_ADDED_CLASSROOM_QUERY ,variables:{id:token.id}},
-  //       { query: FETCH_ALL_CLASSROOM_QUERY ,variables:{id:token.id}}
-  //     ],
-  //     onCompleted: () => {
-  //       dispatch({type:"SET_OPEN2",value:false})
-  //       message.info("Succesfully joined")
-  //     }
-  //  })
+  
 
   //to add the students reuest
 
@@ -219,7 +204,7 @@ function Navbar() {
         <Dropdown menu={{ items }} placement="bottomLeft">
         <AddIcon className='mx-3 cursor-pointer text-slate-500'/>
         </Dropdown>
-        <Link href={"/classroom/profile"}><Image src={'/profile-logo.jpg'} width={40} height={40} alt='profile' className='rounded-full border-2 cursor-pointer'/></Link>
+        <NotificationsActiveIcon className='cursor-pointer text-slate-500'/>
         </div>
         {
           state && 
@@ -228,7 +213,7 @@ function Navbar() {
              filter.length >0 ?filter.map((m:ClassroomProps)=>{
                return(
                 <div key={m._id}>
-                <p className='text-slate-500 text my-3  cursor-pointer' onClick={()=>navigate.push(`/classroom/${m._id}`)}>{m.className}</p>
+                <p className='text-slate-500 text my-3  cursor-pointer' onClick={()=>navigation.push(`/classroom/${m._id}`)}>{m.className}</p>
                 <hr/>
                 </div>
                )
@@ -247,6 +232,7 @@ function Navbar() {
             <SidePanel/>
           </div>
       }
+      <Suspense fallback={<div>Loading...</div>}>
       <Modal title={<span className='text font-normal text-[#3b6a87]'>Create Class</span>} open={open1} footer={null} onCancel={()=>dispatch({type:"SET_OPEN1",value:false})} >
          <form className="mt-5" onSubmit={Onsubmit}>
           <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text" placeholder='Class name(max 20 character)' onChange={(e:ChangeEvent<HTMLInputElement>)=>dispatch({ type: 'SET_FIELD', field: 'name', value: e.target.value })}/>
@@ -269,6 +255,7 @@ function Navbar() {
               <button type='submit' className="bg-[#3b6a87] p-2 border-2 text-white rounded-md px-4 text " onClick={()=>handleJoin()}>Join</button>
           </div>
       </Modal>
+      </Suspense>
     </nav>
   )
 }

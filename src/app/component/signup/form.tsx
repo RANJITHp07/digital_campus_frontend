@@ -1,30 +1,26 @@
 import React, { useState, ChangeEvent } from 'react';
 import { CircularProgress } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { useRouter } from 'next/navigation';
 import { message } from 'antd';
 import Image from 'next/image';
 import { signInnWithGooogle } from '@/services/config/firebase';
 import { SendEmail, getUser, userSignup } from '@/apis/user';
 import { openModal, setEmail } from '@/redux/features/user-auth-slice/reducer';
-import { useForm, Resolver } from 'react-hook-form';
+import { useForm} from 'react-hook-form';
 import { UserForm } from '@/@types/users';
 import { resolver } from '@/services/formValidator/signupForm';
 import { senduserEmail, userlogin } from '@/redux/features/user-auth-slice/action';
-import { AppDispatch, useAppSelector } from '@/redux/store';
 import Cookies from 'js-cookie';
+import { useNavDispatch } from '@/hook/useNavDispatch';
 
 interface FormProps {
   page: boolean;
 }
 
 const Form: React.FC<FormProps> = ({ page }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const navigation = useRouter();
+  const {navigation,dispatch,appSelector}=useNavDispatch()
   const [email, setemail] = useState('');
   const [text, settext] = useState(false);
-  const loading: boolean = useAppSelector((state) => state.userReducer.loading);
-  const resend: boolean = useAppSelector((state) => state.userReducer.resend);
+  const {loading,resend}:{loading:boolean,resend:boolean}=appSelector((state)=>state.userReducer)
 
   //to handle the signup form
   const {

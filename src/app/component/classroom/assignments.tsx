@@ -1,5 +1,5 @@
 'use client'
-import React,{useState,ChangeEvent} from 'react'
+import React,{useState,ChangeEvent, Suspense} from 'react'
 import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
@@ -23,8 +23,6 @@ import {
 } from "firebase/storage";
 import { storage } from "../../../services/config/firebase"
 import { v4 } from "uuid";
-import { useDispatch } from 'react-redux';
-import { AppDispatch, useAppSelector } from '@/redux/store';
 import {  changeToCreator } from '@/redux/features/classroom-slice/reducer';
 import { CREATE_ASSIGNMENT, FETCH_ASSIGNMENT_DETAILS } from '@/apis/assignment';
 import { assignmentClient } from '@/app/providers/ApolloProvider';
@@ -36,13 +34,13 @@ import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import ShareIcon from '@mui/icons-material/Share';
 import {EmailIcon, EmailShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon,WhatsappShareButton} from 'react-share'
-import { useRouter } from 'next/navigation';
+import { useNavDispatch } from '@/hook/useNavDispatch';
 
 function Assignment({id}:{id:string}) {
 
- const dispatch=useDispatch<AppDispatch>()
- const assign=useAppSelector((state)=>state.classroomReducer.creator)
- const token=useAppSelector((state)=>state.authReducer.token)
+const {dispatch,appSelector}=useNavDispatch()
+ const assign=appSelector((state)=>state.classroomReducer.creator)
+ const token=appSelector((state)=>state.authReducer.token)
 const [file,setFile]=useState<File | null>(null)
 const [text,setText]=useState<string[]>([ 'color: #3b6a87;','#3b6a87'])
 const [color,setColor]=useState<any>(themeColor); // choosing theme color
@@ -53,7 +51,6 @@ const [bg,setbg]=useState('/bg4.png')
 const [modal,setmodal]=useState(false)
 const [background,setbackground]=useState('')
 const [annocument,setannouncment]=useState('')
-const navigate=useRouter()
 
   const items: MenuProps['items'] = [
     {
@@ -351,6 +348,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       </div>
       <div className='md:mx-0'>
        <button className=' px-2 md:px-4 py-2 text rounded-md mx-2 md:mx-3 bg-slate-300 xm:bg-slate-100' onClick={()=>setmodal(true)}><InsertPhotoOutlinedIcon/> Select Photo</button>
+       <Suspense fallback={loading}>
        <Modal open={modal} footer={null} onCancel={()=>setmodal(false)} width={1000}>
        <div 
         className=' cursor-pointer bg-cover bg-center h-100 my-9 w- h-60 box_shadow rounded-lg relative'
@@ -393,6 +391,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     }}
     ></div>
        </Modal>
+       </Suspense>
        <label htmlFor="file" className=' px-2 md:px-4 py-3 text rounded-md cursor-pointer bg-slate-300 xm:bg-slate-100'><FileUploadOutlinedIcon/> Upload Photo
         </label>
         <input type="file" name="file"  id="file"  className='hidden' onChange={(e: ChangeEvent<HTMLInputElement>)=> e.target.files && setFile(e.target.files[0])}/>
@@ -432,6 +431,7 @@ style={{ backgroundColor: c }}
          </EmailShareButton>
         </div>
        </Modal>
+       
     </div>
   )
 }

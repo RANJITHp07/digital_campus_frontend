@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState} from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import GroupIcon from "@mui/icons-material/Group";
@@ -8,13 +7,7 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import SchoolIcon from "@mui/icons-material/School";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { AppDispatch, useAppSelector } from "@/redux/store";
-import { useDispatch } from "react-redux";
-import {
-  changeType,
-  getCategory,
-} from "@/redux/features/classroom-slice/reducer";
-import Cookies from "js-cookie";
+import { getCategory} from "@/redux/features/classroom-slice/reducer";
 import {
   FETCH_ADDED_CLASSROOM_QUERY,
   FETCH_CLASSROOM_QUERY,
@@ -22,16 +15,20 @@ import {
 import { useQuery } from "@apollo/client";
 import CategoryIcon from "@mui/icons-material/Category";
 import { ClassroomProps } from "@/@types/classroom";
+import { useNavDispatch } from "@/hook/useNavDispatch";
+import useLogout from "@/hook/uselogout";
+import useNavigation from "@/hook/useNavigation";
 
 function SidePanel() {
-  const state = useAppSelector((state) => state.classroomReducer.open); //to open and close the sidepanel
-  const token = useAppSelector((state) => state.authReducer.token);
+  const logout=useLogout()
+  const useNavigate=useNavigation()
+  const {dispatch,appSelector}=useNavDispatch()
+  const state = appSelector((state) => state.classroomReducer.open); //to open and close the sidepanel
+  const checked = appSelector((state) => state.classroomReducer.category);
+  const token = appSelector((state) => state.authReducer.token);
   const [teaching, setteaching] = useState(false);
   const [enrolled, setenrolled] = useState(false);
   const [category, setcategory] = useState(false);
-  const checked = useAppSelector((state) => state.classroomReducer.category);
-  const dispatch = useDispatch<AppDispatch>();
-  const navigation = useRouter();
   const { data } = useQuery(FETCH_CLASSROOM_QUERY, {
     variables: { id: token.id },
   });
@@ -51,12 +48,7 @@ function SidePanel() {
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() => {
-              if (window.location.pathname !== "/classroom") {
-                navigation.push("/classroom");
-              }
-              dispatch(changeType("home"));
-            }}
+            onClick={() =>useNavigate('home')}
           >
             Home
           </p>
@@ -67,12 +59,7 @@ function SidePanel() {
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() => {
-              if (window.location.pathname !== "/classroom") {
-                navigation.push("/classroom");
-              }
-              dispatch(changeType("calendar"));
-            }}
+            onClick={() =>useNavigate('calendar')}
           >
             Calender
           </p>
@@ -139,12 +126,7 @@ function SidePanel() {
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() => {
-              if (window.location.pathname !== "/classroom") {
-                navigation.push("/classroom");
-              }
-              dispatch(changeType("teaching"));
-            }}
+            onClick={() => useNavigate('teaching')}
           >
             Teaching
           </p>
@@ -193,12 +175,7 @@ function SidePanel() {
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() => {
-              if (window.location.pathname !== "/classroom") {
-                navigation.push("/classroom");
-              }
-              dispatch(changeType("enrolled"));
-            }}
+            onClick={() => useNavigate('enrolled')}
           >
             Enrolled
           </p>
@@ -241,12 +218,7 @@ function SidePanel() {
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() => {
-              if (window.location.pathname !== "/classroom") {
-                navigation.push("/classroom");
-              }
-              dispatch(changeType("profile"));
-            }}
+            onClick={() => useNavigate('profile')}
           >
             Profile
           </p>
@@ -254,10 +226,7 @@ function SidePanel() {
       </div>
       <div
         className="flex items-center p-1 mt-5 cursor-pointer hover:bg-slate-200 hover:mr-3 hover:rounded-r-full"
-        onClick={() => {
-          Cookies.remove("accessToken");
-          navigation.push("/login");
-        }}
+        onClick={logout}
       >
         <LogoutIcon className="mr-6  text-[#3b6a87] ml-4" />
         {state && <p className=" text-[#3b6a87] text-lg">Logout</p>}

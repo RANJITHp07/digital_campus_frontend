@@ -2,9 +2,46 @@ import React from 'react'
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { Tooltip } from 'antd';
+import { Tooltip, message } from 'antd';
+import { ADD_REQUEST, ADD_STUDENT, FETCH_REQUEST_DETAILS} from '@/apis/classroom';
+import { useMutation, useQuery } from '@apollo/client';
+import { useAppSelector } from '@/redux/store';
+import PersonIcon from '@mui/icons-material/Person';
 
-function Request() {
+function Request({id,code}:{id:string,code:string}) {
+
+   const token=useAppSelector((state)=>state.authReducer.token)
+
+  ///to  join into the class
+   const [joinStudent]=useMutation(ADD_STUDENT,{
+      onError(err){
+        console.log(err)
+           message.info(err.graphQLErrors[0].message)
+      },
+      refetchQueries: [{ query:FETCH_REQUEST_DETAILS ,variables:{id:id}}
+      ],
+      onCompleted: () => {
+        message.info("Succesfully added")
+      }
+   })
+
+   
+
+    
+
+   //to fetch request
+   const {data}=useQuery(FETCH_REQUEST_DETAILS,{
+    onError(err){
+      console.log(err)
+      message.info("Some error occured")
+    },
+    variables:{
+      id:id
+    }
+   })
+
+   data && console.log(data)
+
   return (
     <div className='flex justify-center'>
          <div className='w-3/4 my-9'>
@@ -14,8 +51,12 @@ function Request() {
                 </div>
            <hr className='border-1 rounded-full border-[#3b6a87] mb-6 mt-3'/>
            </div>
-           <div className='flex items-center justify-between text-slate-500'>
-              <p className='mx-5 text  '>Ranjith</p>
+           {
+            data && data.getClassroomDetails.request.map((s:any)=>{
+              return (
+                <>
+                <div className='flex items-center justify-between text-slate-500'>
+              <p className='mx-5 text  '><PersonIcon/> {s.name}</p>
               <div>
               <Tooltip placement="topRight" title={"Remove request"}>
               <PlaylistRemoveIcon className='cursor-pointer'/>
@@ -30,6 +71,11 @@ function Request() {
               </div>
                       </div>
                       <hr className='my-5'/>
+                </>
+              )
+            })
+
+           }
                      
            </div>
     </div>

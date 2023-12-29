@@ -1,20 +1,19 @@
 'use client'
-import React,{ChangeEvent, useState} from 'react'
+import React,{ChangeEvent, Suspense, useState} from 'react'
 import Image from "next/image"
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import type { MenuProps } from 'antd';
 import { Dropdown ,Modal,Tooltip, message} from 'antd';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import { useRouter } from 'next/navigation';
 import { DELETE_CLASS, FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM_QUERY, REMOVE_STUDENT, UPDATE_CLASSROOM_DETAILS } from '@/apis/classroom';
-import { useAppSelector } from '@/redux/store';
 import { useMutation } from '@apollo/client';
+import { useNavDispatch } from '@/hook/useNavDispatch';
 
 function Class({className,creator,id,code,type,bg,subject,section,profile,block}:{className:string,creator:string,id:string,code?:string,type:boolean,bg:string,subject?:string,section?:string,profile:string,block?:boolean}) {
   
-  const token=useAppSelector((state)=>state.authReducer.token)
-  const navigation=useRouter()
+  const {navigation,appSelector}=useNavDispatch()
+  const token=appSelector((state)=>state.authReducer.token)
   const[report,setReport]=useState(false);
   const[title,setTitle]=useState('');
   const[description,setDescription]=useState('');
@@ -179,6 +178,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
         </Tooltip>
         </div>
       </div>
+      <Suspense fallback={loading}>
       <Modal title={`Create Class`} open={open} footer={null}onCancel={()=>setOpen(false)} >
          <form className="mt-5" onSubmit={handleUpdate} >
           <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text" placeholder='Class name(max 20 character)' defaultValue={classroom.className} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,className:e.target.value})}/>
@@ -208,6 +208,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
               <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text " onClick={handleReport}>Submit</button>
           </div>
       </Modal>
+      </Suspense>
     </div>
   );
 }
