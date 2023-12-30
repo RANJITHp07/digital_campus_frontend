@@ -9,8 +9,9 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { DELETE_CLASS, FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM_QUERY, REMOVE_STUDENT, UPDATE_CLASSROOM_DETAILS } from '@/apis/classroom';
 import { useMutation } from '@apollo/client';
 import { useNavDispatch } from '@/hook/useNavDispatch';
+import { ClassProps } from '@/@types/classroom';
 
-function Class({className,creator,id,code,type,bg,subject,section,profile,block}:{className:string,creator:string,id:string,code?:string,type:boolean,bg:string,subject?:string,section?:string,profile:string,block?:boolean}) {
+function Class({className,creator,id,code,type,bg,subject,section,profile,block}:ClassProps) {
   
   const {navigation,appSelector}=useNavDispatch()
   const token=appSelector((state)=>state.authReducer.token)
@@ -178,7 +179,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
         </Tooltip>
         </div>
       </div>
-      <Suspense fallback={loading}>
+      <Suspense fallback={<div>loading</div>}>
       <Modal title={`Create Class`} open={open} footer={null}onCancel={()=>setOpen(false)} >
          <form className="mt-5" onSubmit={handleUpdate} >
           <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text" placeholder='Class name(max 20 character)' defaultValue={classroom.className} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,className:e.target.value})}/>

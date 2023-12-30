@@ -16,6 +16,18 @@ export interface ClassroomProps{
     themeColor?:string
 }
 
+export interface ClassProps {
+    className: string;
+    creator: string;
+    id: string;
+    code?: string;
+    type: boolean;
+    bg: string;
+    subject?: string;
+    section?: string;
+    profile: string;
+    block?: boolean;
+  }
 
 export type Polling={
     number:number,
