@@ -7,9 +7,10 @@ import Cookies from "js-cookie";
 
 const authLink = setContext(() => {
   const accessToken = Cookies.get('accessToken') as string;
+  const cleanedJwt = accessToken.replace(/"/g, '');
   return {
     headers: {
-      Authorization: accessToken ? accessToken : '', // Add Bearer prefix
+      Authorization: cleanedJwt as string
     },
   };
 });

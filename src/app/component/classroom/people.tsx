@@ -18,9 +18,17 @@ function People({id,code}:{id:string,code:string}) {
    //to get all the participants
     const { data }=useQuery(GET_PARTICIPANTS,{
         variables:{
-            id:id
+            id:'6590f020c62d40ba6bdd5a8e'
+        },
+        onError(err){
+          console.log(err)
+        },
+        onCompleted:(data)=>{
+          console.log(data)
         }
     })
+
+    console.log(data)
 
     //to add student into admins
     const [addToAdmin]=useMutation(ADD_TO_ADMIN,

@@ -228,8 +228,8 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         </div>
         <div className='text-white  mx-4 w-full items-center flex justify-between absolute bottom-0'>
           <div className='mb-3'>
-          <p className='font-medium text-3xl text-white'>{data.getClassroomDetails.className}</p>
-          <p className='text-sm text'>By {data.getClassroomDetails.creator}</p>
+          <p className='font-medium text-3xl text-white'>{ data && (data.getClassroomDetails.className[0].toUpperCase()+data.getClassroomDetails.className.slice(1,data.getClassroomDetails.className.length).toLowerCase())}</p>
+          <p className='text-sm text'>By { data && (data.getClassroomDetails.creator[0].toUpperCase()+data.getClassroomDetails.creator.slice(1,data.getClassroomDetails.creator.length).toLowerCase())}</p>
           </div>
            <InfoOutlinedIcon className='mx-7 cursor-pointer' onClick={()=>setdetail(!detail)}/>
           </div>    
@@ -252,7 +252,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
             <MoreVertOutlinedIcon className={`m-1 ${text[0]} `}/>
             </Dropdown>
             </div>
-            <p className={`text-3xl  my-3 font-semibold text m-2 ml-4`} style={{ color: text[1] }}>{data.getClassroomDetails.classCode} <ContentCopyOutlinedIcon className={`text-sm cursor-pointer ${text}`} onClick={handleCopyClick}/></p>
+            <p className={` text-2xl xl:text-3xl xl:my-3 font-semibold text m-2 ml-4`} style={{ color: text[1] }}>{data.getClassroomDetails.classCode} <ContentCopyOutlinedIcon className={`text-sm cursor-pointer ${text}`} onClick={handleCopyClick}/></p>
           </div>
           <div className='w-full md:ml-6'>
             <div className='box_shadow p-4 rounded-md h-24'>
@@ -261,8 +261,8 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
               id="message"
               type="text"
               placeholder="Message.."
-              className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-100 rounded-md shadow-sm focus:outline-none   sm:text-sm"
-              defaultValue={annocument}
+              className=" block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-100 rounded-md shadow-sm focus:outline-none   text text-slate-500"
+              value={annocument}
               onChange={(e:ChangeEvent<HTMLInputElement>)=>setannouncment(e.target.value)}
               onKeyDown={handleKeyDown}
             />
@@ -305,12 +305,6 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
               
                <p className='text text-xs text-slate-500'>{format(m.createdAt)}</p>
                </div>
-               <div>
-                {
-                 m.assignmentType!=="Announcement" &&  <MoreVertOutlinedIcon className='m-1 text-slate-700'/>
-                }
-               
-               </div>
               </div>
             </div>
             
@@ -327,7 +321,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
           {
             file ? 
             <div 
-        className=' bg-cover bg-center h-100 my-9 w- h-60 box_shadow rounded-lg relative'
+        className=' bg-cover bg-right h-100 my-9 w- h-60 box_shadow rounded-lg relative'
         style={{
           backgroundImage: `url(${file && URL.createObjectURL(file)})`,
         }}
@@ -335,7 +329,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     </div>
     :
     <div 
-        className='bg-cover bg-center h-100 my-9 w- h-60 box_shadow rounded-lg relative'
+        className='bg-cover bg-right h-100 my-9 w- h-60 box_shadow rounded-lg relative'
     style={{
       backgroundImage: `url(${bg})`,
     }}
@@ -351,7 +345,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
        <Suspense fallback={loading}>
        <Modal open={modal} footer={null} onCancel={()=>setmodal(false)} width={1000}>
        <div 
-        className=' cursor-pointer bg-cover bg-center h-100 my-9 w- h-60 box_shadow rounded-lg relative'
+        className=' cursor-pointer bg-cover bg-right h-100 my-9 w- h-60 box_shadow rounded-lg relative'
         onClick={()=>{
           setbg('/bg2.png');
           setmodal(false)
@@ -361,7 +355,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     }}
     ></div>
     <div 
-        className=' cursor-pointer bg-cover bg-center h-100 my-9 w- h-60 box_shadow rounded-lg relative'
+        className=' cursor-pointer bg-cover bg-right h-100 my-9 w- h-60 box_shadow rounded-lg relative'
         onClick={()=>{
           setbg('/bg3.png');
           setmodal(false)
@@ -371,7 +365,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     }}
     ></div>
     <div 
-        className=' cursor-pointer bg-cover bg-center h-100 my-9 w- h-60 box_shadow rounded-lg relative'
+        className=' cursor-pointer bg-cover bg-right h-100 my-9 w- h-60 box_shadow rounded-lg relative'
         onClick={()=>{
           setbg('/bg4.png');
           setmodal(false)
@@ -381,7 +375,7 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     }}
     ></div>
     <div 
-        className=' cursor-pointer bg-cover bg-center h-100 my-9 w- h-60 box_shadow rounded-lg relative'
+        className=' cursor-pointer bg-cover bg-right h-100 my-9 w- h-60 box_shadow rounded-lg relative'
         onClick={()=>{
           setbg('/bg5.png');
           setmodal(false)
