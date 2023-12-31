@@ -1,13 +1,13 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const cookies = Cookies.get('accessToken');
-console.log(cookies);
+const cookies = Cookies.get('accessToken') as string;
+const cleanedJwt = cookies.replace(/"/g, '');
 
 const Api = axios.create({
-    baseURL: "https://www.digitalcampus.shop",
+    baseURL: "http://localhost:5000",
     headers: {
-        Authorization: cookies || ''
+        Authorization: cleanedJwt || ''
     }
 });
 

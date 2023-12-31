@@ -12,6 +12,7 @@
     "@aldabil/react-scheduler": "^2.7.25",
     "@ant-design/icons": "^5.2.6",
     "@apollo/react-hooks": "^4.0.0",
+    "@auth-middlewares/common": "^1.0.24",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
     "@emotion/react": "^11.11.1",
