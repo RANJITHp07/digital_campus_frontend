@@ -26,6 +26,7 @@ import ReactCrop, {
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import setCanvasPreview from '@/services/setCanvasPreview';
+import LoadinPage from '../common/loadinPage';
 
 const ASPECT_RATIO = 1;
 const MIN_DIMENSION = 200;
@@ -37,15 +38,18 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
   const [imageCrop,setImageCrop]=useState(true)
   const imgRef=useRef<HTMLImageElement | null>( null)
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const {user,profile,modal,file,newpassword,state,oldpassword,update,open,hover}=initalstate
+  const {user,profile,modal,file,newpassword,state,oldpassword,update,open,hover,loading}=initalstate
 
   useEffect(()=>{
     const fetchData=async()=>{
       if (token.email){
         const res=await getUser(token.email)
-        dispatch({type:'SET_USER',value:res.data.data})
-        dispatch({type:'SET_UPDATE',field:'education', value:res.data.data.education})
-        dispatch({type:'SET_UPDATE',field:'about',value:res.data.data.education})
+        if(res.data.data){
+          dispatch({type:'SET_USER',value:res.data.data})
+          dispatch({type:'SET_UPDATE',field:'education', value:res.data.data.education})
+          dispatch({type:'SET_UPDATE',field:'about',value:res.data.data.education})
+          dispatch({type:'SET_LOADING',value:false})
+        }
       }
     }
    fetchData()
@@ -58,7 +62,12 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
   const handleFilechange=(e: ChangeEvent<HTMLInputElement>) => {
     try{
 
+      
        if(e.target.files){
+        if (!e.target.files[0].type.startsWith('image/')) {
+          message.error("Only image type allowed")
+          return;
+        }
   e.target.files && dispatch({type:'SET_FILE',value:e.target.files[0] as File})
       dispatch({type:'SET_OPEN',value:true})
       setImageCrop(true)
@@ -73,6 +82,7 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
   //upload file
   const uploadFile = () => {
     if (file == null) return;
+    
     
     setCanvasPreview(
       imgRef.current as HTMLImageElement,
@@ -177,6 +187,8 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
 
   return (
     <div>
+    {
+    loading ? <LoadinPage/> : <>
     <div className=" mx-5 lg:w-11/12 box_shadow mt-9 lg:mx-auto rounded-lg relative group ">
       <div className='relative h-1/2'>
       <div 
@@ -194,7 +206,7 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
             ((user && user.profile)?
             <Image src={user.profile} width={200} height={200} alt='profile' className='mx-auto  md:mx-0 rounded-full border-2 z-0 '/>
             :
-            <Image src={'/profile-logo.jpg'} width={200} height={200} alt='profile' className='mx-auto   md:mx-0 rounded-lg border-2 z-0 '/>)
+            <Image src={'/profile-logo.jpg'} width={200} height={200} alt='profile' className='mx-auto   md:mx-0 rounded-full border-2 z-0 '/>)
              
           }
           {
@@ -311,6 +323,7 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
           }
           
     </div>
+    </>}
     </div>
   )
 }

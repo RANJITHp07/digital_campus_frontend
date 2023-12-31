@@ -10,4 +10,5 @@ export type ProfileAction =
   | { type: 'SET_NEWPASSWORD'; value: string }
   | { type: 'SET_OLDPASSWORD'; value: string }
   | { type: 'SET_UPDATE'; field: string; value: string | null }
-  | { type: 'SET_HOVER'; value: boolean };
+  | { type: 'SET_HOVER'; value: boolean }
+  | { type: 'SET_LOADING'; value: boolean };

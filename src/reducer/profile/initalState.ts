@@ -14,6 +14,7 @@ export interface ProfileState {
     };
     state: boolean
     hover: boolean
+    loading:boolean
   }
 
 const initialState:ProfileState={
@@ -29,7 +30,8 @@ const initialState:ProfileState={
     about:null
    },
    state:false,
-   hover:false
+   hover:false,
+   loading:true
 
 }
 

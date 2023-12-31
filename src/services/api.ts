@@ -5,7 +5,7 @@ const cookies = Cookies.get('accessToken') as string;
 const cleanedJwt = cookies.replace(/"/g, '');
 
 const Api = axios.create({
-    baseURL: "http://localhost:5000",
+    baseURL: "https://www.digitalcampus.shop",
     headers: {
         Authorization: cleanedJwt || ''
     }
