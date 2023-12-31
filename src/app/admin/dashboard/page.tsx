@@ -3,7 +3,6 @@ import React from 'react'
 import Search from '../../component/admin/dashboard/search'
 import SidePanel from '../../component/admin/dashboard/sidePanel'
 import Navbar from '../../component/admin/dashboard/navbar'
-import Classroom from '../../component/admin/dashboard/classroom'
 import { useAppSelector } from '@/redux/store'
 
 

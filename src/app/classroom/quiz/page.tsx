@@ -1,8 +1,6 @@
 'use client'
 import Navbar from '@/app/component/common/navbar'
-import React,{ChangeEvent, useState} from 'react'
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import React,{ChangeEvent, useReducer, useState} from 'react'
 import type { MenuProps } from 'antd';
 import { Dropdown, message } from 'antd';
 import TuneIcon from '@mui/icons-material/Tune';
@@ -20,16 +18,17 @@ import Title from '@/app/component/classroom/quiztitle';
 
 function Quiz() {
 
-
   const [editquestion,seteditquestion]=useState('');
   const [editoptions,seteditoptions]=useState<string[]>([])
+  const [editAnswer,setEditAnswer]=useState<string[]>([])
   const [edittype,setEdittype]=useState<string| null>(null)
   const [editoption,setEditoption]=useState('')
   const [edit,setEdit]=useState(false)
   const items: MenuProps['items'] = [
     {
       label: <p onClick={ edittype? ()=>{
-        edittype==='checkbox'?setEdittype('radio'):setEdittype('checkbox')
+        edittype==='checkbox'?
+        setEdittype('radio'):setEdittype('checkbox')
       }
       :
         ()=>settype('checkbox')}>{edittype ? "Change option" : "Multiple answer"}</p>,
@@ -60,6 +59,7 @@ function Quiz() {
       
       //quiz details
       const [timer,settimer]=useState<string[]>([]);
+      const [answer,setAnswer]=useState<any>([])
       const [date,setdate]=useState('')
       const [topic,settopic]=useState<string | null >(null)
       const [number,setnumber]=useState(1)
@@ -93,10 +93,15 @@ function Quiz() {
           message.error("Atleast 2 options")
           return
         }
+        if(answer.length==0){
+          message.error("Enter the answer");
+          return
+        }
         const q={
             type:type as string,
             question:question,
             answers:options,
+            realAnswer:answer,
             edit:false
         }
         setquestions([...questions,q])
@@ -148,6 +153,7 @@ function Quiz() {
                seteditoptions(m.answers);
                setEdittype(m.type)
                seteditquestion(m.question)
+               setEditAnswer(m.realAnswer)
               return {...m,edit:true}
            }
            return {...m,edit:false}
@@ -198,7 +204,8 @@ function Quiz() {
 
         let q=questions.map(({ edit, ...rest }) => rest)
         if(question.trim().length>0 && options.length>0){
-          q = [...q, { question: question, answers: options, type: type as string }];
+          q = [...q, { question: question, answers: options,realAnswer:answer, type: type as string }];
+          console.log(q)
         }
         let assignment:any={
           title:title,
@@ -216,14 +223,14 @@ function Quiz() {
          assignment={...assignment,mainTopic:topic}
        }
        console.log(assignment)
-       await createAssignment({
-        client:assignmentClient,
-        variables:
-          {
-            assignment
-          }
+      //  await createAssignment({
+      //   client:assignmentClient,
+      //   variables:
+      //     {
+      //       assignment
+      //     }
         
-      })
+      // })
       }
 
   return (
@@ -278,7 +285,14 @@ function Quiz() {
             return (
                 <div className='flex my-3 text-[#3b6a87]'>
                 <p>{data[index]}. </p>
-        <input type={type==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={false} />
+        <input type={type==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={answer.includes(p)} onChange={()=>
+          {
+            type==='checkbox'?
+            setAnswer([...answer,p])
+            :
+            setAnswer([p])
+          }
+          } />
           <p>{p}</p>
        </div>
             )
@@ -290,7 +304,13 @@ function Quiz() {
             return (
                 <div className='flex my-3 text-[#3b6a87]'>
                 <p>{data[index]}. </p>
-        <input type={edittype==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={false} /> 
+        <input type={edittype==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={editAnswer.includes(editoptions[index])} onChange={()=>
+          {
+            type==='checkbox'?
+            setEditAnswer([...editAnswer,p]):
+            setEditAnswer([p])
+          }
+          } /> 
         <input type='text' placeholder={`Option ${data[options.length]}`} className='border-b-2  text border-slate-100 focus:outline-none placeholder-slate-500' 
             value={editoptions[index]}
             onChange={(e:ChangeEvent<HTMLInputElement>)=>{
@@ -344,18 +364,12 @@ function Quiz() {
           questions[index].answers.map((p,i)=>{
             return (
               <div className='flex my-3 text-[#3b6a87]'>
-              <input type={questions[index].type==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={false} />
+              <input type={questions[index].type==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={questions[index].realAnswer.includes(p)} />
               <p>{p}</p>
              </div>
             )
           })
        }
-      {/* <div className='flex my-3'>
-        <input type="radio" className="transform scale-150 mr-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked />
-          <input type='text' placeholder='Enter the answer' className='border-b-2  text border-slate-300 focus:outline-none placeholder-slate-500' 
-          onKeyDown={()=>{}}
-          />
-       </div> */}
 
       <div className="  mt-4">
         {

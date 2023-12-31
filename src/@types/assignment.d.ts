@@ -2,6 +2,7 @@ export interface Question{
     type:string,
     question:string,
     answers:string[],
+    realAnswer:any[]
     edit:boolean
 }
 

@@ -10,14 +10,14 @@ function Search() {
    const[pagination,setpagination]=useState(1)
    const[text,settext]=useState('')
    const [users,setusers]=useState([])
-    useEffect(()=>{
-      const fetchData=async ()=>{
-        const res=await getAllusers()
-        setusers(res.data.data)
-        console.log(res.data)
-      }
-      fetchData()
-    },[])
+    // useEffect(()=>{
+    //   const fetchData=async ()=>{
+    //     const res=await getAllusers()
+    //     setusers(res.data.data)
+    //     console.log(res.data)
+    //   }
+    //   fetchData()
+    // },[])
 
 
 

@@ -159,7 +159,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
           </Dropdown>
           </div>
         <div className="absolute top-16 left-5 w-full" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}`)}>
-          <Image src={'/profile-logo.jpg' } width={120} height={120} alt='' className='rounded-full z-50 	' />
+          <Image src={profile===''? '/profile-logo.jpg' :profile } width={profile===''?120:140} height={profile===''?120:140} alt='profile' className='rounded-full z-50 	' />
         </div>
       </div>
       <div className="flex justify-end mx-2" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}`)}>
