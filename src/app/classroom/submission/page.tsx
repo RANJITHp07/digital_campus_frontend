@@ -18,6 +18,8 @@ import {format} from "timeago.js"
 import {pdfjs,Document,Page} from 'react-pdf'
 import { CREATE_COMMENT, GET_ALLCOMMENTS } from '@/apis/comment'
 import { Comment } from '@/@types/assignment'
+import QuizSubmission from '@/app/component/submission/quiz'
+import LoadinPage from '@/app/component/common/loadinPage'
 
 function Submission() {
 
@@ -54,7 +56,7 @@ function Submission() {
     })
 
     // get all assignment details
-    const {data}=useQuery(ASSIGNMENT_DETAILS,{
+    const {data,loading}=useQuery(ASSIGNMENT_DETAILS,{
       client:assignmentClient,
       variables:{
         id:id
@@ -99,7 +101,10 @@ function Submission() {
     }  
   return (
     <div>
-        <Navbar/>
+      {
+        type!=='Quiz' ?
+        <>
+<Navbar/>
         <hr/>
         <div className="flex">
         <div className='border-r-2 z-50 hidden xm:block  min-h-screen '>
@@ -203,6 +208,20 @@ function Submission() {
             
         </div>
         </div>
+        
+        </>
+      :
+      (
+         loading ? 
+         <div className='w-11/12 mx-auto'>
+          <LoadinPage/>
+         </div>
+          : <QuizSubmission quiz={data && data.getOneassignment.quiz} title={data && data.getOneassignment.quiz} dueDate={data && data.getOneassignment.dueDate}/>
+      )
+      
+
+      }
+        
     </div>
   )
 }

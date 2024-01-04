@@ -158,17 +158,17 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
           <MoreVertIcon className="text-white"/>
           </Dropdown>
           </div>
-        <div className="absolute top-16 left-5 w-full" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}`)}>
+        <div className="absolute top-16 left-5 w-full" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}?code=${code}`)}>
           <Image src={profile===''? '/profile-logo.jpg' :profile } width={profile===''?120:140} height={profile===''?120:140} alt='profile' className='rounded-full z-50 	' />
         </div>
       </div>
-      <div className="flex justify-end mx-2" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}`)}>
+      <div className="flex justify-end mx-2" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}?code=${code}`)}>
         <div>
           <p>{classroom.className.length >0 && (classroom.className[0].toUpperCase() + classroom.className.slice(1,className.length).toLowerCase())}</p>
           <p className="text-xs">{creator}</p>
         </div>
       </div>
-      <div className='absolute bottom-0 w-full  '>
+      <div className='absolute bottom-0 w-full'>
         <hr/>
         <div className='flex justify-end m-3'>
         <Tooltip placement="topRight" title={"see all the participants"}>

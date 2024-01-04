@@ -78,7 +78,6 @@ const [annocument,setannouncment]=useState('')
 const { loading, data } = useQuery(FETCH_CLASSROOM_DETAILS, {
   variables: { id: id },
   onCompleted:(data)=>{
-    console.log(data.getClassroomDetails)
       dispatch( changeToCreator( data.getClassroomDetails.admins.includes(token.id)))
       setbackground(data.getClassroomDetails.backgroundPicture)
       setbg(data.getClassroomDetails.backgroundPicture)

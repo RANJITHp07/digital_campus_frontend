@@ -212,6 +212,15 @@ export const ADD_REQUEST=gql`
  }
 `
 
+//to remove the student from the request
+export const REMOVE_REQUEST=gql`
+ mutation removeRequest($request:RequestInput){
+     removeRequest(request:$request){
+     message
+     }
+ }
+`
+
 // to delete the classroom
 export const DELETE_CLASS = gql`
   mutation deleteClass($id:String!){

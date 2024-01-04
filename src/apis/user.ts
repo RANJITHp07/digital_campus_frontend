@@ -12,6 +12,16 @@ export async function paginationUser(pagination:number){
 }
 
 
+export async function searchUser(search:string){
+    try{
+        const res = await  Api.get(userEndpoint.searchUser + `=${search}`)
+        return res
+    }catch(err){
+        throw new Error("Api error"+ err)
+    }
+}
+
+
 
 // to block and unblock users
 export async function updateUser(id:number,blocked:boolean) {

@@ -18,7 +18,7 @@ function People({id,code}:{id:string,code:string}) {
    //to get all the participants
     const { data }=useQuery(GET_PARTICIPANTS,{
         variables:{
-            id:'6590f020c62d40ba6bdd5a8e'
+            id:id
         },
         onError(err){
           console.log(err)

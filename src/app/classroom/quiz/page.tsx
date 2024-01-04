@@ -16,6 +16,7 @@ import { Question } from '@/@types/assignment';
 import { FETCH_CLASSROOM_DETAILS } from '@/apis/classroom';
 import Title from '@/app/component/classroom/quiztitle';
 
+
 function Quiz() {
 
   const [editquestion,seteditquestion]=useState('');
@@ -24,14 +25,26 @@ function Quiz() {
   const [edittype,setEdittype]=useState<string| null>(null)
   const [editoption,setEditoption]=useState('')
   const [edit,setEdit]=useState(false)
+
+  console.log(editAnswer)
   const items: MenuProps['items'] = [
     {
-      label: <p onClick={ edittype? ()=>{
-        edittype==='checkbox'?
-        setEdittype('radio'):setEdittype('checkbox')
-      }
-      :
-        ()=>settype('checkbox')}>{edittype ? "Change option" : "Multiple answer"}</p>,
+      label: (
+        <p onClick={() => {
+          if (edittype) {
+            if (edittype === 'checkbox') {
+              setEdittype('radio');
+              setEditAnswer((prev) => [prev[0]]);
+            } else {
+              setEdittype('checkbox');
+            }
+          } else {
+            settype('checkbox');
+          }
+        }}>
+          {edittype ? 'Change option' : 'Multiple answer'}
+        </p>
+      ),
       key: '0',
     },
     {
@@ -101,13 +114,14 @@ function Quiz() {
             type:type as string,
             question:question,
             answers:options,
-            realAnswer:answer,
+            realAnswers:answer,
             edit:false
         }
         setquestions([...questions,q])
         setnumber(number+1)
         setoptions([])
         settype(null)
+        setAnswer([])
       }
 
       
@@ -153,7 +167,7 @@ function Quiz() {
                seteditoptions(m.answers);
                setEdittype(m.type)
                seteditquestion(m.question)
-               setEditAnswer(m.realAnswer)
+               setEditAnswer(m.realAnswers)
               return {...m,edit:true}
            }
            return {...m,edit:false}
@@ -170,14 +184,18 @@ function Quiz() {
 
       //to update the  quiz questions
       const  handleUpdate=(i:number)=>{
+        if(editAnswer.length===0){
+          message.error("Answer is must");
+          return
+        }
         const a= questions.map((m,index)=>{
           if(i===index){
-             return {...m,edit:false,question:editquestion,answers:editoptions}
+             return {...m,edit:false,question:editquestion,answers:editoptions,realAnswers:editAnswer,type:edittype as string}
           }
           return m
        })
        setquestions(a)
-       
+       setEdittype(null)
       }
      
       const [createAssignment]=useMutation(CREATE_ASSIGNMENT,
@@ -204,14 +222,14 @@ function Quiz() {
 
         let q=questions.map(({ edit, ...rest }) => rest)
         if(question.trim().length>0 && options.length>0){
-          q = [...q, { question: question, answers: options,realAnswer:answer, type: type as string }];
+          q = [...q, { question: question, answers: options,realAnswers:answer, type: type as string }];
           console.log(q)
         }
         let assignment:any={
           title:title,
           class_id:[id],
           students: classroom && classroom.getClassroomDetails.students_enrolled,
-          assignmentType:"Quiz",
+          assignmentType: "Quiz",
           creator:token.name,
           dueDate:{
             day:date,
@@ -223,14 +241,12 @@ function Quiz() {
          assignment={...assignment,mainTopic:topic}
        }
        console.log(assignment)
-      //  await createAssignment({
-      //   client:assignmentClient,
-      //   variables:
-      //     {
-      //       assignment
-      //     }
-        
-      // })
+       await createAssignment({
+        client:assignmentClient,
+        variables:{
+        assignment
+      }
+      })
       }
 
   return (
@@ -287,10 +303,16 @@ function Quiz() {
                 <p>{data[index]}. </p>
         <input type={type==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={answer.includes(p)} onChange={()=>
           {
-            type==='checkbox'?
-            setAnswer([...answer,p])
-            :
-            setAnswer([p])
+            type === 'checkbox'
+            ? (() => {
+                if (answer.includes(p)) {
+                  setAnswer((prev:string[]) => prev.filter(m => m !== p));
+                } else {
+                  setAnswer([...answer, p]);
+                }
+              })()
+            : setAnswer([p]);
+          
           }
           } />
           <p>{p}</p>
@@ -304,15 +326,22 @@ function Quiz() {
             return (
                 <div className='flex my-3 text-[#3b6a87]'>
                 <p>{data[index]}. </p>
-        <input type={edittype==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={editAnswer.includes(editoptions[index])} onChange={()=>
+        <input type={edittype==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={editAnswer.includes(p)} onChange={()=>
           {
-            type==='checkbox'?
-            setEditAnswer([...editAnswer,p]):
-            setEditAnswer([p])
+            edittype === 'checkbox'
+            ? (
+                editAnswer.includes(p)?
+                  setEditAnswer((prev:string[]) => prev.filter(m => m !== p))
+                :
+                  setEditAnswer( (prev)=>[...prev, p])
+                
+            )
+            : setEditAnswer([p]);
+          
           }
           } /> 
         <input type='text' placeholder={`Option ${data[options.length]}`} className='border-b-2  text border-slate-100 focus:outline-none placeholder-slate-500' 
-            value={editoptions[index]}
+            value={p}
             onChange={(e:ChangeEvent<HTMLInputElement>)=>{
               const a=editoptions.map((m,i)=>{
                 if(i===index){
@@ -350,7 +379,7 @@ function Quiz() {
         )
        }
        {
-        editoptions.length< 4  && edit && <div className='flex my-3 text-[#3b6a87]'>
+        questions[index] && editoptions.length< 4  && questions[index].edit && edit && <div className='flex my-3 text-[#3b6a87]'>
         <input type={type==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mr-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={false} />
           <input type='text' placeholder={`Option`} className='border-b-2  text border-slate-100 focus:outline-none placeholder-slate-500' 
           value={editoption}
@@ -364,7 +393,7 @@ function Quiz() {
           questions[index].answers.map((p,i)=>{
             return (
               <div className='flex my-3 text-[#3b6a87]'>
-              <input type={questions[index].type==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={questions[index].realAnswer.includes(p)} />
+              <input type={questions[index].type==='checkbox'? "checkbox" : "radio"} className="transform scale-150  mx-3 text-[#3b6a87] cursor-pointer  accent-[#3b6a87]" checked={questions[index].realAnswers.includes(p)} />
               <p>{p}</p>
              </div>
             )

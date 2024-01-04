@@ -146,19 +146,23 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
       console.log(err)
     },
     onCompleted:()=>{
-      console.log("HIi")
+      message.info("Updated successfully");
+      router.push(`/classroom/${classId}`)
     }
   })
 
   const handleUpdate=async()=>{
     const { __typename, ...detailsWithoutTypename } = details;
+    const {__typename:type,...date}=details.dueDate
 
     const attachment = {
       type: detailsWithoutTypename.attachment.type,
       content: detailsWithoutTypename.attachment.content,
     };
 
-    const assignment={ ...detailsWithoutTypename, attachment }
+
+
+    const assignment={ ...detailsWithoutTypename,dueDate:date, attachment }
     console.log(assignment)
     
     await updateAssignment({
@@ -261,6 +265,9 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
               
                    </div>
                 </div>
+                {
+                 data &&  data.getOneassignment && 
+                 <>
                 <div className='w-1/2 my-5 pr-2'>
                    <p className='text text-slate-700'>Points</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
@@ -299,6 +306,8 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                 }
                 
                 </div>
+                </>
+                }
                 <div className=' my-5 '>
                    <p className='text text-slate-700'>Topic</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>

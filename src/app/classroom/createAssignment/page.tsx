@@ -367,6 +367,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
               
                    </div>
                 </div>
+                { type!=='Material' && <>
                 <div className='w-1/2 my-5 pr-2'>
                    <p className='text text-slate-700'>Points</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
@@ -424,6 +425,8 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                 }
                 
                 </div>
+                </>
+                }
                 <div className=' my-5 '>
                    <p className='text text-slate-700'>Topic</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>

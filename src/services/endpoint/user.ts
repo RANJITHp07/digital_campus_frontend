@@ -1,5 +1,6 @@
 export const userEndpoint={
     getPaginatedUsers:"/v3/api/auth/user/pagination/page?page",
+    searchUser:"/v3/api/auth/user/searchUser/page?search",
     userUpdate:"/v3/api/auth/user/updateUser",
     sendEmail:"/v3/api/auth/user/sendEmail",
     verifyEmail:"/v3/api/auth/user/verifyEmail",

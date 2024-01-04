@@ -16,7 +16,7 @@ async function Dashboard() {
             <Navbar/>
         </div>
         <div className='flex '>
-            <div className='w-60 border-r-2 bg-white hidden lg:block  h-screen'>
+            <div className='w-60 border-r-2 bg-white hidden lg:block  min-h-screen'>
                 <SidePanel/>
             </div>
             <div className='lg:w-3/4 w-full  mx-auto'>

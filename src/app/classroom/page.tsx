@@ -45,7 +45,7 @@ const Classroom=()=>{
   useEffect(()=>{
 
     if(!socket.current){
-      socket.current = io('http://localhost:4000');
+      socket.current = io('wss://www.digitalcampus.shop/v3/api/auth');
       socket.current.on("responseIsBlocked",(data:{isBlocked:boolean})=>{
         if(data.isBlocked){
           Cookies.remove('accessToken')

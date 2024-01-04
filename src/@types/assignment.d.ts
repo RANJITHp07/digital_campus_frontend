@@ -2,7 +2,7 @@ export interface Question{
     type:string,
     question:string,
     answers:string[],
-    realAnswer:any[]
+    realAnswers:any[]
     edit:boolean
 }
 
@@ -30,5 +30,12 @@ export interface Polling{
 export interface Comment{
     username:string,
     comment:string
+}
+
+export interface Quiz{
+    question: string;
+    answers: string[];
+    type: string;
+    realAnswers:string[]
 }
 

@@ -3,10 +3,11 @@ import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { Tooltip, message } from 'antd';
-import { ADD_REQUEST, ADD_STUDENT, FETCH_REQUEST_DETAILS} from '@/apis/classroom';
+import { ADD_REQUEST, ADD_STUDENT, FETCH_REQUEST_DETAILS, REMOVE_REQUEST} from '@/apis/classroom';
 import { useMutation, useQuery } from '@apollo/client';
 import { useAppSelector } from '@/redux/store';
 import PersonIcon from '@mui/icons-material/Person';
+import UserDetail from './userDetail';
 
 function Request({id,code}:{id:string,code:string}) {
 
@@ -25,10 +26,6 @@ function Request({id,code}:{id:string,code:string}) {
       }
    })
 
-   
-
-    
-
    //to fetch request
    const {data}=useQuery(FETCH_REQUEST_DETAILS,{
     onError(err){
@@ -40,7 +37,39 @@ function Request({id,code}:{id:string,code:string}) {
     }
    })
 
-   data && console.log(data)
+   const [removeRequest]=useMutation(REMOVE_REQUEST,{
+    onError(err){
+      console.log(err)
+      message.info("Some error occured")
+    },
+    refetchQueries: [{ query:FETCH_REQUEST_DETAILS ,variables:{id:id}}],
+    onCompleted: () => {
+      message.info("Succesfully removed")
+    }
+   })
+
+   const handleRemoverequest=(p:any)=>{
+     const {__typename,...data}=p
+      removeRequest({
+        variables:{
+          request:{
+            ...data,
+            code:code
+          }
+        }
+      })
+   }
+
+
+   const handleJoin=async(id:string)=>{
+    console.log(code)
+       await joinStudent({
+        variables:{
+          userId:id,
+          code:'j4o9'
+        }
+       })
+   }
 
   return (
     <div className='flex justify-center'>
@@ -59,15 +88,14 @@ function Request({id,code}:{id:string,code:string}) {
               <p className='mx-5 text  '><PersonIcon/> {s.name}</p>
               <div>
               <Tooltip placement="topRight" title={"Remove request"}>
-              <PlaylistRemoveIcon className='cursor-pointer'/>
+              <PlaylistRemoveIcon className='cursor-pointer' onClick={()=>handleRemoverequest(s)}/>
               </Tooltip>
               <Tooltip placement="topRight" title={"Add to classroom"}>
-              <DownloadDoneIcon className='mx-3 cursor-pointer'/>
+              <DownloadDoneIcon className='mx-3 cursor-pointer' onClick={()=>handleJoin(s.id)}/>
               </Tooltip>
-              <Tooltip placement="topRight" title={"View Profile"}>
+              {/* <Tooltip placement="topRight" title={"View Profile"}>
               <RemoveRedEyeIcon className='cursor-pointer'/>
-              </Tooltip>
-              
+              </Tooltip> */}
               </div>
                       </div>
                       <hr className='my-5'/>

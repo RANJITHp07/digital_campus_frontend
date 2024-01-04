@@ -52,7 +52,7 @@ export const FETCH_MAINTOPIC = gql`
 `;
 
 export const GROUPED_ASSIGNMENT=gql`
-   query getgroupedAssignment($id: String!) {
+   query getgroupedAssignment($id: ID!) {
     getgroupedAssignment(id: $id) {
        _id,
        assignments{
@@ -66,7 +66,7 @@ export const GROUPED_ASSIGNMENT=gql`
 `
 
 export const ASSIGNMENT_DETAILS=gql`
-   query getOneassignment($id: String!) {
+   query getOneassignment($id: ID!) {
     getOneassignment(id: $id) {
        title,
        instruction,
