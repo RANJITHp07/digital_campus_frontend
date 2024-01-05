@@ -6,14 +6,24 @@ function Material({assignment}:{assignment:any}) {
   const [file,setfile]=useState<File | null>(null)
   return (
     <div>
+       {
+        <>
+        {
+          assignment.assignmentType==='Assignment' &&
+        <a className="float-right p-2 text-white bg-[#3b6a87] text rounded-md  hidden lg:block">Attachement</a>
+       }
         <p className='text text-2xl text-[#3b6a87] mx-6 '>
             {assignment.title.toUpperCase()}
-            
+            <span className=" text-[#3b6a87] text rounded-md text-xs  mx-2 underline  lg:hidden">{ assignment.assignmentType==='Assignment' && "Attachement" }</span>
           </p>
+          <a className=" p-2  text-[#3b6a87] mx-6 border-2  my-7 text rounded-md  ">Attachement a {assignment.attachment && assignment.attachment.type}</a>
           <p className='text text-sm mb-3 mt-1 text-[#3b6a87] mx-6'>
             {assignment.instruction}
           </p>
           <input type='file' name='file' id='file' className='hidden' onChange={(e:ChangeEvent<HTMLInputElement>)=> e.target.files && setfile(e.target.files[0])}/>
+          {
+            assignment.assignmentType==='Assignment' && 
+          <>
           <div className='flex items-center'>
           <label htmlFor='file'>
             <div className='bg-slate-50 items-center flex justify-center w-32 h-32 outline-dashed outline-2 cursor-pointer outline-slate-500 outline-offset-2 mx-6 rounded-lg'>
@@ -29,13 +39,18 @@ function Material({assignment}:{assignment:any}) {
           </div>
           <span className='text-xs text text-[#3b6a87] mx-6'>
            Due date: {
-              assignment.dueDate &&
+              (assignment.dueDate && assignment.dueDate.day )
+              ?
               (
               assignment.dueDate.day +', ' + assignment.dueDate.time
-              )
+              ):
+              "No due Date"
             }
           </span>
-
+          </>
+          }
+          </>
+        }
     </div>
   )
 }

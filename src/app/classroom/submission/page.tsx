@@ -111,15 +111,15 @@ function Submission() {
               <SidePanel/>
         </div>
         <div className='w-full'>
-        <div className='text-3xl text  mx-4 my-5 flex items-center'>
+        <div className='text-3lg text  mx-4 my-5 flex items-center'>
           <div className='flex bg-[#3b6a87] w-9 h-9 text-white rounded-full justify-center items-center'><PollIcon/></div>
           <p className='text-[#3b6a87] mx-3'>{type}</p>
           </div>
           <hr/>
-          <div className='flex'>
+          <div className='lg:flex'>
             {
                 data && 
-                <div className='my-6 mx-3 w-2/3'>
+                <div className='my-6 mx-3 w-full'>
                 
           {
             type==='Polling' && <Polling details={data && data.getOneassignment}/>
@@ -127,8 +127,12 @@ function Submission() {
           {
             (type==='Assignment' || type==='Material' ) && <Material assignment={data && data.getOneassignment}/>
           }
-        <button className='text-white bg-[#3b6a87] p-3 w-3/4 my-5 mx-3 text-center text rounded-md'>Submit</button>
-        <div className='box_shadow p-3 mx-3 w-3/4 rounded-md'>
+          {
+            type!=='Material' && 
+            <button className='text-white bg-[#3b6a87] p-3 w-11/12 lg:w-3/4 my-5 mx-3 text-center text rounded-md'>Submit</button>
+          }
+        
+        <div className='box_shadow p-3 mx-3 w-11/12 lg:w-3/4 rounded-md'>
           <div className={`flex items-center ${comment.length>0 && 'mb-6'}`}>
             <GroupIcon className='text-slate-400 mr-3'/>
           <input placeholder='Add comment to the class' className='placeholder:text focus:outline-none w-full text text-slate-500'
@@ -157,53 +161,6 @@ function Submission() {
         </div>
                 </div>
             }
-            <div className='w-1/3'>
-              <div className='box_shadow  mr-9 p-3 rounded-md  my-6'>
-                <p className='text text-[#3b6a87]'>Created By {data && (data.getOneassignment.creator[0].toUpperCase() +data.getOneassignment.creator.slice(1,data.getOneassignment.creator.length).toLowerCase())}</p>
-                <p className='text text-[#3b6a87] text-xs'>{data && format(data.getOneassignment.createdAt)}</p>
-                {
-                  data && data.getOneassignment.attachment
-                  &&
-                  <>
-                  <p className='text text-[#3b6a87] text-xs mt-2 mx-2'>Attachment</p>
-                  <a href={data.getOneassignment.attachment.content} target="_blank" rel="noopener noreferrer"  className='border-2 inline-block mb-2 rounded-md p-1 cursor-pointer'>
-                  {
-                    data.getOneassignment.attachment.type==='pdf' 
-                    && 
-                    <Document file={data.getOneassignment.attachment.content} onLoadSuccess={onDocumentLoadSuccess}>
-                    <Page pageNumber={1}
-                      renderTextLayer={false}
-                      renderAnnotationLayer={false}
-                      height={100}
-                      width={100}
-                    />
-                  </Document>
-                  }
-                  {
-                    data.getOneassignment.attachment.type==='photo' 
-                    &&
-                    <img src='mfl3,l;,4e'/>
-                  }
-                  
-      </a>
-      </>
-                }
-                
-                <div className='flex mt-4'>
-                  <SecurityIcon className='text-slate-400 mr-3'/>
-                <input placeholder='Add private comment' className='placeholder:text focus:outline-none'/>
-                </div>
-                <div className='border-2 p-3 rounded-md my-3'>
-          <div className='flex items-end '>
-                    <Image src={'/profile.jpg'} width={20} height={20} alt='profile' className='rounded-full'/>
-                    <p className='text-xs text mx-1 text-slate-500'>James</p>
-                    </div>
-             <p className='text text-slate-600 text-xs'>
-                is this the task we need to complete by today
-             </p>
-          </div>
-              </div>
-            </div>
             </div>
             
         </div>

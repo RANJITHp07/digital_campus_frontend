@@ -1,13 +1,14 @@
 'use client'
 import React, { useState } from 'react';
 
-function Polling({ details }: { details: any }) {
+function Polling({ details,creator }: { details: any ,creator?:boolean}) {
   const [comment,setcomment]=useState([])
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
   const handleRadioChange = (answer: string) => {
     setSelectedAnswer(answer);
   };
+
 
   return (
     <div>

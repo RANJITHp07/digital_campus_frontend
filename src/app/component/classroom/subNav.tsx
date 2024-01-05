@@ -45,6 +45,10 @@ function SubNav({id}:{id:string}) {
             label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('request')}>Request</p>,
             key: '4',
           },
+          {
+            label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('submission')}>Submission</p>,
+            key: '5',
+          }
        
       ];
   return (
@@ -68,6 +72,9 @@ function SubNav({id}:{id:string}) {
                       <p className={` ${border==='request' && ' border-b-4 border-[#3b6a87]'} pb-3 mx-5 pt-3 text text-lg text-[#3b6a87] cursor-pointer`} onClick={()=>
                        handleSectionClick('request')
                       }>{creator && "Request" }</p>
+                       <p className={` ${border==='submission' && ' border-b-4 border-[#3b6a87]'} pb-3 mx-5 pt-3 text text-lg text-[#3b6a87] cursor-pointer`} onClick={()=>
+                       handleSectionClick('submission')
+                      }>{creator && "Submission" }</p>
                         </div>
                         <div className='mx-5 items-center flex'>
                           {creator && <VideocamOutlinedIcon className='text-[#3b6a87] cursor-pointer text-3xl mx-3' onClick={()=>navigation.push(`/classroom/vediocall/${id}`)}/>}

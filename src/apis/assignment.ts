@@ -35,8 +35,9 @@ export const DELETE_ASSIGNMENT = gql`
 `;
 
 export const FETCH_ASSIGNMENT_DETAILS = gql`
-  query getAllassignment($id: String!) {
+  query getAllassignment($id: ID!) {
     getAllassignment(id: $id) {
+    _id,
        title,
        assignmentType,
     }

@@ -11,6 +11,7 @@ import {  useSearchParams } from 'next/navigation';
 import Chat from '@/app/component/classroom/chat';
 import { io, Socket } from 'socket.io-client';
 import Request from '@/app/component/classroom/request';
+import Submission from '@/app/component/classroom/submission';
 
 
 
@@ -60,6 +61,9 @@ function Classroom({ params }: { params: { id: string } }) {
                 }
                 {
                  assign==='request' && <Request id={params.id} code={code}/>
+                }
+                {
+                 assign==='submission' && <Submission id={params.id}/>
                 }
                 {/* {
                  assign==='stream' && <Assignment id={params.id}/>
