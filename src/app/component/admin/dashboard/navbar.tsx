@@ -5,14 +5,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SidePanel from './sidePanel';
 
 function Navbar() {
-  const [open,setopen]=useState(false)
+  const [open,setOpen]=useState(false)
   return (
     <nav className="flex justify-between items-center bg-white w-full">
       <div>
       <Image src={"/Logo.png"} width={60} height={60} alt='logo' className='p-2 mx-3' />
       </div>
       <div className='lg:hidden'>
-        <MenuIcon className='mx-3' onClick={()=>setopen(!open)}/>
+        <MenuIcon className='mx-3' onClick={()=>setOpen(!open)}/>
       </div>
       {
         open && 

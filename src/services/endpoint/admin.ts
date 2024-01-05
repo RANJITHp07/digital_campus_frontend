@@ -1,3 +1,3 @@
 export const adminEndpoint={
-    create:"/v1/api/auth/admin/create"
+    create:"/v3/api/auth/admin/create"
 }

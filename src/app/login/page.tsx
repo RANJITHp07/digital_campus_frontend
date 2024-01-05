@@ -3,17 +3,23 @@ import React from 'react';
 import Image from 'next/image';
 import Form from '../component/signup/form';
 import Link from 'next/link'
-import Otp from '../component/signup/otp';
-import {  useAppSelector } from '@/redux/store';
+import dynamic from 'next/dynamic';
+import { useAppSelector } from '@/redux/store';
+import { setResend } from '@/redux/features/user-auth-slice/reducer';
+import { useNavDispatch } from '@/hook/useNavDispatch';
+
+// Use next/dynamic to lazily load the Otp component
+const Otp = dynamic(() => import('../component/signup/otp'), { ssr: false });
 
 
 function Login() {
   const modal:boolean=useAppSelector((state)=>state.userReducer.modal)
+  const {dispatch}=useNavDispatch()
   
   return (
     <div>
       <div className='lg:absolute right-0 m-3 flex justify-end'>
-           <Link href="/signup" className=' border-2 rounded-md py-1 px-3 text-[#194866] border-[#194866] '>Signup</Link>
+           <Link href="/signup" className=' border-2 rounded-md py-1 px-3 text-[#194866] border-[#194866] ' onClick={()=>dispatch(setResend(false))} >Signup</Link>
       </div>
     <div  className="grid place-content-center xm:h-screen">
   <div  className={`  xm:flex  rounded-lg bg-white ${modal && 'blur'}`}>

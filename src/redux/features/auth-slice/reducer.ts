@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Socket } from "socket.io-client";
 
 interface InitialState {
   token: {
@@ -10,7 +11,7 @@ interface InitialState {
   forgetPassword:{
     email:string,
     id:number | null
-  }
+  },
 }
 
 export const initialState: InitialState = {
@@ -23,7 +24,7 @@ export const initialState: InitialState = {
   forgetPassword:{
     email:'',
     id:null
-  }
+  },
 };
 
 export const authentication = createSlice({
@@ -39,5 +40,5 @@ export const authentication = createSlice({
   },
 });
 
-export const { setToken,setForgetpassword } = authentication.actions;
+export const { setToken,setForgetpassword,} = authentication.actions;
 export default authentication.reducer;

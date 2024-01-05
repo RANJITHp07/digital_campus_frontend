@@ -33,19 +33,19 @@ function Navbar() {
             <CloseIcon onClick={()=>setopen(!open)}/>
             </div>
             <div  className='my-8'>
-              <div className='flex items-center hover:bg-slate-100 hover:p-1 hover:rounded-r-full hover:mr-7'>
+              <div className='flex items-center hover:bg-slate-100 hover:rounded-r-full hover:mr-7'>
                    <HouseIcon className='text-[#194866] text-3xl ml-2'/>
-                   <Link href='/' className='text-[#194866] mx-4 text-xl font-semibold'>Home</Link>
+                   <Link href='/' className='text-[#194866] mx-4 text-xl text my-2' onClick={()=>setopen(!open)}>Home</Link>
               </div>
               <hr className='mb-6 mt-3'/>
               <div className='flex items-center hover:bg-slate-100 hover:p-1 hover:rounded-r-full hover:mr-7'>
                    <MiscellaneousServicesIcon className='text-[#194866] text-3xl ml-2'/>
-                   <Link href='/services' className='text-[#194866] mx-4 text-xl font-semibold'>Services</Link>
+                   <Link href='#services' className='text-[#194866] mx-4 text-xl text ' onClick={()=>setopen(!open)}>Services</Link>
               </div>
               <hr className='mb-6 mt-3 '/>
               <div className='flex items-center hover:bg-slate-100 hover:p-1 hover:rounded-r-full hover:mr-7'>
                    <InfoIcon className='text-[#194866] text-3xl ml-2'/>
-                   <Link href='/about' className='text-[#194866] mx-4 text-xl font-semibold'>About</Link>
+                   <Link href='#about' className='text-[#194866] mx-4 text-xl text' onClick={()=>setopen(!open)}>About</Link>
               </div>
               <hr className='mb-6 mt-3'/>
             </div>

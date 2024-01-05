@@ -48,8 +48,7 @@ function Chat({length,id,classId,socket}:{length:number,id:string,classId:string
   const [desc,setdesc]=useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [loading,setloading]=useState(true)
-  const [scroll,setscroll]=useState(0)
-  const [skip,setskip]=useState(0)
+
 
   pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
@@ -139,8 +138,9 @@ function Chat({length,id,classId,socket}:{length:number,id:string,classId:string
 
   useEffect(()=>{
      const fetchData=async()=>{
-       const res=await  getMessage(classId,skip)
-       setmessage(res.data.data)
+       const res=await  getMessage(classId,0)
+       console.log(res.data.data)
+       setmessage(res.data.data.reverse())
      }
      fetchData()
   },[socket])
@@ -199,26 +199,16 @@ function Chat({length,id,classId,socket}:{length:number,id:string,classId:string
     }
   }
 
-  const handleScroll = async(event:React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop} = event.currentTarget;
-    if(scrollTop>500){
-      const res=await getMessage(classId,skip+10)
-      console.log(res.data.data.reverse())
-     setskip((prev)=>prev+10)
-     setscroll(0)
-    }
-  };
 
   return (
     <div className='bg-white h-full'>
           <div className="bg-[#3b6a87] text-white p-2 flex justify-between items-center ">
             <div className="flex items-center">
             <p className='text text-xl'>Chat</p>
-            {/* <p className='text text-xs mx-2 mt-1'>( {length} online )</p> */}
             </div>
             <CloseIcon className='text-white cursor-pointer' onClick={()=>dispatch(changeChatState(false))}/>
           </div>
-          <div className='h-[87%] xl:h-[84%] lg:h-[85%] p-4 overflow-auto relative' onScroll={handleScroll}>
+          <div className='h-[87%] xl:h-[84%] lg:h-[85%] p-4 overflow-auto relative'>
             {
                  
                  isHovered && <div className='fixed bottom-8 md:bottom-16 xm:bottom-9 lg:bottom-12 right-11 z-50'

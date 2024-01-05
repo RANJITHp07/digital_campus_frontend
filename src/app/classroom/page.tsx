@@ -1,34 +1,59 @@
 'use client'
-import React,{Suspense,useState,ChangeEvent, useReducer} from 'react';
+import React,{Suspense,useState,useEffect,useRef} from 'react';
 import Image from 'next/image'
 import Navbar from '../component/common/navbar';
-import SidePanel from '../component/common/sidePanel';
 import Class from '../component/classroom/class';
 import {  useAppSelector } from '@/redux/store';
 import { useQuery} from '@apollo/react-hooks';
 import { FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM_QUERY, GET_FILTRED_CLASSROOM } from '@/apis/classroom';
 import LoadinPage from '../component/common/loadinPage';
 import Profile from '../component/classroom/profile';
-import BasicCalendar from '../component/classroom/calendar';
 import { Pagination, Popover } from 'antd';
 import { ClassroomProps } from '@/@types/classroom';
 import { DUE_DATES } from '@/apis/assignment';
 import { assignmentClient } from '../providers/ApolloProvider';
 import moment from "moment";
 import { Event } from '@/@types/assignment';
+import Cookies from 'js-cookie';
+import { Socket,io} from 'socket.io-client';
+import dynamic from 'next/dynamic';
+
+//dynamic imports
+const SidePanel = dynamic(()=>import('../component/common/sidePanel'))
+const BasicCalendar = dynamic(()=>import('../component/classroom/calendar'))
+
+
+
 
 const Classroom=()=>{
 
-  const state = useAppSelector((state) => state.classroomReducer.open);
-  const categoryType=useAppSelector((state)=>state.classroomReducer.categoryType)
-  const category=useAppSelector((state)=>state.classroomReducer.category)
-  const [addedClasroom,setaddedClasroom]=useState(0)
-  const [createdClasroom,setcreatedClasroom]=useState(0)
-  const [pagination,setpagination]=useState(1)
+  //redux state
+  const {open:state,categoryType,type,category}=useAppSelector((state) => state.classroomReducer);
   const token=useAppSelector((state) => state.authReducer.token);
-  const type=useAppSelector((state) => state.classroomReducer.type)
-  const [event,setevent]=useState<Event[]>([])
 
+  //states
+  const [addedClasroom,setAddedClasroom]=useState(0)
+  const [createdClasroom,setCreatedClasroom]=useState(0)
+  const [pagination,setPagination]=useState(1)
+  const [event,setEvent]=useState<Event[]>([])
+  const socket=useRef<Socket | null>(null)
+
+
+  useEffect(()=>{
+
+    if(!socket.current){
+      socket.current = io('wss://www.digitalcampus.shop',{
+              path:"/socket-auth/"
+            });
+      socket.current.on("responseIsBlocked",(data:{isBlocked:boolean})=>{
+        if(data.isBlocked){
+          Cookies.remove('accessToken')
+          window.location.href = '/login'
+        }  
+        
+      })
+    }
+  },[socket])
 
   //to fetch all the classrooms
   const { data:allClassroom} = useQuery(FETCH_ALL_CLASSROOM_QUERY, {
@@ -39,15 +64,18 @@ const Classroom=()=>{
   const { data:addedClassroom} = useQuery(FETCH_ADDED_CLASSROOM_QUERY, {
     variables: { id: token.id },
     onCompleted:()=>{
-       setaddedClasroom(addedClassroom.getAllClassroom.length)
+       setAddedClasroom(addedClassroom.getAllClassroom.length)
     }
   });
 
   //to fetch all the class  created
   const { loading, data } = useQuery(FETCH_CLASSROOM_QUERY, {
     variables: { id: token.id },
+    onError(err){
+     console.log(err)
+    },
     onCompleted:()=>{
-      setcreatedClasroom(data.getCreatorClassroom.length)
+      setCreatedClasroom(data.getCreatorClassroom.length)
    }
   });
 
@@ -58,9 +86,8 @@ const Classroom=()=>{
       category:category
     },
       onError(err){
-        console.log(token.id)
         console.log(err)
-      }
+      },
   });
 
 
@@ -91,8 +118,7 @@ const Classroom=()=>{
             </Popover>
           }
         })
-        console.log(e)
-        setevent(e)
+        setEvent(e)
       }
   });
 
@@ -121,13 +147,13 @@ const Classroom=()=>{
                 <Suspense fallback={loading}>
               { (filteredClassroom && filteredClassroom.getFilteredClassroom.length > 0) ? (filteredClassroom.getFilteredClassroom.map((c:ClassroomProps) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
-                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} />
+                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} profile={c.profile as string} />
                 </div>)
                 
               )) :
               <div className='flex justify-center w-full'>
                 <div>
-                { filteredClassroom && <Image src={'/noaddedclassroom.png'} width={500} height={500} alt='classroom'/>} 
+                { filteredClassroom && <Image src={'/filter.jpg'} width={500} height={500} alt='classroom'/>} 
                
                 </div>
               </div>
@@ -145,9 +171,9 @@ const Classroom=()=>{
                 loading ? <LoadinPage/> 
                 :
                 <Suspense fallback={loading}>
-              { (allClassroom && allClassroom.getAllTheClassroom.length > 0) ? (allClassroom.getAllTheClassroom.map((c:ClassroomProps) => (
+              { (allClassroom && allClassroom.getAllTheClassroom.length > 0) ? (allClassroom.getAllTheClassroom.slice(pagination * 9 - 9, pagination * 9).map((c:ClassroomProps) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
-                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} />
+                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} profile={c.profile as string} block={c.blockClassroom} />
                 </div>)
                 
               )) :
@@ -169,12 +195,12 @@ const Classroom=()=>{
               
               <div className={` flex-wrap flex lg:ml-7 xl:ml-12 md:ml-12 ${!state && 'xm:ml-0'}`}>
               {
-                true ? <LoadinPage/> 
+                loading ? <LoadinPage/> 
                 :
                 <Suspense fallback={loading}>
-              { (data && data.getCreatorClassroom.length > 0) ? (data.getCreatorClassroom.map((c:ClassroomProps) => (
+              { (data && data.getCreatorClassroom.length > 0) ? (data.getCreatorClassroom.slice(pagination * 9 - 9, pagination * 9).map((c:ClassroomProps) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
-                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={true} bg={c.backgroundPicture as string} subject={c.classSubject as string} section={c.classSection as string} code={c.classCode} />
+                     <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={true} bg={c.backgroundPicture as string} subject={c.classSubject as string} section={c.classSection as string} code={c.classCode} profile={c.profile as string} />
                 </div>)
                 
               )) :
@@ -201,7 +227,7 @@ const Classroom=()=>{
               { (addedClassroom  && addedClassroom.getAllClassroom.length>0 ) ?addedClassroom.getAllClassroom.slice(pagination * 9 - 9, pagination * 9).map((c: any) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
                     
-                     <Class className={c.className} creator={c.creator} id={c._id} code={c.classCode} type={false} bg={c.backgroundPicture} />
+                     <Class className={c.className} creator={c.creator} id={c._id} code={c.classCode} type={false} bg={c.backgroundPicture}  profile={c.profile as string}/>
                 </div>
               )):
               <div className='flex justify-center w-full'>
@@ -221,8 +247,13 @@ const Classroom=()=>{
              </div>
             }
             {
-             type!=="calendar" && <Pagination defaultCurrent={1} total={(Math.ceil(data && data.getCreatorClassroom.length / 9) * 10)} onChange={(e:number) => {
-              setpagination(e);
+             type!=="calendar" && 
+             
+             ((data && type==='teaching' && data.getCreatorClassroom.length) || (filteredClassroom && filteredClassroom.getFilteredClassroom.length > 0) || (addedClassroom && type==='enrolled'  && addedClassroom.getAllClassroom.length>0 ))  && 
+             <Pagination defaultCurrent={1} 
+             total={(Math.ceil(allClassroom && allClassroom.getAllTheClassroom.length / 9) * 10)} 
+             onChange={(e:number) => {
+              setPagination(e);
             }}  className='text-center mt-4' />
 
           }

@@ -1,4 +1,6 @@
 'use client'
+import axios from 'axios';
+import Image from 'next/image';
 import React, { useState } from 'react';
 
 
@@ -16,9 +18,9 @@ function loadScript(src: string): Promise<boolean> {
     });
 }
 
-const __DEV__ = document.domain === 'localhost';
 
-function App() {
+
+function Payment() {
     const [name, setName] = useState('Mehul');
 
     async function displayRazorpay() {
@@ -29,29 +31,25 @@ function App() {
             return;
         }
 
-        const data = await fetch('http://localhost:6003/v1/api/payment/subscription', { method: 'POST' }).then((t) =>
-            t.json()
-        );
-
-        console.log(data);
-
+        
+            const response = await axios.post('http://localhost:6003/v1/api/payment/subscription', {
+              planName: '6months',
+              interval: 6,
+              amount: 900,
+              username: 'Ranjith',
+              email: 'ranjith@gmail.com',
+              plan_id: '89890',
+            });
+          
+            const data = response.data;
+            console.log(data.data);
+          
         const options = {
-            key: __DEV__ ? 'rzp_test_uGoq5ABJztRAhk' : 'PRODUCTION_KEY',
-            currency: data.currency,
-            amount: data.amount.toString(),
-            order_id: data.id,
-            name: 'Donation',
-            description: 'Thank you for nothing. Please give us some money',
-            handler: function (response: any) {
-                alert(response.razorpay_payment_id);
-                alert(response.razorpay_order_id);
-                alert(response.razorpay_signature);
-            },
-            prefill: {
-                name,
-                email: 'sdfdsjfh2@ndsfdf.com',
-                phone_number: '9899999999',
-            },
+            key:"rzp_test_f2VkhZBqoeOqME" ,
+            name:"6 months subscription",
+            description:"6 months plan in digital ocean",
+            subscription_id:data.data.id,
+            callback_url:'http://localhost:6003/v1/api/payment/verification'
         };
 
         const paymentObject = new (window as any).Razorpay(options);
@@ -59,23 +57,37 @@ function App() {
     }
 
     return (
-        <div className="App">
-            <header className="App-header">
-                {/* <img src={logo} className="App-logo" alt="logo" /> */}
-                <p>
-                    Edit <code>src/App.js</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    onClick={displayRazorpay}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Donate $5
-                </a>
-            </header>
+        <div>
+           <Image
+            src={"/Logo.png"}
+            width="40"
+            height="60"
+            alt="logo"
+            className='mx-3 my-3'
+          />
+          <div className='flex justify-center items-center'>
+          <div className='w-1/2 mx-9 my-16'>
+            <p className='heading font-semibold mt-9 text-[60px] text-[#194866] '>Transforming the digital campus experience is not just a choice</p>
+            <p className='text my-3 text-[#194866]'>it's a journey of discovery, empowerment, and limitless opportunities. Elevate your journey with our exclusive subscription, unlocking a world where innovation meets education, and each moment is a step towards a brighter future. Join us to redefine your learning adventure—subscribe now and embark on a digital campus advantage like never before. Your gateway to knowledge, connectivity, and unparalleled growth awaits!</p>
+          </div>
+          <div className='w-1/2'>
+            <div className='p-2 flex items-center w-10/12 mx-auto py-6 pr-4 my-5 border-2'>
+                <input type='radio'  className='text-xl mr-5'/>
+            <div className='box_shadow w-full p-5 text text-[#194866] '>
+                <p className='text-2xl'>Free Trial</p>
+                <p>No online class availble</p>
+                <p>Only two classrooms available</p>
+              </div>
+            </div>
+              <div className='box_shadow w-3/4 mx-auto my-5 p-5'>
+                <p>6 month subscription</p>
+                <p>online class availble</p>
+                <p>Infinte number of classrooms avaible</p>
+              </div>
+          </div>
+          </div>
         </div>
     );
 }
 
-export default App;
+export default Payment;

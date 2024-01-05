@@ -1,10 +1,10 @@
-import axios from "axios"
+import Api from "@/services/api"
 import chatEndpoint from "../services/endpoint/chat"
 
 
 export const getMessage=async(id:string,skip:number)=>{
     try{
-        const res = await  axios.get(`http://localhost:8000${chatEndpoint.getMessage}/${id}`,{
+        const res = await  Api.get(`${chatEndpoint.getMessage}/${id}`,{
             params:{
                 skip
             }

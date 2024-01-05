@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import ApolloassignmentProvider from '@/app/providers/ApolloassignmentProvider'
-import ApolloClassroomProvider from '../../providers/ApolloProvider'
+
 
 
 export const metadata: Metadata = {

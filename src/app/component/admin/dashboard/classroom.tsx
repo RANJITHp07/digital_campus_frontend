@@ -1,8 +1,8 @@
 'use client'
 import React, { ChangeEvent,useState } from 'react'
-import { GET_CLASSROOMS } from '../../../../apis/classroom'
-import { useQuery } from '@apollo/client'
-import { Pagination } from 'antd'
+import { GET_CLASSROOMS, UPDATE_CLASSROOM_DETAILS } from '../../../../apis/classroom'
+import { useMutation, useQuery } from '@apollo/client'
+import { Pagination, message } from 'antd'
 
 function Classroom() {
    
@@ -12,6 +12,7 @@ function Classroom() {
         }
     })
     const [pagination,setpagination]=useState(1)
+    const [blocked,setblocked]=useState<any>({})
     const [text,settext]=useState('');
     const[classroom,setclassroom]=useState([])
     
@@ -36,6 +37,29 @@ function Classroom() {
     }
    }
 
+    //to update the classroom
+ const [updateClassroom]=useMutation(UPDATE_CLASSROOM_DETAILS,{
+   onError(err){
+       console.log(err)
+   },
+  })
+
+  const handleBlock=async(id:string,block:boolean)=>{
+     try{
+       await updateClassroom({
+         variables:{
+            id:id,
+            update:{
+               blockClassroom:!block
+            }
+         }
+       })
+       message.info("Blocked the classroom")
+     }catch(err){
+      throw err
+     }
+  }
+
   return (
     <div>
        <div className="mt-5 mx-4 mb-9 flex rounded-lg">
@@ -45,14 +69,20 @@ function Classroom() {
      {
          (data && classroom.length!=0) ? classroom.map((m:any)=>{
             return (
-               <div className='box_shadow w-full my-5 p-3 rounded-md'>
-                <p>Name of the classroom: {m.className}</p>
+               <div className='box_shadow w-full my-5 p-3 flex justify-between items-center rounded-md'>
+                  <div>
+                  <p>Name of the classroom: {m.className}</p>
                 <p>Code of the classroom: {m.classCode}</p>
                 <p>Person who created classroom: {m.creator}</p>
+                  </div>
+                  <div>
+                  <button className=" bg-green-700 text-white p-2 px-5 rounded-md  ml-3" onClick={()=>handleBlock(m._id,m.blockClassroom)}>{m.blockClassroom? "Blocked" :"Block"}</button>
+                  </div>
+                
                </div>
             )
         }):
-        <p className="mx-auto my-8">No such user</p>
+        <p className="mx-auto my-8">No such classroom</p>
      }
       <Pagination defaultCurrent={1} total={(Math.ceil(data && data.getclassroom.length / 6) * 10)} onChange={(e:number) => {
               setpagination(e);

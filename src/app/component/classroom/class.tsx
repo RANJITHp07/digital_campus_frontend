@@ -1,25 +1,34 @@
 'use client'
-import React,{ChangeEvent, useState} from 'react'
+import React,{ChangeEvent, Suspense, useState} from 'react'
 import Image from "next/image"
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import type { MenuProps } from 'antd';
 import { Dropdown ,Modal,Tooltip, message} from 'antd';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import { useRouter } from 'next/navigation';
 import { DELETE_CLASS, FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_QUERY, FETCH_CLASSROOM_QUERY, REMOVE_STUDENT, UPDATE_CLASSROOM_DETAILS } from '@/apis/classroom';
-import { useAppSelector } from '@/redux/store';
 import { useMutation } from '@apollo/client';
+import { useNavDispatch } from '@/hook/useNavDispatch';
+import { ClassProps } from '@/@types/classroom';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import PersonRemoveAlt1 from '@mui/icons-material/PersonRemoveAlt1';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import EditIcon from '@mui/icons-material/Edit';
+import { changeAssignment } from '@/redux/features/classroom-slice/reducer';
 
-function Class({className,creator,id,code,type,bg,subject,section}:{className:string,creator:string,id:string,code?:string,type:boolean,bg:string,subject?:string,section?:string}) {
-
-  const token=useAppSelector((state)=>state.authReducer.token)
-  const navigation=useRouter()
-  const [open,setopen]=useState(false)
-  const [classroom,setclassroom]=useState({
+function Class({className,creator,id,code,type,bg,subject,section,profile,block}:ClassProps) {
+  
+  const {navigation,appSelector,dispatch}=useNavDispatch()
+  const token=appSelector((state)=>state.authReducer.token)
+  const[report,setReport]=useState(false);
+  const[title,setTitle]=useState('');
+  const[description,setDescription]=useState('');
+  const [open,setOpen]=useState(false)
+  const [classroom,setClassroom]=useState({
     className:className,
     classSection:section,
-    classSubject:subject
+    classSubject:subject,
+    profile:profile
   })
 
   //items of the class menu
@@ -27,21 +36,24 @@ function Class({className,creator,id,code,type,bg,subject,section}:{className:st
     {
       key: '1',
       label: (
-        <p onClick={!type ? removeStudent : deleteClass}>{!type ? "Unenroll" : "Delete"}</p>
+        <p className='text-[#3b6a87] ' onClick={!type ? removeStudent : deleteClass}>{!type ? <span><PersonRemoveAlt1 className='text-sm'/> Unenroll</span> : <span><DeleteOutlineIcon className='text-sm'/> Delete</span>}</p>
       ),
+    },
+    {
+        type:'divider'
     },
     {
       key: '3',
       label: (
-        <p onClick={type ? handleEdit : deleteClass}>{ type ? "Edit" : "Report Abuse"}</p>
+        <p className='text-[#3b6a87]' onClick={type ? handleEdit : ()=>setReport(true)}>{ type ? <span><EditIcon  className='text-sm'/> Edit</span> : <span><ReportGmailerrorredIcon className='text-sm'/> Report Abuse</span>}</p>
       ),
     }
     
   ]
 
-  //setopen
+  //setOpen
  async function handleEdit(){
-    setopen(true)
+    setOpen(true)
   }
 
   //to remove student query
@@ -73,7 +85,7 @@ function Class({className,creator,id,code,type,bg,subject,section}:{className:st
    //to delete class
    const [delete_class]=useMutation(DELETE_CLASS,{
     onError(err){
-         console.log(err)
+         message.info("Some error occured")
     },
     variables:{
     id:id
@@ -97,23 +109,48 @@ function Class({className,creator,id,code,type,bg,subject,section}:{className:st
 
    //to update the classroom
  const [updateClassroom]=useMutation(UPDATE_CLASSROOM_DETAILS,{
-  variables:{
-    id:id,
-    update:classroom
-  },
   onError(err){
+    console.log(classroom)
       console.log(err)
   },
   onCompleted:()=>{
-    setopen(false);
+    setOpen(false);
     message.info('Updated')
   }
  })
 
  const handleUpdate=async(e:React.FormEvent<HTMLFormElement>)=>{
   e.preventDefault()
-  await updateClassroom()
+  const { profile,...updatedClassroom}=classroom
+  await updateClassroom({
+    variables:{
+      id:id,
+      update:updatedClassroom
+    }
+  })
  }
+
+ const handleReport=async()=>{
+  const update={
+    reported:true,
+    reason:{
+      title:title,
+      description:description,
+      reporter:token.name
+    }
+  }
+  await updateClassroom({
+    variables:{
+      id:id,
+      update:update
+    }
+  })
+
+  setReport(false)
+  setTitle('');
+  setDescription('')
+
+}
 
 
   return (
@@ -131,38 +168,64 @@ function Class({className,creator,id,code,type,bg,subject,section}:{className:st
           <MoreVertIcon className="text-white"/>
           </Dropdown>
           </div>
-        <div className="absolute top-16 left-5 w-full" onClick={()=>navigation.push(`/classroom/${id}?code=${code}`)}>
-          <Image src={'/profile-logo.jpg'} width={120} height={120} alt='vv' className='rounded-full z-50' />
+        <div className="absolute top-16 left-5 w-full" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}?code=${code}`)}>
+          <Image src={profile===''? '/profile-logo.jpg' :profile } width={profile===''?120:140} height={profile===''?120:140} alt='profile' className='rounded-full z-50 	' />
         </div>
       </div>
-      <div className="flex justify-end mx-2" onClick={()=>navigation.push(`/classroom/${id}`)}>
+      <div className="flex justify-end mx-2" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}?code=${code}`)}>
         <div>
-          <p>{classroom.className.length >0 && (classroom.className[0].toUpperCase() + classroom.className.slice(1,className.length).toLowerCase())}</p>
+          <p>{classroom.className.length >0 && (classroom.className[0].toUpperCase() + classroom.className.slice(1,classroom.className.length).toLowerCase())}</p>
           <p className="text-xs">{creator}</p>
         </div>
       </div>
-      <div className='absolute bottom-0 w-full  '>
+      <div className='absolute bottom-0 w-full'>
         <hr/>
         <div className='flex justify-end m-3'>
         <Tooltip placement="topRight" title={"see all the participants"}>
-          <AssignmentIndIcon className='text-[#8cb6d0] text-2xl mx-2 cursor-pointer'/>
+          <AssignmentIndIcon className='text-[#8cb6d0] text-2xl mx-2 cursor-pointer' onClick={()=>{
+            navigation.push(`/classroom/${id}?code=${code}`)
+            dispatch(changeAssignment('people'))
+          }}/>
           </Tooltip>
           <Tooltip placement="topLeft" title={"see all the assignments"}>
-        <AssignmentIcon className='text-[#8cb6d0] text-2xl cursor-pointer'/>
+        <AssignmentIcon className='text-[#8cb6d0] text-2xl cursor-pointer' onClick={()=>{
+            navigation.push(`/classroom/${id}?code=${code}`)
+            dispatch(changeAssignment('classwork'))
+          }}/>
         </Tooltip>
         </div>
       </div>
-      <Modal title={`Create Class`} open={open} footer={null}onCancel={()=>setopen(false)} >
+      <Suspense fallback={<div>loading...</div>}>
+      <Modal title={<span className='text font-normal'>Update classroom</span>} open={open} footer={null}onCancel={()=>setOpen(false)} >
          <form className="mt-5" onSubmit={handleUpdate} >
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text" placeholder='Class name(max 20 character)' defaultValue={classroom.className} onChange={(e:ChangeEvent<HTMLInputElement>)=>setclassroom({...classroom,className:e.target.value})}/>
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300   border-2 my-2 text" placeholder='Class section' defaultValue={classroom.classSection} onChange={(e:ChangeEvent<HTMLInputElement>)=>setclassroom({...classroom,classSubject:e.target.value})}/>
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none  border-slate-300  border-2 my-2 text" placeholder='Class subject' defaultValue={classroom.classSubject} onChange={(e:ChangeEvent<HTMLInputElement>)=>setclassroom({...classroom,classSection:e.target.value})}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text text-slate-500" placeholder='Class name(max 20 character)' defaultValue={classroom.className} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,className:e.target.value})}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300   border-2 my-2 text text-slate-500" placeholder='Class section' defaultValue={classroom.classSection} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,classSubject:e.target.value})}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none  border-slate-300  border-2 my-2 text text-slate-500" placeholder='Class subject' defaultValue={classroom.classSubject} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,classSection:e.target.value})}/>
           <div className="flex justify-end my-2">
               <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text ">Update</button>
           </div>
 
          </form>
       </Modal>
+      <Modal title={<span className='text font-normal'>Report classroom</span>} open={report} footer={null} onCancel={()=>{
+          setReport(false)
+          setTitle('');
+          setDescription('')        
+      }}>
+         <select className="w-full p-3 rounded-md border-2 text-md focus:outline-none border-slate-300" onChange={(e:ChangeEvent<HTMLSelectElement>)=>setTitle(e.target.value)}>
+  <option value="improperContents">Inappropriate Contents</option>
+  <option value="hateSpeech">Hate Speech</option>
+  <option value="harassment">Harassment</option>
+  <option value="violence">Violence or Threats</option>
+         </select>
+         <textarea rows={10} cols={10} placeholder="Describe the problem the problem" className='w-full border-2 focus:outline-none rounded-md border-slate-300 mt-5 p-2'
+         onChange={(e:ChangeEvent<HTMLTextAreaElement>)=>setDescription(e.target.value)}
+         ></textarea>
+         <div className="flex justify-end my-2">
+              <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text " onClick={handleReport}>Submit</button>
+          </div>
+      </Modal>
+      </Suspense>
     </div>
   );
 }

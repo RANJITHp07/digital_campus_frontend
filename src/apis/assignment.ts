@@ -35,8 +35,9 @@ export const DELETE_ASSIGNMENT = gql`
 `;
 
 export const FETCH_ASSIGNMENT_DETAILS = gql`
-  query getAllassignment($id: String!) {
+  query getAllassignment($id: ID!) {
     getAllassignment(id: $id) {
+    _id,
        title,
        assignmentType,
     }
@@ -52,7 +53,7 @@ export const FETCH_MAINTOPIC = gql`
 `;
 
 export const GROUPED_ASSIGNMENT=gql`
-   query getgroupedAssignment($id: String!) {
+   query getgroupedAssignment($id: ID!) {
     getgroupedAssignment(id: $id) {
        _id,
        assignments{
@@ -66,7 +67,7 @@ export const GROUPED_ASSIGNMENT=gql`
 `
 
 export const ASSIGNMENT_DETAILS=gql`
-   query getOneassignment($id: String!) {
+   query getOneassignment($id: ID!) {
     getOneassignment(id: $id) {
        title,
        instruction,
@@ -74,13 +75,28 @@ export const ASSIGNMENT_DETAILS=gql`
        content
        type
        }
-       assignmentType
+       dueDate{
+        day
+        time
+        timer
+       }
+       creator
+       assignmentType,
+       polling{
+         answers
+       }
+       quiz{
+        answers
+        type
+        question
+       }
+       createdAt
     }
   }
 `
 
 export const EDIT_ASSIGNMENT_DETAILS=gql`
-   query getOneassignment($id: String!) {
+   query getOneassignment($id: ID!) {
     getOneassignment(id: $id) {
        title,
        instruction,
@@ -101,6 +117,24 @@ export const EDIT_ASSIGNMENT_DETAILS=gql`
   }
 `
 
+export const EDIT_QUIZ_DETAILS=gql`
+query getOneassignment($id:ID!){
+  getOneassignment(id:$id){
+     title,
+     dueDate{
+     day
+     timer
+     },
+     quiz{
+      question
+      answers
+      realAnswers
+      type
+     }
+  }
+}
+`
+
 export const DUE_DATES=gql`
 query getDueDates($id: String!){
   getDueDates(id: $id){
@@ -113,4 +147,18 @@ query getDueDates($id: String!){
   class_id
   }
 }
+`
+
+
+export const EDIT_POLLING=gql`
+  query getOneassignment($id: String!) {
+    getOneassignment(id: $id) {
+      title,
+    polling {
+      answers
+    },
+    students
+    }
+  }
+
 `

@@ -11,8 +11,23 @@ export interface ClassroomProps{
     createdAt?:Date
     category?:string,
     block?:boolean
+    profile?:string
+    blockClassroom?:boolean
+    themeColor?:string
 }
 
+export interface ClassProps {
+    className: string;
+    creator: string;
+    id: string;
+    code?: string;
+    type: boolean;
+    bg: string;
+    subject?: string;
+    section?: string;
+    profile: string;
+    block?: boolean;
+  }
 
 export type Polling={
     number:number,

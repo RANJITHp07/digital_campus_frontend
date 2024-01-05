@@ -17,10 +17,12 @@ export const reducer = (state: ProfileState, action: ProfileAction): ProfileStat
         return { ...state, file: action.value };
       case 'SET_NEWPASSWORD':
         return { ...state, newpassword: action.value };
+        case 'SET_HOVER':
+        return { ...state, hover: action.value };
       case 'SET_OLDPASSWORD':
         return { ...state, oldpassword: action.value };
-    case 'SET_OLDPASSWORD':
-        return { ...state, oldpassword: action.value };
+      case 'SET_LOADING':
+        return { ...state, loading: action.value };
       case 'SET_UPDATE' : 
         return { ...state, update: {...state.update,[action.field]:action.value }};   
 

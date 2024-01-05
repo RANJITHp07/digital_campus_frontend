@@ -13,7 +13,8 @@ export const FETCH_CLASSROOM_QUERY = gql`
       classSubject,
       classCode
       backgroundPicture,
-      themeColor
+      themeColor,
+      profile
     }
   }
 `;
@@ -29,7 +30,8 @@ export const FETCH_ADDED_CLASSROOM_QUERY = gql`
       classCode,
       classSubject,
       backgroundPicture,
-      themeColor
+      themeColor,
+      profile
     }
   }
 `;
@@ -45,7 +47,9 @@ export const FETCH_ALL_CLASSROOM_QUERY = gql`
       students_enrolled,
       classSubject,
       backgroundPicture,
-      classCode
+      classCode,
+      profile,
+      blockClassroom
     }
   }
 `;
@@ -75,6 +79,19 @@ export const FETCH_CLASSROOM_DETAILS = gql`
   }
 `;
 
+
+export const FETCH_REQUEST_DETAILS = gql`
+  query getClassroomDetails($id: String!) {
+    getClassroomDetails(id: $id) {
+      request{
+        id
+        name
+        email
+      }
+    }
+  }
+`;
+
 // to fetch all the participants
 export const GET_PARTICIPANTS = gql`
  query getAllClassroomparticipants($id: String!){
@@ -94,12 +111,29 @@ export const GET_PARTICIPANTS = gql`
 `
 
 // to fetch all the classrooms
+export const GET_REPORTED_CLASSROOMS = gql`
+  query reportedClassroom {
+    reportedClassroom {
+      className
+      classCode
+      reason {
+        title
+        description
+      }
+    }
+  }
+`;
+
+
+// to fetch all reported the classrooms
 export const GET_CLASSROOMS = gql`
   query getclassrooms {
     getclassroom {
+      _id
       className
       classCode
       creator
+      blockClassroom
     }
   }
 `;
@@ -170,6 +204,24 @@ export const ADD_STUDENT = gql`
   }
 `;
 
+//to add student into a add student request
+export const ADD_REQUEST=gql`
+ mutation addRequest($request:RequestInput){
+     addRequest(request:$request){
+     message
+     }
+ }
+`
+
+//to remove the student from the request
+export const REMOVE_REQUEST=gql`
+ mutation removeRequest($request:RequestInput){
+     removeRequest(request:$request){
+     message
+     }
+ }
+`
+
 // to delete the classroom
 export const DELETE_CLASS = gql`
   mutation deleteClass($id:String!){
@@ -199,7 +251,7 @@ export const REMOVE_STUDENT = gql`
 
 // to update the classroom details 
 export const UPDATE_CLASS = gql`
-  mutation updateClass($update:updateClasroom, $id: String!) {
+  mutation updateClass($id: String!,$update:updateClasroom) {
     updateClass(id:$id, update:$update)
      {
       message

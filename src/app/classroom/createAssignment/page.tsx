@@ -180,6 +180,10 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
          assignmentType:type,
          creator:token.name
       }
+
+      if(type !=='Material' ){
+        assignment.points=point
+      }
       
       if(instruction.trim().length>0) assignment.instruction=instruction
       if(link.trim().length>0){
@@ -265,7 +269,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
             <div className='mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[25rem] box_shadow p-5'>
               <input type="text" className="w-full bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text my-4 text-slate-600" placeholder='Title of the assignment' 
               onChange={(e:ChangeEvent<HTMLInputElement>)=>settitle(e.target.value)}/>
-              <textarea  className="w-full h-3/4 bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text" placeholder='Instruction (optional)'
+              <textarea  className="w-full h-3/4 bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text text-slate-600" placeholder='Instruction (optional)'
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setinstruction(e.target.value)}/>
             </div>
             <div className=' mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[8rem] box_shadow my-5 px-3'>
@@ -310,7 +314,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                    <div className='w-1/2'>
                    <p className='text text-slate-700'>For</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
-                  <p className='text text-slate-700'>{checked.length>1 ? `${checked.length} classes` :(name.length > 0 && name[0].toUpperCase() + name.slice(1,name.length).toLowerCase())}</p>
+                  <p className='text text-slate-700 overflow-hidden'>{checked.length>1 ? `${checked.length} classes` :(name.length > 0 && name[0].toUpperCase() + name.slice(1,(name.length>15 ? 15 : name.length)).toLowerCase()+(name.length>15 ? '...' :''))}</p>
                   <ArrowDropDownIcon className='cursor-pointer' onClick={()=>handleState('state1',!state.state1)}/>
                   
                 </div>
@@ -324,7 +328,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                       <div key={c._id}>
                       <div className={`flex my-1 items-center ${c._id===id && 'bg-slate-200'} p-2`}>
                         <input type='checkbox' className='w-4 h-4 mx-1 cursor-pointer' checked={ c._id===id ? true : checked.includes(c._id)}  onChange={()=>handleChecked(c._id)}/>
-                        <p className='text text-slate-700 '>{c.className[0].toUpperCase() + c.className.slice(1,c.className.length).toLowerCase()}</p>
+                        <p className='text text-slate-700 '>{c.className[0].toUpperCase() + c.className.slice(1,(c.className.length>15 ? 15 : c.className.length)).toLowerCase()+(c.className.length>15 ? '...' :'')}</p>
                       </div>
                       <hr/>
                       </div>
@@ -360,6 +364,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
               
                    </div>
                 </div>
+                { type!=='Material' && <>
                 <div className='w-1/2 my-5 pr-2'>
                    <p className='text text-slate-700'>Points</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
@@ -417,6 +422,8 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                 }
                 
                 </div>
+                </>
+                }
                 <div className=' my-5 '>
                    <p className='text text-slate-700'>Topic</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>

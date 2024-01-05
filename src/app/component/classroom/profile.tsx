@@ -1,5 +1,5 @@
 'use client'
-import React,{useState,useEffect,ChangeEvent, useReducer} from 'react'
+import React,{useState,useEffect,ChangeEvent, useReducer, useRef} from 'react'
 import Image from 'next/image'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { useAppSelector } from '@/redux/store';
@@ -13,53 +13,64 @@ import {
 import { storage } from "../../../services/config/firebase"
 import { v4 } from "uuid";
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
-import BadgeIcon from '@mui/icons-material/Badge';
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import FaceIcon from '@mui/icons-material/Face';
 import EmailIcon from '@mui/icons-material/Email';
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import { reducer } from '@/reducer/profile/reducer';
 import { initialState } from '@/reducer/profile/initalState';
+import ReactCrop, {
+  centerCrop,
+  convertToPixelCrop,
+  makeAspectCrop,
+} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import setCanvasPreview from '@/services/setCanvasPreview';
+import LoadinPage from '../common/loadinPage';
+
+const ASPECT_RATIO = 1;
+const MIN_DIMENSION = 200;
 
 function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,createdClassroom:number}) {
   const token=useAppSelector((state)=>state.authReducer.token)
   const [initalstate, dispatch] = useReducer(reducer, initialState);
-  const {user,profile,modal,file,newpassword,state,oldpassword,update,open}=initalstate
+  const [crop, setCrop] = useState<any>();
+  const [imageCrop,setImageCrop]=useState(true)
+  const imgRef=useRef<HTMLImageElement | null>( null)
+  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const {user,profile,modal,file,newpassword,state,oldpassword,update,open,hover,loading}=initalstate
 
   useEffect(()=>{
     const fetchData=async()=>{
       if (token.email){
         const res=await getUser(token.email)
-        dispatch({type:'SET_USER',value:res.data.data})
-        dispatch({type:'SET_UPDATE',field:'education', value:res.data.data.education})
-        dispatch({type:'SET_UPDATE',field:'about',value:res.data.data.education})
+        if(res.data.data){
+          dispatch({type:'SET_USER',value:res.data.data})
+          dispatch({type:'SET_UPDATE',field:'education', value:res.data.data.education})
+          dispatch({type:'SET_UPDATE',field:'about',value:res.data.data.education})
+          dispatch({type:'SET_LOADING',value:false})
+        }
       }
     }
    fetchData()
   },[token])
+
+  
 
 
 
   const handleFilechange=(e: ChangeEvent<HTMLInputElement>) => {
     try{
 
+      
        if(e.target.files){
-        const img = document.createElement("img");
-  img.src = URL.createObjectURL(e.target.files[0])
-
-  img.onload = () => {
-    if(img.height>=300 && img.width>=300){
-      e.target.files && dispatch({type:'SET_FILE',value:e.target.files[0] as File})
+        if (!e.target.files[0].type.startsWith('image/')) {
+          message.error("Only image type allowed")
+          return;
+        }
+  e.target.files && dispatch({type:'SET_FILE',value:e.target.files[0] as File})
       dispatch({type:'SET_OPEN',value:true})
-    }else{
-       message.info("Atleast 300*300 dimension")
-    }
-  };
-  img.onerror = (err:any) => {
-    console.log("img error");
-    console.error(err);
-  };
+      setImageCrop(true)
        }
     }catch(err){
       message.info("Some error")
@@ -71,11 +82,29 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
   //upload file
   const uploadFile = () => {
     if (file == null) return;
+    
+    
+    setCanvasPreview(
+      imgRef.current as HTMLImageElement,
+      previewCanvasRef.current as HTMLCanvasElement,
+      convertToPixelCrop(
+        crop,
+        imgRef.current?.width as number,
+        imgRef.current?.height as number
+      )
+    )
+    const dataUrl = previewCanvasRef.current?.toDataURL();
+    console.log(previewCanvasRef)
     const imageRef = ref(storage, `images/${file.name + v4()}`);
-    uploadBytes(imageRef, file).then((snapshot) => {
+    const imageData = dataUrl?.split(',')[1];
+    const imageBytes = new Uint8Array(atob(imageData as string).split('').map((char) => char.charCodeAt(0)));
+    
+    uploadBytes(imageRef, imageBytes).then((snapshot:any) => {
       getDownloadURL(snapshot.ref).then(async(url) => {
+        console.log(token)
         if(token.id){
           const res=await updateProfile(token.id,url)
+          console.log(res.data)
           message.info("Profile updated")
           dispatch({type:'SET_OPEN',value:false})
           dispatch({type:'SET_PROFILE',value:url})
@@ -131,42 +160,79 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
     }
   }
 
+
+  const onImageLoad = (e:any) => {
+    const { width, height } = e.currentTarget;
+    if(width<=200 || height <=200){
+      message.error("Atleast 200 * 200 dimension")
+      dispatch({type:'SET_OPEN',value:false})
+      return;
+    }
+    if(imageCrop){
+      const cropWidthInPercent = (MIN_DIMENSION / width) * 100;
+      const crop = makeAspectCrop(
+        {
+          unit: "%",
+          width: cropWidthInPercent,
+        },
+        ASPECT_RATIO,
+        width,
+        height
+      );
+      const centeredCrop = centerCrop(crop, width, height);
+      setCrop(centeredCrop);
+      setImageCrop(false)
+    }
+  };
+
   return (
     <div>
-    <div className=" mx-5 md:mx-3 lg:w-11/12 p-2 box_shadow mt-9 lg:mx-auto rounded-lg relative group md:flex">
+    {
+    loading ? <LoadinPage/> : <>
+    <div className=" mx-5 lg:w-11/12 box_shadow mt-9 lg:mx-auto rounded-lg relative group ">
       <div className='relative h-1/2'>
-        
-        <div className='absolute w-full h-full my-8 hover:opacity-100 opacity-0 transition-opacity cursor-pointer'>
-          <div className='flex justify-center items-center my-16 z-50'>
-          <label htmlFor='file' className='cursor-pointer' >
-            <AddAPhotoIcon style={{ fontSize: 64, color: 'white' }} />
-            </label>
-          </div>
-        </div>
+      <div 
+        className={` bg-cover bg-transparent bg-right h-100  w-full h-56  box_shadow rounded-t-md   relative`}
+    style={{
+      backgroundImage:  `url('/bgprofilepage.jpg')`,
+    }}
+    >
         <input type='file' name='file' id='file' className='hidden' onChange={handleFilechange}/>
-        <div className='hover:opacity-50 opacity-100'>
+        <div className='absolute top-28 left-4  w-10/12  cursor-pointer' onMouseMove={()=>dispatch({type:'SET_HOVER',value:true})} onMouseOut={()=>dispatch({type:'SET_HOVER',value:false})}>
+          <div className='relative'>
           {
-            profile ?  <Image src={profile} width={200} height={200} alt='profile' style={{ width: 300, height: 300, overflow: 'hidden' }} className='mx-auto  border-2 z-0 '/>
+            profile ?  <Image src={profile} width={200} height={200} alt='profile' className='mx-auto md:mx-0  rounded-full border-2 z-0 '/>
             :
             ((user && user.profile)?
-            <Image src={user.profile} width={400} height={400} alt='profile' className='mx-auto rounded-lg border-2 z-0 ' style={{ width: 300, height: 300, overflow: 'hidden' }}/>
+            <Image src={user.profile} width={200} height={200} alt='profile' className='mx-auto  md:mx-0 rounded-full border-2 z-0 '/>
             :
-            <Image src={'/profile-logo.jpg'} width={200} height={200} alt='profile' className='mx-auto rounded-lg border-2 z-0 ' style={{ width: 300, height: 300, overflow: 'hidden' }}/>)
+            <Image src={'/profile-logo.jpg'} width={200} height={200} alt='profile' className='mx-auto   md:mx-0 rounded-full border-2 z-0 '/>)
+             
           }
+          {
+            hover && 
+            <div className=' absolute left-28  top-16 md:left-16'>
+          <label htmlFor='file' className='cursor-pointer' >
+            <AddAPhotoIcon  className='text-white text-6xl' />
+            </label>
+          </div>
+          }
+           
+          </div>
         </div>      
+        </div>
         </div>
         {
           user.firstName && user.lastName && user.username  && 
-        <div className=' md:w-3/4 h-full'>
-      <div className=" px-5">
-        <p className="text-[#3b6a87] my-1 text-xl "><BadgeIcon/> First Name: {user.firstName[0].toUpperCase() + user.firstName.slice(1,user.firstName.length).toLowerCase()}</p>
-          <p className="text-[#3b6a87]  my-1 text-xl "><PeopleAltIcon/> Last Name: {user.lastName[0].toUpperCase()+ user.lastName.slice(1,user.lastName.length).toLowerCase()}</p>
-        <p className="text-[#3b6a87]  my-1 text-xl "><FaceIcon/> Username: {user.username[0].toUpperCase() + user.username.slice(1,user.username.length).toLowerCase()}</p>
-        <p className="text-[#3b6a87]  my-1 text-xl "><EmailIcon/> Email: {user.email}</p>
-        <p className="text-[#3b6a87]  my-2 text-xl "><AddCommentIcon/> Added classrooms: {addedClassroom}</p>
-        <p className="text-[#3b6a87]  my-2 text-xl "><SaveAsIcon/> Created classrooms: {createdClassroom}</p>
+        <div className=' h-full mt-24 pb-2 md:flex'>
+      <div className=" px-5 md:w-1/2">
+        <p className="text-[#3b6a87]  my-1  "><FaceIcon  className='text-md'/> Username: {user.username[0].toUpperCase() + user.username.slice(1,user.username.length).toLowerCase()}</p>
+        <p className="text-[#3b6a87]  my-1 "><EmailIcon  className='text-md'/> Email: {user.email}</p>
+        <p className="text-[#3b6a87]  my-2  "><AddCommentIcon  className='text-md'/> Added classrooms: {addedClassroom}</p>
+        <p className="text-[#3b6a87]  my-2  "><SaveAsIcon  className='text-md'/> Created classrooms: {createdClassroom}</p>
       </div>
-      <div className="flex justify-end items-end m-2 mt-5 md:m-2 lg:mt-0 md:absolute bottom-2 right-2">
+      <div className="flex md:justify-end items-end m-2 mt-5 md:m-2 lg:mt-0 md:w-1/2">
+      <a href={'/payment'} className='text text-white bg-[#3b6a87] p-2  mx-3 rounded-md'>Subscription</a>
         <button className='text text-white bg-[#3b6a87] p-2 rounded-md' onClick={()=> dispatch({type:'SET_MODAL',value:true})}>Reset Password</button>
       </div>
       </div>
@@ -178,11 +244,36 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
               <button type='submit' className=" p-2 border-2 bg-[#3b6a87] text-white rounded-md px-4 text" onClick={handleReset}>Reset</button>
           </div>
       </Modal >
-      <Modal open={open} footer={null} onCancel={() => dispatch({type:'SET_OPEN',value:false})}>
+      <Modal title={<span className="font-normal">Set the profile</span>} open={open} footer={null} onCancel={() => dispatch({type:'SET_OPEN',value:false})}>
   {file && (
     <div>
-      <div className='flex justify-center items-center w-full'>
-      <Image src={URL.createObjectURL(file)} width={200} height={200} alt='profile' className='mx-auto rounded-lg border-2 z-0 ' style={{ width: 300, height: 300, overflow: 'hidden' }}/>
+      <div className='flex justify-center items-center w-full my-2'>
+      <ReactCrop
+            crop={crop}
+            onChange={(pixelCrop, percentCrop) => setCrop(percentCrop)}
+            circularCrop
+            keepSelection
+            aspect={1}
+            minWidth={MIN_DIMENSION}
+            minHeight={MIN_DIMENSION}
+          >
+      <img ref={imgRef} src={URL.createObjectURL(file)}  alt='profile' className= 'border-2 z-0 max-h-[70vh]' onLoad={onImageLoad}/>
+      </ReactCrop>
+     
+
+      {crop && (
+        <canvas
+          ref={previewCanvasRef}
+          className="mt-4"
+          style={{
+            display: "none",
+            border: "1px solid black",
+            objectFit: "contain",
+            width: 200,
+            height: 200,
+          }}
+        />
+      )}
         </div>
       
     </div>
@@ -232,6 +323,7 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
           }
           
     </div>
+    </>}
     </div>
   )
 }

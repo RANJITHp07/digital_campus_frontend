@@ -10,6 +10,7 @@ export interface UsersProps {
     blocked?: boolean;
     about?: string;
     education?: string;
+    created_at:string
   }
 
 export interface UserForm{
@@ -32,4 +33,12 @@ export interface AdminProps{
 export interface Detail{
     about:string | null ,
     education:string | null
+}
+
+export  interface RequestUser{
+   __typename:string,
+   email:string,
+   code:string,
+   name:string,
+   id:string
 }

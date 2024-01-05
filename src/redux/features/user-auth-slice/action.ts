@@ -21,11 +21,13 @@ export const senduserEmail=createAsyncThunk(
                         if(res.data.success){
                             message.success("Email sent")
                             return  {firstName:user.firstName,lastName:user.lastName,email:user.email,password:user.password,username:user.username}
+                        }else{
+                            return Promise.reject("wrong credientials");
                         }
                     }else{
                         
                         message.info("Already Exist");
-                    return Promise.reject("input error");
+                     return Promise.reject("input error");
                     }
                 }else{
                     message.info("Password not matching");

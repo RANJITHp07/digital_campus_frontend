@@ -1,5 +1,5 @@
 const chatEndpoint={
-    getMessage:"/v1/chat"
+    getMessage:"/v1/api/chat"
 }
 
 export default  chatEndpoint

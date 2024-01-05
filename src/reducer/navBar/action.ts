@@ -6,4 +6,3 @@ type NavbarAction =
   | { type: 'SET_OPEN'; value: boolean }
   | { type: 'SET_OPEN1'; value: boolean }
   | { type: 'SET_OPEN2'; value: boolean };
-  
