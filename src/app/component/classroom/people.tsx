@@ -14,6 +14,7 @@ function People({id,code}:{id:string,code:string}) {
   const[open,setopen]=useState(false)
   const [open1,setopen1]=useState(false)
   const token=useAppSelector((state)=>state.authReducer.token)
+  const creator=useAppSelector((state)=>state.classroomReducer.creator)
   const [email,setemail]=useState('')
    //to get all the participants
     const { data }=useQuery(GET_PARTICIPANTS,{
@@ -141,9 +142,13 @@ function People({id,code}:{id:string,code:string}) {
             <div className='mb-16'>
                 <div className='flex justify-between items-center'>
                 <p className='text-3xl text text-[#3b6a87] mx-4'>Teachers</p>
-                <Tooltip placement="topRight" title={"Add into admins"}>
+                {
+                  creator && 
+                  <Tooltip placement="topRight" title={"Add into admins"}>
                 <PersonAddAlt1Icon className='text-[#3b6a87] cursor-pointer' onClick={()=>setopen(true)}/>
                 </Tooltip>
+                }
+                
                 </div>
            <hr className='border-1 rounded-full border-[#3b6a87] mb-6 mt-3'/>
 
@@ -156,8 +161,9 @@ function People({id,code}:{id:string,code:string}) {
                       <Image src={'/profile-logo.jpg'} width={35} height={35} alt='profile' className='rounded-full'/>
               <p className='mx-5 text text-sm text-slate-900'>{admin.username}</p>
                       </div>
-                      
-                      <Popconfirm
+                      {
+                        creator && 
+                        <Popconfirm
     title="Remove from admin"
     description="Are you sure to remove"
     okText="Yes"
@@ -167,6 +173,8 @@ function People({id,code}:{id:string,code:string}) {
   >
                       <PlaylistRemoveIcon className="text-[#3b6a87] cursor-pointer"/>
                       </Popconfirm>
+                      }
+                      
             </div>
             <hr/>
                     </>
@@ -176,9 +184,13 @@ function People({id,code}:{id:string,code:string}) {
             </div>
             <div className='flex justify-between items-center'>
                 <p className='text-3xl text text-[#3b6a87] mx-4'>Students</p>
-                <Tooltip placement="topRight" title={"Send invitation to student"}>
-                <PersonAddAlt1Icon className='text-[#3b6a87] cursor-pointer' onClick={()=>setopen1(true)}/>
-                </Tooltip>
+                {
+                  creator && 
+                  <Tooltip placement="topRight" title={"Send invitation to student"}>
+                  <PersonAddAlt1Icon className='text-[#3b6a87] cursor-pointer' onClick={()=>setopen1(true)}/>
+                  </Tooltip>
+                }
+                
                 
                 </div>
            <hr className='border-1 rounded-full border-[#3b6a87] mb-6 mt-3'/>
@@ -191,6 +203,9 @@ function People({id,code}:{id:string,code:string}) {
                       <Image src={'/profile-logo.jpg'} width={35} height={35} alt='profile' className='rounded-full'/>
               <p className='mx-5 text text-sm text-slate-900'>{user.username}</p>
                       </div>
+                      {
+                        creator && 
+                      
                       <Popconfirm
     title="Add to admin"
     description="Are you sure to add"
@@ -201,6 +216,7 @@ function People({id,code}:{id:string,code:string}) {
   >
    <PlaylistRemoveIcon className="text-[#3b6a87] cursor-pointer"/>
   </Popconfirm>
+             }
             </div>
 
             <hr/>
@@ -222,7 +238,9 @@ function People({id,code}:{id:string,code:string}) {
                       <Image src={'/profile-logo.jpg'} width={35} height={35} alt='profile' className='rounded-full'/>
               <p className='mx-5 text text-sm text-slate-900'>{user.username}</p>
                       </div>
-                      <Popconfirm
+                      {
+                        creator && 
+                        <Popconfirm
     title="Add to admin"
     description="Are you sure to add"
     okText="Yes"
@@ -232,6 +250,8 @@ function People({id,code}:{id:string,code:string}) {
   >
     <PlaylistAddIcon className="text-[#3b6a87] cursor-pointer"/>
   </Popconfirm>
+                      }
+                      
             </div>
             <hr/>
                     </>

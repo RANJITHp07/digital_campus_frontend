@@ -86,6 +86,7 @@ export const FETCH_REQUEST_DETAILS = gql`
       request{
         id
         name
+        email
       }
     }
   }

@@ -68,6 +68,7 @@ function Navbar() {
       variables:{
         request:{
           id:token.id,
+          email:token.email,
         name:token.name,
         code:code
         }
@@ -250,7 +251,7 @@ function Navbar() {
          </form>
       </Modal>
       <Modal title={<span className='text font-normal text-[#3b6a87]'>Join classroom</span>} open={open2} footer={null} onCancel={()=>dispatch({type:"SET_OPEN2",value:false})}>
-      <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text" placeholder='Class code' onChange={(e:ChangeEvent<HTMLInputElement>)=>dispatch({ type: 'SET_FIELD', field: 'code', value: e.target.value })}/>
+      <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 text-slate-500  border-2 my-2 text" placeholder='Class code' onChange={(e:ChangeEvent<HTMLInputElement>)=>dispatch({ type: 'SET_FIELD', field: 'code', value: e.target.value })}/>
       <div className="flex justify-end my-2">
               <button type='submit' className="bg-[#3b6a87] p-2 border-2 text-white rounded-md px-4 text " onClick={()=>handleJoin()}>Join</button>
           </div>

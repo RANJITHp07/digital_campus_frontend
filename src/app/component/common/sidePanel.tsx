@@ -151,10 +151,10 @@ function SidePanel() {
                     </div>
                     <div className="mx-4">
                       <p className="text-sm text text-[#3b6a87]">
-                        {c.className}
+                      {c.className && c.className[0].toUpperCase() + c.className.slice(1,c.className.length).toLowerCase()}
                       </p>
                       <p className="text-xs font-sm text text-slate-500">
-                        {c.classSection}
+                      {c.classSection && c.classSection[0].toUpperCase() + c.classSection.slice(1,c.classSection.length).toLowerCase()}
                       </p>
                     </div>
                   </div>
@@ -200,10 +200,10 @@ function SidePanel() {
                     </div>
                     <div className="mx-4">
                       <p className="text-sm text text-[#3b6a87]">
-                        {c.className}
+                        {c.className && c.className[0].toUpperCase() + c.className.slice(1,c.className.length).toLowerCase()}
                       </p>
                       <p className="text-xs font-sm text text-slate-500">
-                        {c.classSection}
+                        {c.classSection && c.classSection[0].toUpperCase() + c.classSection.slice(1,c.classSection.length).toLowerCase()}
                       </p>
                     </div>
                   </div>

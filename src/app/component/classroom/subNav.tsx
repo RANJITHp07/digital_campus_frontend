@@ -41,6 +41,10 @@ function SubNav({id}:{id:string}) {
             label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('grades')}>Grades</p>,
             key: '3',
           },
+          {
+            label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('request')}>Request</p>,
+            key: '4',
+          },
        
       ];
   return (

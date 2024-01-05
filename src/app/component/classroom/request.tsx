@@ -1,17 +1,30 @@
-import React from 'react'
+'use client'
+import React,{useState} from 'react'
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import { Tooltip, message } from 'antd';
+import { Modal, Tooltip, message } from 'antd';
 import { ADD_REQUEST, ADD_STUDENT, FETCH_REQUEST_DETAILS, REMOVE_REQUEST} from '@/apis/classroom';
 import { useMutation, useQuery } from '@apollo/client';
 import { useAppSelector } from '@/redux/store';
 import PersonIcon from '@mui/icons-material/Person';
 import UserDetail from './userDetail';
+import Image from 'next/image'
+import LoadinPage from '../common/loadinPage';
+import { RequestUser } from '@/@types/users';
 
-function Request({id,code}:{id:string,code:string}) {
+interface RequestProps{
+  id:string,
+  code:string
+}
 
-   const token=useAppSelector((state)=>state.authReducer.token)
+
+function Request({id,code}:RequestProps) {
+
+  const [open,setOpen]=useState<{open:boolean,email:string}>({
+    open:false,
+    email:''
+  })
 
   ///to  join into the class
    const [joinStudent]=useMutation(ADD_STUDENT,{
@@ -27,15 +40,15 @@ function Request({id,code}:{id:string,code:string}) {
    })
 
    //to fetch request
-   const {data}=useQuery(FETCH_REQUEST_DETAILS,{
+   const {data,loading}=useQuery(FETCH_REQUEST_DETAILS,{
     onError(err){
-      console.log(err)
       message.info("Some error occured")
     },
     variables:{
       id:id
-    }
+    },
    })
+
 
    const [removeRequest]=useMutation(REMOVE_REQUEST,{
     onError(err){
@@ -48,7 +61,8 @@ function Request({id,code}:{id:string,code:string}) {
     }
    })
 
-   const handleRemoverequest=(p:any)=>{
+   const handleRemoverequest=(p:RequestUser)=>{
+    console.log(p)
      const {__typename,...data}=p
       removeRequest({
         variables:{
@@ -62,18 +76,20 @@ function Request({id,code}:{id:string,code:string}) {
 
 
    const handleJoin=async(id:string)=>{
-    console.log(code)
        await joinStudent({
         variables:{
           userId:id,
-          code:'j4o9'
+          code:code
         }
        })
    }
 
   return (
     <div className='flex justify-center'>
-         <div className='w-3/4 my-9'>
+      {
+        loading ? <LoadinPage/> :
+      
+         <div className='w-full md:w-3/4 my-9'>
             <div className='mb-9'>
                 <div className='flex justify-between items-center'>
                 <p className='text-3xl text text-[#3b6a87] mx-4'>Request</p>
@@ -81,9 +97,10 @@ function Request({id,code}:{id:string,code:string}) {
            <hr className='border-1 rounded-full border-[#3b6a87] mb-6 mt-3'/>
            </div>
            {
-            data && data.getClassroomDetails.request.map((s:any)=>{
+            data && data.getClassroomDetails.request.map((s:RequestUser)=>{
               return (
                 <>
+                {console.log(s)}
                 <div className='flex items-center justify-between text-slate-500'>
               <p className='mx-5 text  '><PersonIcon/> {s.name}</p>
               <div>
@@ -93,9 +110,13 @@ function Request({id,code}:{id:string,code:string}) {
               <Tooltip placement="topRight" title={"Add to classroom"}>
               <DownloadDoneIcon className='mx-3 cursor-pointer' onClick={()=>handleJoin(s.id)}/>
               </Tooltip>
-              {/* <Tooltip placement="topRight" title={"View Profile"}>
-              <RemoveRedEyeIcon className='cursor-pointer'/>
-              </Tooltip> */}
+              <Tooltip placement="topRight" title={"View Profile"}>
+              <RemoveRedEyeIcon className='cursor-pointer' onClick={()=>
+                setOpen((prev)=>({...prev,email:s.email,open:true}))}/>
+              </Tooltip>
+              <Modal open={open.open} title={<span className='text font-normal'>User Details</span>} footer={null} onCancel={()=>setOpen((prev)=>({...prev,open:false}))}>
+                <UserDetail email={open.email}/>
+              </Modal>
               </div>
                       </div>
                       <hr className='my-5'/>
@@ -104,8 +125,12 @@ function Request({id,code}:{id:string,code:string}) {
             })
 
            }
+           {
+            data && data.getClassroomDetails.request.length==0 && <Image src={'/request.png'} width={400} height={400} alt='request' className='mx-auto' />
+           }
                      
            </div>
+       }
     </div>
   )
 }
