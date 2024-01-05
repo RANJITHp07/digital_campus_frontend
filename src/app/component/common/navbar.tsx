@@ -237,12 +237,12 @@ function Navbar() {
          <form className="mt-5" onSubmit={Onsubmit}>
           <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text text-slate-500" placeholder='Class name(max 20 character)' onChange={(e:ChangeEvent<HTMLInputElement>)=>dispatch({ type: 'SET_FIELD', field: 'name', value: e.target.value })}/>
           <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300   border-2 my-2 text text-slate-500" placeholder='Class section' onChange={(e:ChangeEvent<HTMLInputElement>)=>dispatch({ type: 'SET_FIELD', field: 'section', value: e.target.value })}/>
-          <select className=" w-full  p-2 rounded-md focus:outline-none border-slate-300 text-slate-500   border-2 my-2 text text-slate-500" onChange={(e: ChangeEvent<HTMLSelectElement>) => dispatch({ type: 'SET_FIELD', field: 'category', value: e.target.value })}>
+          <select className=" w-full  p-2 rounded-md focus:outline-none border-slate-300 text-slate-500   border-2 my-2 text " onChange={(e: ChangeEvent<HTMLSelectElement>) => dispatch({ type: 'SET_FIELD', field: 'category', value: e.target.value })}>
             <option>Junior level</option>
             <option>Higher secondary</option>
             <option>University</option>
           </select>
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none  border-slate-300  border-2 my-2 text" placeholder='Class subject' onChange={(e:ChangeEvent<HTMLInputElement>)=>dispatch({ type: 'SET_FIELD', field: 'subject', value: e.target.value })}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none  border-slate-300 text-slate-500   border-2 my-2 text" placeholder='Class subject' onChange={(e:ChangeEvent<HTMLInputElement>)=>dispatch({ type: 'SET_FIELD', field: 'subject', value: e.target.value })}/>
           <div className="flex justify-end my-2">
               <button type='submit' className="p-2 border-2 bg-[#3b6a87] text-white rounded-md px-4 text ">Create</button>
           </div>
