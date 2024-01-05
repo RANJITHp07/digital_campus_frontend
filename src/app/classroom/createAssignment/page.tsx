@@ -168,18 +168,15 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
 
 
   const handleAssign=async()=>{
-    // if(studentChecked.length===0){
-    //   message.info("Atleast one student must be there in the clasroom")
-    //   return 
-    // }
+    if(studentChecked.length===0){
+      message.info("Atleast one student must be there in the clasroom")
+      return 
+    }
     if(title.trim().length>0){
       const assignment:any={
          title:title,
          class_id:checked,
-         students:[
-          'eeb42a93-4d9e-45a3-b213-c080cb6aebe6',
-          '6218fc36-380a-4b3a-9436-053da316a9b2'
-        ],
+         students:studentChecked,
          assignmentType:type,
          creator:token.name
       }
@@ -272,7 +269,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
             <div className='mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[25rem] box_shadow p-5'>
               <input type="text" className="w-full bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text my-4 text-slate-600" placeholder='Title of the assignment' 
               onChange={(e:ChangeEvent<HTMLInputElement>)=>settitle(e.target.value)}/>
-              <textarea  className="w-full h-3/4 bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text" placeholder='Instruction (optional)'
+              <textarea  className="w-full h-3/4 bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text text-slate-600" placeholder='Instruction (optional)'
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setinstruction(e.target.value)}/>
             </div>
             <div className=' mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[8rem] box_shadow my-5 px-3'>
