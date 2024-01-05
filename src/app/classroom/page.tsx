@@ -28,11 +28,8 @@ const BasicCalendar = dynamic(()=>import('../component/classroom/calendar'))
 const Classroom=()=>{
 
   //redux state
-  const state = useAppSelector((state) => state.classroomReducer.open);
-  const categoryType=useAppSelector((state)=>state.classroomReducer.categoryType)
-  const category=useAppSelector((state)=>state.classroomReducer.category)
+  const {open:state,categoryType,type,category}=useAppSelector((state) => state.classroomReducer);
   const token=useAppSelector((state) => state.authReducer.token);
-  const type=useAppSelector((state) => state.classroomReducer.type)
 
   //states
   const [addedClasroom,setAddedClasroom]=useState(0)
@@ -174,7 +171,7 @@ const Classroom=()=>{
                 loading ? <LoadinPage/> 
                 :
                 <Suspense fallback={loading}>
-              { (allClassroom && allClassroom.getAllTheClassroom.length > 0) ? (allClassroom.getAllTheClassroom.map((c:ClassroomProps) => (
+              { (allClassroom && allClassroom.getAllTheClassroom.length > 0) ? (allClassroom.getAllTheClassroom.slice(pagination * 9 - 9, pagination * 9).map((c:ClassroomProps) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
                      <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={!c.students_enrolled || !c.students_enrolled.includes(token.id?.toString() as string)} bg={c.backgroundPicture as string} subject={c.classSubject} section={c.classSection} code={c.classCode} profile={c.profile as string} block={c.blockClassroom} />
                 </div>)
@@ -201,7 +198,7 @@ const Classroom=()=>{
                 loading ? <LoadinPage/> 
                 :
                 <Suspense fallback={loading}>
-              { (data && data.getCreatorClassroom.length > 0) ? (data.getCreatorClassroom.map((c:ClassroomProps) => (
+              { (data && data.getCreatorClassroom.length > 0) ? (data.getCreatorClassroom.slice(pagination * 9 - 9, pagination * 9).map((c:ClassroomProps) => (
                 <div className={` mx-auto md:mx-0 ${state ? 'xl:w-1/3 xm:w-1/2' :'xl:w-1/4 xm:w-1/3'} lg:w-1/3`} key={c._id} >
                      <Class className={c.className as string} creator={c.creator as string} id={c._id as string} type={true} bg={c.backgroundPicture as string} subject={c.classSubject as string} section={c.classSection as string} code={c.classCode} profile={c.profile as string} />
                 </div>)
@@ -250,7 +247,12 @@ const Classroom=()=>{
              </div>
             }
             {
-             type!=="calendar" && ((data && data.getCreatorClassroom.length) || (filteredClassroom && filteredClassroom.getFilteredClassroom.length > 0) || (addedClassroom  && addedClassroom.getAllClassroom.length>0 ))  && <Pagination defaultCurrent={1} total={(Math.ceil(data && data.getCreatorClassroom.length / 9) * 10)} onChange={(e:number) => {
+             type!=="calendar" && 
+             
+             ((data && type==='teaching' && data.getCreatorClassroom.length) || (filteredClassroom && filteredClassroom.getFilteredClassroom.length > 0) || (addedClassroom && type==='enrolled'  && addedClassroom.getAllClassroom.length>0 ))  && 
+             <Pagination defaultCurrent={1} 
+             total={(Math.ceil(allClassroom && allClassroom.getAllTheClassroom.length / 9) * 10)} 
+             onChange={(e:number) => {
               setPagination(e);
             }}  className='text-center mt-4' />
 

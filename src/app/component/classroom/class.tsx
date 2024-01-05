@@ -10,10 +10,15 @@ import { DELETE_CLASS, FETCH_ADDED_CLASSROOM_QUERY, FETCH_ALL_CLASSROOM_QUERY, F
 import { useMutation } from '@apollo/client';
 import { useNavDispatch } from '@/hook/useNavDispatch';
 import { ClassProps } from '@/@types/classroom';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import PersonRemoveAlt1 from '@mui/icons-material/PersonRemoveAlt1';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import EditIcon from '@mui/icons-material/Edit';
+import { changeAssignment } from '@/redux/features/classroom-slice/reducer';
 
 function Class({className,creator,id,code,type,bg,subject,section,profile,block}:ClassProps) {
   
-  const {navigation,appSelector}=useNavDispatch()
+  const {navigation,appSelector,dispatch}=useNavDispatch()
   const token=appSelector((state)=>state.authReducer.token)
   const[report,setReport]=useState(false);
   const[title,setTitle]=useState('');
@@ -31,13 +36,16 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
     {
       key: '1',
       label: (
-        <p onClick={!type ? removeStudent : deleteClass}>{!type ? "Unenroll" : "Delete"}</p>
+        <p className='text-[#3b6a87] ' onClick={!type ? removeStudent : deleteClass}>{!type ? <span><PersonRemoveAlt1 className='text-sm'/> Unenroll</span> : <span><DeleteOutlineIcon className='text-sm'/> Delete</span>}</p>
       ),
+    },
+    {
+        type:'divider'
     },
     {
       key: '3',
       label: (
-        <p onClick={type ? handleEdit : ()=>setReport(true)}>{ type ? "Edit" : "Report Abuse"}</p>
+        <p className='text-[#3b6a87]' onClick={type ? handleEdit : ()=>setReport(true)}>{ type ? <span><EditIcon  className='text-sm'/> Edit</span> : <span><ReportGmailerrorredIcon className='text-sm'/> Report Abuse</span>}</p>
       ),
     }
     
@@ -77,7 +85,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
    //to delete class
    const [delete_class]=useMutation(DELETE_CLASS,{
     onError(err){
-         console.log(err)
+         message.info("Some error occured")
     },
     variables:{
     id:id
@@ -102,6 +110,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
    //to update the classroom
  const [updateClassroom]=useMutation(UPDATE_CLASSROOM_DETAILS,{
   onError(err){
+    console.log(classroom)
       console.log(err)
   },
   onCompleted:()=>{
@@ -112,10 +121,11 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
 
  const handleUpdate=async(e:React.FormEvent<HTMLFormElement>)=>{
   e.preventDefault()
+  const { profile,...updatedClassroom}=classroom
   await updateClassroom({
     variables:{
       id:id,
-      update:classroom
+      update:updatedClassroom
     }
   })
  }
@@ -164,7 +174,7 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
       </div>
       <div className="flex justify-end mx-2" onClick={ block ? ()=>message.info('Blocked the classroom by admin'):()=>navigation.push(`/classroom/${id}?code=${code}`)}>
         <div>
-          <p>{classroom.className.length >0 && (classroom.className[0].toUpperCase() + classroom.className.slice(1,className.length).toLowerCase())}</p>
+          <p>{classroom.className.length >0 && (classroom.className[0].toUpperCase() + classroom.className.slice(1,classroom.className.length).toLowerCase())}</p>
           <p className="text-xs">{creator}</p>
         </div>
       </div>
@@ -172,19 +182,25 @@ function Class({className,creator,id,code,type,bg,subject,section,profile,block}
         <hr/>
         <div className='flex justify-end m-3'>
         <Tooltip placement="topRight" title={"see all the participants"}>
-          <AssignmentIndIcon className='text-[#8cb6d0] text-2xl mx-2 cursor-pointer'/>
+          <AssignmentIndIcon className='text-[#8cb6d0] text-2xl mx-2 cursor-pointer' onClick={()=>{
+            navigation.push(`/classroom/${id}?code=${code}`)
+            dispatch(changeAssignment('people'))
+          }}/>
           </Tooltip>
           <Tooltip placement="topLeft" title={"see all the assignments"}>
-        <AssignmentIcon className='text-[#8cb6d0] text-2xl cursor-pointer'/>
+        <AssignmentIcon className='text-[#8cb6d0] text-2xl cursor-pointer' onClick={()=>{
+            navigation.push(`/classroom/${id}?code=${code}`)
+            dispatch(changeAssignment('classwork'))
+          }}/>
         </Tooltip>
         </div>
       </div>
-      <Suspense fallback={<div>loading</div>}>
-      <Modal title={`Create Class`} open={open} footer={null}onCancel={()=>setOpen(false)} >
+      <Suspense fallback={<div>loading...</div>}>
+      <Modal title={<span className='text font-normal'>Update classroom</span>} open={open} footer={null}onCancel={()=>setOpen(false)} >
          <form className="mt-5" onSubmit={handleUpdate} >
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text" placeholder='Class name(max 20 character)' defaultValue={classroom.className} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,className:e.target.value})}/>
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300   border-2 my-2 text" placeholder='Class section' defaultValue={classroom.classSection} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,classSubject:e.target.value})}/>
-          <input type="text" className=" w-full p-2 rounded-md focus:outline-none  border-slate-300  border-2 my-2 text" placeholder='Class subject' defaultValue={classroom.classSubject} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,classSection:e.target.value})}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300 border-2 my-2 text text-slate-500" placeholder='Class name(max 20 character)' defaultValue={classroom.className} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,className:e.target.value})}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none border-slate-300   border-2 my-2 text text-slate-500" placeholder='Class section' defaultValue={classroom.classSection} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,classSubject:e.target.value})}/>
+          <input type="text" className=" w-full p-2 rounded-md focus:outline-none  border-slate-300  border-2 my-2 text text-slate-500" placeholder='Class subject' defaultValue={classroom.classSubject} onChange={(e:ChangeEvent<HTMLInputElement>)=>setClassroom({...classroom,classSection:e.target.value})}/>
           <div className="flex justify-end my-2">
               <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text ">Update</button>
           </div>

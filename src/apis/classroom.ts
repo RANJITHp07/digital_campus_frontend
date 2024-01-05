@@ -250,7 +250,7 @@ export const REMOVE_STUDENT = gql`
 
 // to update the classroom details 
 export const UPDATE_CLASS = gql`
-  mutation updateClass($update:updateClasroom, $id: String!) {
+  mutation updateClass($id: String!,$update:updateClasroom) {
     updateClass(id:$id, update:$update)
      {
       message
