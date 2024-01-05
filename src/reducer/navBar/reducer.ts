@@ -13,7 +13,8 @@ export const reducer = (state: NavbarState, action: NavbarAction): NavbarState =
       case 'SET_OPEN':
         return { ...state, open: action.value };
       case 'SET_OPEN1':
-        return { ...state, open1: action.value };
+        return  action.value ? { ...state, open1: action.value } : 
+        {...state,name:null,subject:null, section:null, open1: action.value};
       case 'SET_OPEN2':
         return { ...state, open2: action.value };
       default:
