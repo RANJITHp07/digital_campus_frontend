@@ -216,7 +216,7 @@ function Submission() {
          <div className='w-11/12 mx-auto'>
           <LoadinPage/>
          </div>
-          : <QuizSubmission quiz={data && data.getOneassignment.quiz} title={data && data.getOneassignment.quiz} dueDate={data && data.getOneassignment.dueDate}/>
+          : <QuizSubmission quiz={data && data.getOneassignment.quiz} title={data && data.getOneassignment.title} dueDate={data && data.getOneassignment.dueDate}/>
       )
       
 

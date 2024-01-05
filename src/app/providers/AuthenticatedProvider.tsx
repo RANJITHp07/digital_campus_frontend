@@ -18,7 +18,9 @@ function AuthenticatedProvider({children}:{children:React.ReactNode}) {
           parsedAccessToken = JSON.parse(accessToken);
           const token:any=jwtDecode(parsedAccessToken)
           if(!socket.current){
-            socket.current = io('wss://www.digitalcampus.shop/v3/api/auth');
+            socket.current = io('wss://www.digitalcampus.shop',{
+              path:"/socket-auth/"
+            });
             socket.current.emit('join-room',token.email);
             socket.current.emit("isBlocked",{email:token.email})
             socket.current.on("responseIsBlocked",(data:{isBlocked:boolean})=>{

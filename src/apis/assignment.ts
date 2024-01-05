@@ -77,11 +77,17 @@ export const ASSIGNMENT_DETAILS=gql`
        dueDate{
         day
         time
+        timer
        }
        creator
        assignmentType,
        polling{
          answers
+       }
+       quiz{
+        answers
+        type
+        question
        }
        createdAt
     }

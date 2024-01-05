@@ -29,8 +29,9 @@ function Classroom({ params }: { params: { id: string } }) {
 
  useEffect(() => {
     if(!socket.current){
-        socket.current = io('wss://digitalcampus.shop/v1/api/chat/');
-        console.log("jii")
+        socket.current = io('wss://www.digitalcampus.shop',{
+            path:"/socket-chat/"
+        });
         socket.current.emit('join-room', params.id);
     }
     
