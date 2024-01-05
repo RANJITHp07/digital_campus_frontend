@@ -2,10 +2,10 @@
 import React from 'react'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Image from "next/image"
-import { useRouter } from 'next/navigation';
+import { useNavDispatch } from '@/hook/useNavDispatch';
 
 function Header() {
-  const router=useRouter()
+  const {navigation}=useNavDispatch()
   return (
     <div>
         <div className="md:flex items-center min-h-[18rem] mt-7">
@@ -14,14 +14,14 @@ function Header() {
             </div>
             <div className='md:w-1/3 ml-5 pr-16 md:pr-8 xm:pr-16 mt-16 md:mt-0 xm:mt-16'>
                <p className='text-[#194866] '>Join hundreds of thousands of educators and trainers on Moodle, the world’s most customisable and trusted learning management system.</p>
-               <p className='mt-4 p-3 px-4 border-2 inline-block rounded-full border-[#194866] text-[#194866] cursor-pointer' onClick={()=>router.push("/signup")}>Get Started <ArrowForwardIcon className='text-[#194866]'/></p>
+               <p className='mt-4 p-3 px-4 border-2 inline-block rounded-full border-[#194866] text-[#194866] cursor-pointer' onClick={()=>navigation.push("/signup")}>Get Started <ArrowForwardIcon className='text-[#194866]'/></p>
             </div>
         </div>
         <div className='bg-[#194866] my-32 xm:min-h-[35rem] xl:h-screen relative'>
           <div className='absolute h-1/2 w-1/3 bg-slate-300 z-0 hidden lg:block'></div>
           <div className='absolute top-16 left-11 z-50'>
-          <Image src={"https://images.pexels.com/photos/6001377/pexels-photo-6001377.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} width={600} height={600} alt='signup' className='rounded-md hidden lg:block xl:hidden'/>
-        <Image src={"https://images.pexels.com/photos/6002000/pexels-photo-6002000.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} width={800} height={800} alt='signup' className='rounded-md hidden xl:block'/>
+          <Image src={"/header.jpeg"} width={600} height={600} alt='signup' className='rounded-md hidden lg:block xl:hidden'/>
+        <Image src={"/header2.jpeg"} width={800} height={800} alt='signup' className='rounded-md hidden xl:block'/>
         </div>
         <div className='flex lg:justify-end items-center relative' id='about'>
           <div className=' mt-7 lg:mt-32 mx-3 md:mx-8 '>

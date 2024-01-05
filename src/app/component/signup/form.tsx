@@ -117,7 +117,7 @@ const Form: React.FC<FormProps> = ({ page }) => {
                 id='firstname'
                 type='text'
                 placeholder='Enter your firstname'
-                className='block p-3 w-full md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
+                className='block p-3 w-full md:p-2 lg:p-3 border-2 text-slate-500 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
                 {...register('firstName')}
               />
             </div>
@@ -131,7 +131,7 @@ const Form: React.FC<FormProps> = ({ page }) => {
                 id='lastname'
                 type='text'
                 placeholder='Enter your lastname'
-                className='block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
+                className='block w-full p-3 md:p-2 lg:p-3 border-2 text-slate-500 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
                 {...register('lastName')}
               />
             </div>
@@ -147,7 +147,7 @@ const Form: React.FC<FormProps> = ({ page }) => {
             id='email'
             type='email'
             placeholder='Enter your email'
-            className='block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
+            className='block w-full p-3 md:p-2 lg:p-3 border-2  border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm text-slate-500'
             {...register('email')}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setemail(e.target.value)}
           />
@@ -162,7 +162,7 @@ const Form: React.FC<FormProps> = ({ page }) => {
               id='username'
               type='text'
               placeholder='Enter your username'
-              className='block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
+              className='block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm text-slate-500'
               {...register('username')}
             />
           </div>
@@ -178,7 +178,7 @@ const Form: React.FC<FormProps> = ({ page }) => {
             id='password'
             type='password'
             placeholder='Enter your password'
-            className='block p-3 w-full md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
+            className='block p-3 w-full md:p-2 lg:p-3 border-2 text-slate-500 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
             {...register('password')}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               e.target.value.length >= 8 ? settext(false) : settext(true);
@@ -197,7 +197,7 @@ const Form: React.FC<FormProps> = ({ page }) => {
               id='password'
               type='password'
               placeholder='Confirm your password'
-              className='block w-full p-3 md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
+              className='block w-full p-3 md:p-2 lg:p-3 border-2 text-slate-500 border-gray-400 rounded-md shadow-sm focus:outline-none  sm:text-sm'
               {...register('confirm_password')}
               onCopy={(e) => e.preventDefault()}
               onCut={(e) => e.preventDefault()}
