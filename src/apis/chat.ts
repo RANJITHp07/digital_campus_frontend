@@ -11,7 +11,6 @@ export const getMessage=async(id:string,skip:number)=>{
         })
         return res
     }catch(err){
-        console.log("jiii")
         throw new Error("Axios error"+ err)
     }
 }

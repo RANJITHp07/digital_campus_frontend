@@ -95,7 +95,7 @@ export const ASSIGNMENT_DETAILS=gql`
 `
 
 export const EDIT_ASSIGNMENT_DETAILS=gql`
-   query getOneassignment($id: String!) {
+   query getOneassignment($id: ID!) {
     getOneassignment(id: $id) {
        title,
        instruction,
@@ -114,6 +114,24 @@ export const EDIT_ASSIGNMENT_DETAILS=gql`
        assignmentType
     }
   }
+`
+
+export const EDIT_QUIZ_DETAILS=gql`
+query getOneassignment($id:ID!){
+  getOneassignment(id:$id){
+     title,
+     dueDate{
+     day
+     timer
+     },
+     quiz{
+      question
+      answers
+      realAnswers
+      type
+     }
+  }
+}
 `
 
 export const DUE_DATES=gql`

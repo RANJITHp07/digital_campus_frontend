@@ -223,7 +223,6 @@ function Quiz() {
         let q=questions.map(({ edit, ...rest }) => rest)
         if(question.trim().length>0 && options.length>0){
           q = [...q, { question: question, answers: options,realAnswers:answer, type: type as string }];
-          console.log(q)
         }
         let assignment:any={
           title:title,

@@ -33,7 +33,9 @@ function Material({material,assignment,setassignment,id}:{material:any,assignmen
         key: '2',
         label: (
           <p className='text text-[#3b6a87] my-2' 
-          onClick={(material.assignmentType==='Assignment' ||material.assignmentType==='Material') ? ()=>router.push(`/classroom/editAssignment?assignment=${material._id}&classroom=${id}`) : ()=>handleEdit()}><AutoFixNormalIcon className='text-lg'/><span> Edit </span></p> 
+          onClick={(['Assignment','Material','Quiz'].includes(material.assignmentType)) ? ()=> { 
+            router.push(material.assignmentType==='Quiz' ? `/classroom/editAssignment/quiz?assignment=${material._id}&classroom=${id}` : `/classroom/editAssignment?assignment=${material._id}&classroom=${id}` )
+          } : ()=>handleEdit()}><AutoFixNormalIcon className='text-lg'/><span> Edit </span></p> 
         ),
       },
   ]

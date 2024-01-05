@@ -88,7 +88,6 @@ const {data:assignment}=useQuery(EDIT_ASSIGNMENT_DETAILS,{
     console.log(err)
   },
   onCompleted:(data)=>{
-    console.log(data.getOneassignment)
     setStudentchecked(data.getOneassignment.students)
     setdetails(data.getOneassignment)
   }
@@ -142,7 +141,6 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
   const [updateAssignment]=useMutation(EDIT_ASSIGNMENT,{
     client:assignmentClient,
     onError(err){
-      console.log(details)
       console.log(err)
     },
     onCompleted:()=>{

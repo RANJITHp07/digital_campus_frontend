@@ -30,4 +30,9 @@ export default function middleware(req: NextRequest) {
     const absoluteURL = new URL("/login", req.nextUrl.origin);
     return NextResponse.redirect(absoluteURL.toString());
   }
+
+  if(req.nextUrl.pathname.startsWith('/') && userToken){
+    const absoluteURL = new URL("/classroom", req.nextUrl.origin);
+    return NextResponse.redirect(absoluteURL.toString());
+  }
 }
