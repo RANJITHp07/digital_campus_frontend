@@ -23,7 +23,7 @@ export const EDIT_ASSIGNMENT = gql`
 
 
 export const DELETE_ASSIGNMENT = gql`
-  mutation deleteAssignment($id:String!) {
+  mutation deleteAssignment($id:ID!) {
     deleteAssignment(id:$id) {
       title,
         createdAt,
@@ -69,8 +69,10 @@ export const GROUPED_ASSIGNMENT=gql`
 export const ASSIGNMENT_DETAILS=gql`
    query getOneassignment($id: ID!) {
     getOneassignment(id: $id) {
+    _id,
        title,
        instruction,
+       students,
        attachment{
        content
        type

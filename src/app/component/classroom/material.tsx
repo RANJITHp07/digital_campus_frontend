@@ -177,7 +177,7 @@ function Material({material,assignment,setassignment,id}:{material:any,assignmen
     <div>
         <div className='my-4 flex justify-between items-center'>
                 <div className='flex items-center'>
-                <div className='h-11 w-11 rounded-full flex bg-yellow-900 justify-center items-center'>
+                <div className='h-11 w-11 rounded-full flex bg-[#3b6a87] justify-center items-center'>
                    <ContentPasteIcon className='text-white'/>
                 </div>
                 {

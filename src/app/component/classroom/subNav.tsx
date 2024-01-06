@@ -66,9 +66,9 @@ function SubNav({id}:{id:string}) {
                      onClick={()=>
                      handleSectionClick('people')
                      }>People</p>
-                     <p className={` ${border==='grades' && ' border-b-4 border-[#3b6a87]'} pb-3 mx-5 pt-3 text text-lg text-[#3b6a87] cursor-pointer`} onClick={()=>
+                     {/* <p className={` ${border==='grades' && ' border-b-4 border-[#3b6a87]'} pb-3 mx-5 pt-3 text text-lg text-[#3b6a87] cursor-pointer`} onClick={()=>
                       handleSectionClick('grades')
-                      }>{creator && "Grades" }</p>
+                      }>{creator && "Grades" }</p> */}
                       <p className={` ${border==='request' && ' border-b-4 border-[#3b6a87]'} pb-3 mx-5 pt-3 text text-lg text-[#3b6a87] cursor-pointer`} onClick={()=>
                        handleSectionClick('request')
                       }>{creator && "Request" }</p>
@@ -77,7 +77,7 @@ function SubNav({id}:{id:string}) {
                       }>{creator && "Submission" }</p>
                         </div>
                         <div className='mx-5 items-center flex'>
-                          {creator && <VideocamOutlinedIcon className='text-[#3b6a87] cursor-pointer text-3xl mx-3' onClick={()=>navigation.push(`/classroom/vediocall/${id}`)}/>}
+                         <VideocamOutlinedIcon className='text-[#3b6a87] cursor-pointer text-3xl mx-3' onClick={()=>navigation.push(`/classroom/vediocall/${id}`)}/>
                           <Tooltip placement="topLeft" title={"Chat"}>
                         <ForumIcon className='text-[#3b6a87] cursor-pointer' onClick={()=>dispatch(changeChatState(true))}/>
                         </Tooltip>

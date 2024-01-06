@@ -102,7 +102,6 @@ const Classroom=()=>{
         allClassroom.getAllTheClassroom.forEach((m: any) => {
         result[m._id] = { name: m.className };
       });
-      
        const e:Event[]=data.getDueDates.map((d:Event)=>{
           return {
             start: moment(`${d.dueDate.day}T00:00:00`).toDate(),
@@ -118,6 +117,7 @@ const Classroom=()=>{
             </Popover>
           }
         })
+        console.log(e)
         setEvent(e)
       }
   });
@@ -133,7 +133,7 @@ const Classroom=()=>{
             { 
               type==='calendar' && 
              <div className="w-full text-[#3b6a87]">
-            <BasicCalendar events={event}/>
+            <BasicCalendar events={ event}/>
             </div> 
             }
             <div className={`${type!=='calendar' && 'w-full'}`}>

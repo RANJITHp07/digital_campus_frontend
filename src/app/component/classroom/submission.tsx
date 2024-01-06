@@ -41,7 +41,7 @@ function Submission({id}:{id:string}) {
               </div>
                       <div className='w-full flex justify-between items-center'>
                       <div>
-                     <p className='text text-slate-600 cursor-pointer' onClick={()=>router.push(`/classroom/submitted?assignment=${m._id}`)}>{m.assignmentType}: {m.title}</p>
+                     <p className='text text-slate-600 cursor-pointer' onClick={()=>router.push(`/classroom/submitted?assignment=${m._id}&type=${m.assignmentType}`)}>{m.assignmentType}: {m.title}</p>
               
                <p className='text text-xs text-slate-500' >{format(m.createdAt)}</p>
                </div>
