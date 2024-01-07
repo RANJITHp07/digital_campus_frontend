@@ -1,5 +1,5 @@
 "use client";
-import React, { useState} from "react";
+import React, { useState } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import GroupIcon from "@mui/icons-material/Group";
@@ -7,11 +7,11 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import SchoolIcon from "@mui/icons-material/School";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { getCategory} from "@/redux/features/classroom-slice/reducer";
+import { getCategory } from "@/redux/features/classroom-slice/reducer";
 import {
   FETCH_ADDED_CLASSROOM_QUERY,
   FETCH_CLASSROOM_QUERY,
-} from "@/apis/classroom";
+} from "@/apis/classroom/query";
 import { useQuery } from "@apollo/client";
 import CategoryIcon from "@mui/icons-material/Category";
 import { ClassroomProps } from "@/@types/classroom";
@@ -20,9 +20,9 @@ import useLogout from "@/hook/uselogout";
 import useNavigation from "@/hook/useNavigation";
 
 function SidePanel() {
-  const logout=useLogout()
-  const useNavigate=useNavigation()
-  const {dispatch,appSelector}=useNavDispatch()
+  const logout = useLogout();
+  const useNavigate = useNavigation();
+  const { dispatch, appSelector } = useNavDispatch();
   const state = appSelector((state) => state.classroomReducer.open); //to open and close the sidepanel
   const checked = appSelector((state) => state.classroomReducer.category);
   const token = appSelector((state) => state.authReducer.token);
@@ -43,12 +43,14 @@ function SidePanel() {
 
   return (
     <div className={`bg-white py-5 ${state && "w-56"}`}>
-      <div className={`flex items-center p-1 cursor-pointer hover:bg-slate-200 hover:mr-3 hover:rounded-r-full`}>
+      <div
+        className={`flex items-center p-1 cursor-pointer hover:bg-slate-200 hover:mr-3 hover:rounded-r-full`}
+      >
         <HomeIcon className="mr-6  text-[#3b6a87] ml-4 " />
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() =>useNavigate('home')}
+            onClick={() => useNavigate("home")}
           >
             Home
           </p>
@@ -59,7 +61,7 @@ function SidePanel() {
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() =>useNavigate('calendar')}
+            onClick={() => useNavigate("calendar")}
           >
             Calender
           </p>
@@ -126,7 +128,7 @@ function SidePanel() {
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() => useNavigate('teaching')}
+            onClick={() => useNavigate("teaching")}
           >
             Teaching
           </p>
@@ -145,16 +147,24 @@ function SidePanel() {
                   >
                     <div
                       className={`flex w-7 h-7  ml-6 rounded-full justify-center items-center text text-white text-xs`}
-                      style={{backgroundColor: c.themeColor}}
+                      style={{ backgroundColor: c.themeColor }}
                     >
-                       { c.className && c.className[0].toUpperCase()}
+                      {c.className && c.className[0].toUpperCase()}
                     </div>
                     <div className="mx-4">
                       <p className="text-sm text text-[#3b6a87]">
-                      {c.className && c.className[0].toUpperCase() + c.className.slice(1,c.className.length).toLowerCase()}
+                        {c.className &&
+                          c.className[0].toUpperCase() +
+                            c.className
+                              .slice(1, c.className.length)
+                              .toLowerCase()}
                       </p>
                       <p className="text-xs font-sm text text-slate-500">
-                      {c.classSection && c.classSection[0].toUpperCase() + c.classSection.slice(1,c.classSection.length).toLowerCase()}
+                        {c.classSection &&
+                          c.classSection[0].toUpperCase() +
+                            c.classSection
+                              .slice(1, c.classSection.length)
+                              .toLowerCase()}
                       </p>
                     </div>
                   </div>
@@ -175,7 +185,7 @@ function SidePanel() {
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() => useNavigate('enrolled')}
+            onClick={() => useNavigate("enrolled")}
           >
             Enrolled
           </p>
@@ -194,16 +204,24 @@ function SidePanel() {
                   >
                     <div
                       className={`flex w-7 h-7  ml-6 rounded-full justify-center items-center text text-white text-xs`}
-                      style={{backgroundColor: c.themeColor}}
+                      style={{ backgroundColor: c.themeColor }}
                     >
-                      { c.className && c.className[0].toUpperCase()}
+                      {c.className && c.className[0].toUpperCase()}
                     </div>
                     <div className="mx-4">
                       <p className="text-sm text text-[#3b6a87]">
-                        {c.className && c.className[0].toUpperCase() + c.className.slice(1,c.className.length).toLowerCase()}
+                        {c.className &&
+                          c.className[0].toUpperCase() +
+                            c.className
+                              .slice(1, c.className.length)
+                              .toLowerCase()}
                       </p>
                       <p className="text-xs font-sm text text-slate-500">
-                        {c.classSection && c.classSection[0].toUpperCase() + c.classSection.slice(1,c.classSection.length).toLowerCase()}
+                        {c.classSection &&
+                          c.classSection[0].toUpperCase() +
+                            c.classSection
+                              .slice(1, c.classSection.length)
+                              .toLowerCase()}
                       </p>
                     </div>
                   </div>
@@ -218,7 +236,7 @@ function SidePanel() {
         {state && (
           <p
             className=" text-[#3b6a87] text-lg"
-            onClick={() => useNavigate('profile')}
+            onClick={() => useNavigate("profile")}
           >
             Profile
           </p>
