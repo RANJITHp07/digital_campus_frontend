@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, useState, useEffect, useRef } from "react";
+import React, { Suspense, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Image from "next/image";
 import Navbar from "../component/common/navbar";
 import Class from "../component/classroom/class";
@@ -100,39 +100,46 @@ const Classroom = () => {
       id: token.id,
     },
     onCompleted: (data) => {
-      let result: { [key: string]: { name: string } } = {};
-      allClassroom.getAllTheClassroom.forEach((m: any) => {
-        result[m._id] = { name: m.className };
-      });
-      const e: Event[] = data.getDueDates.map((d: Event) => {
-        return {
-          start: moment(`${d.dueDate.day}T00:00:00`).toDate(),
-          end: moment(`${d.dueDate.day}T${d.dueDate.time}`).toDate(),
-          title: (
-            <Popover
-              placement="right"
-              content={
-                <div>
-                  <p>Classroom: {result[d.class_id[0]].name}</p>
-                  <p>
-                    Created By{" "}
-                    {d.creator[0].toUpperCase() +
-                      d.creator.slice(1, d.creator.length)}
-                  </p>
-                </div>
-              }
-              title={<p>{d.title.toUpperCase()}</p>}
-              trigger="hover"
-            >
-              <p>{d.title}</p>
-            </Popover>
-          ),
-        };
-      });
-      console.log(e);
-      setEvent(e);
+      const events = useMemo(() => {
+    let result: { [key: string]: { name: string } } = {};
+    allClassroom?.getAllTheClassroom.forEach((m: any) => {
+      result[m._id] = { name: m.className };
+    });
+
+    return (due_dates?.getDueDates || []).map((d: Event) => ({
+      start: moment(`${d.dueDate.day}T00:00:00`).toDate(),
+      end: moment(`${d.dueDate.day}T${d.dueDate.time}`).toDate(),
+      title: (
+        <Popover
+          placement="right"
+          content={
+            <div>
+              <p>Classroom: {result[d.class_id[0]].name}</p>
+              <p>
+                Created By{" "}
+                {d.creator[0].toUpperCase() + d.creator.slice(1, d.creator.length)}
+              </p>
+            </div>
+          }
+          title={<p>{d.title.toUpperCase()}</p>}
+          trigger="hover"
+        >
+          <p>{d.title}</p>
+        </Popover>
+      ),
+    }));
+  }, [due_dates, allClassroom]);
+  setEvent(event)
     },
   });
+
+
+  const handlePaginationChange = useCallback(
+    (pageNumber: number) => {
+      setPagination(pageNumber);
+    },
+    [setPagination]
+  );
 
   return (
     <div>
@@ -383,9 +390,7 @@ const Classroom = () => {
                     allClassroom && allClassroom.getAllTheClassroom.length / 9
                   ) * 10
                 }
-                onChange={(e: number) => {
-                  setPagination(e);
-                }}
+                onChange={handlePaginationChange}
                 className="text-center mt-4"
               />
             )}
