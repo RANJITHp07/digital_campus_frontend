@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, Suspense, useReducer, useState } from "react";
+import React, { ChangeEvent, Suspense, useCallback, useMemo, useReducer, useState } from "react";
 import Image from "next/image";
 import AddIcon from "@mui/icons-material/Add";
 import { Dropdown } from "antd";
@@ -45,8 +45,8 @@ function Navbar() {
     open1,
     open2,
   } = initalstate;
-  const items: MenuProps["items"] = [
-    // items of the dropdown
+
+  const items: MenuProps["items"] = useMemo(() => [
     {
       key: "1",
       label: (
@@ -63,7 +63,8 @@ function Navbar() {
         </p>
       ),
     },
-  ];
+  ], [dispatch]);
+  
 
   //to get all the classroom names
   const { data } = useQuery(FETCH_ALL_CLASSROOM_NAMES, {
@@ -87,8 +88,7 @@ function Navbar() {
       },
     },
     onError(err) {
-      console.log(err);
-      message.info(err.graphQLErrors[0].message);
+      message.error(err.graphQLErrors[0].message);
     },
     onCompleted: () => {
       dispatch({ type: "SET_OPEN2", value: false });
@@ -99,8 +99,7 @@ function Navbar() {
   // to create class
   const [createClass] = useMutation(CREATE_CLASS, {
     onError(err) {
-      console.log(err);
-      message.info("Some error occured");
+      message.error("Some error occured");
     },
     refetchQueries: [
       { query: FETCH_CLASSROOM_QUERY, variables: { id: token.id } },
@@ -113,7 +112,7 @@ function Navbar() {
   });
 
   //fuction to create class
-  const Onsubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const Onsubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
       if (name && name.length > 20) {
@@ -142,10 +141,11 @@ function Navbar() {
     } catch (err) {
       message.info("Some error occurred");
     }
-  };
+  },
+  [createClass, name, subject, section, token.id, token.name, category]);
 
   //function to join the class
-  const handleJoin = async () => {
+  const handleJoin = useCallback(async () => {
     try {
       if (code) {
         await addRequest();
@@ -155,9 +155,9 @@ function Navbar() {
     } catch (err) {
       throw err;
     }
-  };
+  }, [addRequest, code]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     try {
       if (e.target.value.length !== 0 && filter.length > 0) {
         dispatch({ type: "SET_STATE", value: true });
@@ -189,7 +189,9 @@ function Navbar() {
     } catch (err) {
       throw err;
     }
-  };
+  },
+  [data.getAllTheClassroom, dispatch, filter, name, section]
+);
 
   return (
     <nav className="flex justify-between items-center w-full bg-white">
@@ -213,6 +215,7 @@ function Navbar() {
             height="60"
             alt="logo"
             className="mx-3"
+            loading="lazy"
           />
         </Link>
       </div>

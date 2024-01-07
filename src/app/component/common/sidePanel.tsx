@@ -18,6 +18,7 @@ import { ClassroomProps } from "@/@types/classroom";
 import { useNavDispatch } from "@/hook/useNavDispatch";
 import useLogout from "@/hook/uselogout";
 import useNavigation from "@/hook/useNavigation";
+import useFormattedCreator from "@/hook/useFormat";
 
 function SidePanel() {
   const logout = useLogout();
@@ -26,9 +27,11 @@ function SidePanel() {
   const state = appSelector((state) => state.classroomReducer.open); //to open and close the sidepanel
   const checked = appSelector((state) => state.classroomReducer.category);
   const token = appSelector((state) => state.authReducer.token);
-  const [teaching, setteaching] = useState(false);
-  const [enrolled, setenrolled] = useState(false);
-  const [category, setcategory] = useState(false);
+  const [page,setPage]=useState({
+    teaching:false,
+    enrolled:false,
+    category:false
+  })
   const { data } = useQuery(FETCH_CLASSROOM_QUERY, {
     variables: { id: token.id },
   });
@@ -73,13 +76,13 @@ function SidePanel() {
       >
         <ArrowRightIcon
           className="text-[#3b6a87] "
-          onClick={() => setcategory(!category)}
+          onClick={() => setPage((prev)=>({...prev,category:!prev.category}))}
         />
         <CategoryIcon className="mr-6  text-[#3b6a87] " />
         {state && <p className=" text-[#3b6a87] text-lg">Category</p>}
       </div>
       <hr className="mt-3 mb-3" />
-      {state && category && (
+      {state && page.category && (
         <>
           <div className="flex items-center mb-4 cursor-pointer">
             <input
@@ -116,13 +119,13 @@ function SidePanel() {
           </div>
         </>
       )}
-      {state && category && <hr className="mt-3 mb-6" />}
+      {state && page.category && <hr className="mt-3 mb-6" />}
       <div
         className={`flex items-center  mt-5 cursor-pointer hover:bg-slate-200  hover:rounded-r-full py-1 hover:w-[95%]`}
       >
         <ArrowRightIcon
           className="text-[#3b6a87] "
-          onClick={() => setteaching(!teaching)}
+          onClick={() => setPage((prev)=>({...prev,teaching:!prev.teaching}))}
         />
         <GroupIcon className="mr-6  text-[#3b6a87] " />
         {state && (
@@ -134,7 +137,7 @@ function SidePanel() {
           </p>
         )}
       </div>
-      {teaching && state && (
+      {page.teaching && state && (
         <>
           <hr className="my-3" />
           <div className="mb-6">
@@ -154,17 +157,13 @@ function SidePanel() {
                     <div className="mx-4">
                       <p className="text-sm text text-[#3b6a87]">
                         {c.className &&
-                          c.className[0].toUpperCase() +
-                            c.className
-                              .slice(1, c.className.length)
-                              .toLowerCase()}
+                          useFormattedCreator(c.className)
+                          }
                       </p>
                       <p className="text-xs font-sm text text-slate-500">
                         {c.classSection &&
-                          c.classSection[0].toUpperCase() +
-                            c.classSection
-                              .slice(1, c.classSection.length)
-                              .toLowerCase()}
+                          useFormattedCreator(c.classSection)
+                          }
                       </p>
                     </div>
                   </div>
@@ -179,7 +178,7 @@ function SidePanel() {
       >
         <ArrowRightIcon
           className="text-[#3b6a87] "
-          onClick={() => setenrolled(!enrolled)}
+          onClick={() => setPage((prev)=>({...prev,enrolled:!prev.enrolled}))}
         />
         <SchoolIcon className="mr-6  text-[#3b6a87] " />
         {state && (
@@ -191,7 +190,7 @@ function SidePanel() {
           </p>
         )}
       </div>
-      {enrolled && state && (
+      {page.enrolled && state && (
         <>
           <hr className="my-3" />
           <div className="mb-6">
@@ -211,17 +210,13 @@ function SidePanel() {
                     <div className="mx-4">
                       <p className="text-sm text text-[#3b6a87]">
                         {c.className &&
-                          c.className[0].toUpperCase() +
-                            c.className
-                              .slice(1, c.className.length)
-                              .toLowerCase()}
+                          useFormattedCreator(c.className)
+                          }
                       </p>
                       <p className="text-xs font-sm text text-slate-500">
                         {c.classSection &&
-                          c.classSection[0].toUpperCase() +
-                            c.classSection
-                              .slice(1, c.classSection.length)
-                              .toLowerCase()}
+                          useFormattedCreator(c.classSection)
+                          }
                       </p>
                     </div>
                   </div>

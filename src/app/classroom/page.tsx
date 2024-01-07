@@ -75,7 +75,7 @@ const Classroom = () => {
   const { loading, data } = useQuery(FETCH_CLASSROOM_QUERY, {
     variables: { id: token.id },
     onError(err) {
-      console.log(err);
+      throw err
     },
     onCompleted: () => {
       setCreatedClasroom(data.getCreatorClassroom.length);

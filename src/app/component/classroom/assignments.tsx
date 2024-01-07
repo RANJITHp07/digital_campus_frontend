@@ -40,6 +40,7 @@ import {
 import { useNavDispatch } from "@/hook/useNavDispatch";
 import { UPDATE_CLASS } from "@/apis/classroom/mutation";
 import { CREATE_ASSIGNMENT } from "@/apis/assignment/mutation";
+import useFormattedCreator from "@/hook/useFormat";
 
 function Assignment({ id }: { id: string }) {
   const { dispatch, appSelector } = useNavDispatch();
@@ -242,19 +243,11 @@ function Assignment({ id }: { id: string }) {
             <div className="text-white  mx-4 w-full items-center flex justify-between absolute bottom-0">
               <div className="mb-3">
                 <p className="font-medium text-3xl text-white">
-                  {data &&
-                    data.getClassroomDetails.className[0].toUpperCase() +
-                      data.getClassroomDetails.className
-                        .slice(1, data.getClassroomDetails.className.length)
-                        .toLowerCase()}
+                  {useFormattedCreator(data.getClassroomDetails.className)}
                 </p>
                 <p className="text-sm text">
                   By{" "}
-                  {data &&
-                    data.getClassroomDetails.creator[0].toUpperCase() +
-                      data.getClassroomDetails.creator
-                        .slice(1, data.getClassroomDetails.creator.length)
-                        .toLowerCase()}
+                  {data && useFormattedCreator(data.getClassroomDetails.creator)}
                 </p>
               </div>
               <InfoOutlinedIcon
