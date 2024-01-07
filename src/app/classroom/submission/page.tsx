@@ -127,10 +127,10 @@ function Submission() {
           {
             (type==='Assignment' || type==='Material' ) && <Material assignment={data && data.getOneassignment}/>
           }
-          {
+          {/* {
             type!=='Material' && 
             <button className='text-white bg-[#3b6a87] p-3 w-11/12 lg:w-3/4 my-5 mx-3 text-center text rounded-md'>Submit</button>
-          }
+          } */}
         
         <div className='box_shadow p-3 mx-3 w-11/12 lg:w-3/4 rounded-md'>
           <div className={`flex items-center ${comment.length>0 && 'mb-6'}`}>

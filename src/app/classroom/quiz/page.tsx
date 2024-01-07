@@ -26,7 +26,6 @@ function Quiz() {
   const [editoption,setEditoption]=useState('')
   const [edit,setEdit]=useState(false)
 
-  console.log(editAnswer)
   const items: MenuProps['items'] = [
     {
       label: (
@@ -87,9 +86,6 @@ function Quiz() {
       //classroom details
       const { data:classroom } = useQuery(FETCH_CLASSROOM_DETAILS, {
         variables: { id: id },
-        onCompleted:(data)=>{
-          console.log(data)
-        }
       });
 
 
@@ -201,7 +197,7 @@ function Quiz() {
       const [createAssignment]=useMutation(CREATE_ASSIGNMENT,
         {
           onError(err){
-            console.log(err)
+            message.info("Some error occurred")
             
           },
           onCompleted:()=>{
@@ -239,7 +235,6 @@ function Quiz() {
        if(topic && topic.trim().length>0){
          assignment={...assignment,mainTopic:topic}
        }
-       console.log(assignment)
        await createAssignment({
         client:assignmentClient,
         variables:{

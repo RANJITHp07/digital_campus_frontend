@@ -18,6 +18,7 @@ import { FETCH_CLASSROOM_DETAILS} from '@/apis/classroom';
 import { useAppSelector } from '@/redux/store';
 import Material from './material';
 
+
 function Classwork({id}:{id:string}) {
 
   const options=["A","B","C","D"]
@@ -246,7 +247,7 @@ function Classwork({id}:{id:string}) {
                 }
            
            {
-             a.assignments.map((a:any)=>{
+             a.assignments.map((a:any,index:number)=>{
               return (
                 <>
                    <Material material={a} assignment={assignment} setassignment={setassignment} id={id}/>

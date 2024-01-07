@@ -7,6 +7,7 @@ import { FETCH_MAINTOPIC } from '@/apis/assignment';
 import { assignmentClient } from '@/app/providers/ApolloProvider';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import { DatePicker, TimePicker, message } from 'antd';
+import { Dayjs } from 'dayjs';
 
 function Title({id,settitle,topic,settopic,settimer,setdate}:
   {id:string,settitle:React.Dispatch<React.SetStateAction<string>>,
@@ -24,13 +25,20 @@ function Title({id,settitle,topic,settopic,settimer,setdate}:
       id:id
     },
     onError(err){
-      console.log(err)
+      message.info("Some error occurred")
     },
   })
 
-  const handleDateChange = (date: any, dateString: any) => {
+  const handleDateChange = (value: Dayjs | null, dateString: string) => {
+    if (value === null) {
+      return;
+    }
     const selectedDate = new Date(dateString);
     const currentDate = new Date();
+
+    selectedDate.setHours(0, 0, 0, 0);
+  currentDate.setHours(0, 0, 0, 0);
+
     if (selectedDate < currentDate) {
       message.error("Selected date is before the current date");
       return
@@ -82,7 +90,7 @@ function Title({id,settitle,topic,settopic,settimer,setdate}:
     </div>
     
     <div className='p-5'>
-    <input type='text' placeholder='Title' className='text-slate-500 mb-4  focus:outline-none border-b-2 text-2xl placeholder-slate-500' onChange={(e:any)=>settitle(e.target.value)}/>
+    <input type='text' placeholder='Title' className='text-slate-500 mb-4  focus:outline-none border-b-2 text-2xl placeholder-slate-500' onChange={(e:ChangeEvent<HTMLInputElement>)=>settitle(e.target.value)}/>
     <p className='mt-3 text text-slate-500'>Instructions</p>
     <ul className='text-slate-500 text'>
       <li><FiberManualRecordIcon className='text-xs'/> For checkbox questions, choose one or more correct options.</li>

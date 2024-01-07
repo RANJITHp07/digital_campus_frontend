@@ -47,7 +47,6 @@ function Chat({length,id,classId,socket}:{length:number,id:string,classId:string
   const [isHovered,setIshovered]=useState(false)
   const [desc,setdesc]=useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [loading,setloading]=useState(true)
 
 
   pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -285,7 +284,7 @@ function Chat({length,id,classId,socket}:{length:number,id:string,classId:string
                       }
               {
                 m.text.type==='photo' && 
-                <a href={m.text.text} target="_blank" rel="noopener noreferrer" ><Image src={m.text.text}  width={300} height={300} alt='profile' className='text-center w-[19rem] cursor-pointer  object-contain' onLoad={()=>setloading(false)}/></a>
+                <a href={m.text.text} target="_blank" rel="noopener noreferrer" ><Image src={m.text.text}  width={300} height={300} alt='profile' className='text-center w-[19rem] cursor-pointer  object-contain' /></a>
                 
               }
               {
@@ -350,12 +349,12 @@ function Chat({length,id,classId,socket}:{length:number,id:string,classId:string
      }
 
           <div className=' h-[8%] flex items-center justify-between bg-slate-100'>
-          {loading && (
+          {/* {loading && (
         
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <CircularProgress className='text-slate-300'/>
         </div>
-      )}
+      )} */}
             <EmojiEmotionsIcon className='mx-3 text-[#4b606d] cursor-pointer' onClick={()=>setemojii(!emojii)}/>
             <input type='text' className='w-full h-full focus:outline-none bg-slate-100 text' onKeyPress={handleKeyPress} value={newMessage}  placeholder='Send message ...' onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     handleInput(e);

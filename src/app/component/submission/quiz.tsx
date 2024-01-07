@@ -2,6 +2,8 @@
 import React,{useState,useEffect} from 'react'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { Quiz } from '@/@types/assignment';
+import LoadinPage from '../common/loadinPage';
+import Image from 'next/image';
 
 interface QuizSubmissionProps{
     title:string,
@@ -16,7 +18,7 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
     const [answers,setAnswers]=useState<any>({})
     const [timeRemaining, setTimeRemaining] = useState('');
     const [isOpen, setIsOpen] = useState(false);
-    const [isLoading,setIsLoading]=useState(false)
+    const [isLoading,setIsLoading]=useState(true)
 
     
 
@@ -31,8 +33,6 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
     const isSameDate = currentDate.getFullYear() === quizDate.getFullYear() &&
                        currentDate.getMonth() === quizDate.getMonth() &&
                        currentDate.getDate() === quizDate.getDate();
-        console.log(isSameDate)
-        console.log("Jiii")
        
          if(isSameDate){
           const openingTimesUTC = dueDate.timer.map(time => {
@@ -57,7 +57,7 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
             setTimeRemaining(`${hours}:${minutes}:${seconds}`);
           }
         };
-        setIsLoading(true)
+        setIsLoading(false)
         }
         const interval = setInterval(checkOpeningHours, 1000);
 
@@ -96,26 +96,45 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
             }));
         }
     };
+
+
+    const handleSubmit=()=>{
+         console.log(answers)
+    }
     
   return (
     <div >
         {
-            !isOpen ? <div>
-                <div className="mx-auto w-11/12 box_shadow">
+           isLoading ? <LoadinPage/> : !isOpen ? <div>
+                <div className="mx-auto w-11/12 box_shadow my-8 rounded-md  ">
                 <div className='bg-[#3b6a87] p-4 rounded-t-md flex justify-between items-center'>
       <p className='text-white text text-xl'>Quiz</p>
+      <p className='text text-red-300 mx-5'>Quiz not yet started</p>
     </div>
-    
+    <div className='p-5'>
+        <p className='text-slate-500 mb-4  text-2xl '>{title[0].toUpperCase() + title.slice(1,title.length).toLowerCase()}</p>
+    <p className='mt-3 text text-slate-500'>Instructions</p>
+    <ul className='text-slate-500 text'>
+      <li><FiberManualRecordIcon className='text-xs'/> For checkbox questions, choose one or more correct options.</li>
+      <li className='my-1'><FiberManualRecordIcon className='text-xs'/> For radio questions, select the single correct answer.</li>
+      <li className='my-1'><FiberManualRecordIcon className='text-xs'/> Carefully read all questions and options before choosing.</li>
+      <li className='my-1'><FiberManualRecordIcon className='text-xs'/> Submit your answers before the timer expires.</li>
+      <li className='my-1'><FiberManualRecordIcon className='text-xs'/> Review your choices; changes can't be made after submission.</li>
+      <li className='my-1'><FiberManualRecordIcon className='text-xs'/>  Points are awarded based on correct answers.</li>
+    </ul>
     </div>
-            </div>
+    <Image src={'/timer.gif'} width={ 300} height={300} alt='photo' className='mx-auto opacity-60'/>
+    </div>
+    </div>
         :
         <>
         <div className=" w-11/12 mx-auto mt-8  box_shadow rounded-md relative">
         <div className='bg-[#3b6a87] p-4 rounded-t-md flex justify-between items-center'>
-      <p className='text-white text text-xl'>Quiz{timeRemaining}</p>
+      <p className='text-white text text-xl'>Quiz</p>
+      <p className='text text-white'>{timeRemaining}</p>
     </div>
     <div className='p-5'>
-        <p className='text-slate-500 mb-4  text-2xl '>{title[0].toUpperCase() + title.slice(0,title.length).toLowerCase()}</p>
+        <p className='text-slate-500 mb-4  text-2xl '>{title[0].toUpperCase() + title.slice(1,title.length).toLowerCase()}</p>
     <p className='mt-3 text text-slate-500'>Instructions</p>
     <ul className='text-slate-500 text'>
       <li><FiberManualRecordIcon className='text-xs'/> For checkbox questions, choose one or more correct options.</li>
@@ -155,7 +174,7 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
     </div>
      
     <div className='flex justify-end w-11/12 mx-auto'>
-        <button className='p-2 bg-[#3b6a87]  text text-white rounded-md mb-4'>Submit</button>
+        <button className='p-2 bg-[#3b6a87]  text text-white rounded-md mb-4' onClick={handleSubmit}>Submit</button>
     </div>
     </>
 }

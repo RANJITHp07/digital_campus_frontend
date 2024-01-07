@@ -71,20 +71,15 @@ function Payment() {
             <p className='text my-3 text-[#194866]'>it's a journey of discovery, empowerment, and limitless opportunities. Elevate your journey with our exclusive subscription, unlocking a world where innovation meets education, and each moment is a step towards a brighter future. Join us to redefine your learning adventure—subscribe now and embark on a digital campus advantage like never before. Your gateway to knowledge, connectivity, and unparalleled growth awaits!</p>
           </div>
           <div className='w-1/2'>
-            <div className='p-2 flex items-center w-10/12 mx-auto py-6 pr-4 my-5 border-2'>
-                <input type='radio'  className='text-xl mr-5'/>
-            <div className='box_shadow w-full p-5 text text-[#194866] '>
-                <p className='text-2xl'>Free Trial</p>
-                <p>No online class availble</p>
-                <p>Only two classrooms available</p>
-              </div>
-            </div>
-              <div className='box_shadow w-3/4 mx-auto my-5 p-5'>
+              <div className='box_shadow w-3/4 mx-auto my-5 p-5 text text-slate-600'>
                 <p>6 month subscription</p>
                 <p>online class availble</p>
                 <p>Infinte number of classrooms avaible</p>
+                <button className='w-full bg-green-600 text-white p-2 my-3 ' onClick={displayRazorpay}>Subscribe</button>
               </div>
+              
           </div>
+          
           </div>
         </div>
     );
