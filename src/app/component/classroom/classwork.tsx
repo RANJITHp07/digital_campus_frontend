@@ -246,7 +246,7 @@ function Classwork({ id }:ClassworkProps) {
                     className="text-[#3b6a87] cursor-pointer"
                     onClick={() => {
                       setAssignment(data.getgroupedAssignment);
-                      setState(true);
+                      setState(!state);
                     }}
                   />
                 </div>

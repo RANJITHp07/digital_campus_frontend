@@ -3,7 +3,9 @@ import AutoFixNormalIcon from "@mui/icons-material/AutoFixNormal";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import ContentPasteIcon from "@mui/icons-material/ContentPaste";
+import LiveHelpOutlinedIcon from "@mui/icons-material/LiveHelpOutlined";
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
+import PollIcon from "@mui/icons-material/Poll";
 import { format } from "timeago.js";
 import { Dropdown, MenuProps, Modal, message } from "antd";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -21,6 +23,9 @@ import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutl
 import DoneOutlined from "@mui/icons-material/DoneOutlined";
 import { useNavDispatch } from "@/hook/useNavDispatch";
 import useFormattedCreator from "@/hook/useFormat";
+import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
+import QuizIcon from '@mui/icons-material/Quiz';
+import AssignmentIcon from "@mui/icons-material/Assignment";
 
 interface MaterialProps{
   material:  any;
@@ -191,9 +196,9 @@ function Material({
   }, [deleteAssignment]);
 
 
-  const items: MenuProps["items"] = useMemo(() => [
+  const items: MenuProps['items'] = useMemo(() => [
     {
-      key: "1",
+      key: '1',
       label: (
         <p onClick={handleDelete}>
           <span className="text text-[#3b6a87] my-2">
@@ -203,13 +208,11 @@ function Material({
       ),
     },
     {
-      type: "divider",
-    },
-    {
-      key: "2",
+      type: ["Assignment", "Material", "Quiz","Polling"].includes(material.assignmentType) ? '' : 'item',
+      key: '2',
       label: (
         <p
-          className="text text-[#3b6a87] my-2"
+          className={`text text-[#3b6a87] my-2 ${ !["Assignment", "Material", "Quiz","Polling"].includes(material.assignmentType) && "hidden"}`}
           onClick={
             ["Assignment", "Material", "Quiz"].includes(material.assignmentType)
               ? () => {
@@ -234,13 +237,35 @@ function Material({
       <div className="my-4 flex justify-between items-center">
         <div className="flex items-center">
           <div className="h-11 w-11 rounded-full flex bg-[#3b6a87] justify-center items-center">
-            <ContentPasteIcon className="text-white" />
+          <div
+                          className={`w-12 h-12 rounded-full flex justify-center items-center`}
+                          style={{ backgroundColor: text[1] }}
+                        >
+                          {material.assignmentType === "Announcement" && (
+                            <NewReleasesIcon className="text-white text-xl" />
+                          )}
+                          {material.assignmentType === "Question" && (
+                            <LiveHelpOutlinedIcon className="text-white text-xl" />
+                          )}
+                          {material.assignmentType === "Assignment" && (
+                            <AssignmentIcon className="text-white text-xl" />
+                          )}
+
+                          {material.assignmentType === "Material" && (
+                            <MenuBookOutlinedIcon className="text-white text-xl" />
+                          )}
+                          {material.assignmentType === "Polling" && (
+                            <PollIcon className="text-white text-xl" />
+                          )}
+                          {material.assignmentType === "Quiz" && (
+                            <QuizIcon className="text-white text-xl" />
+                          )}
+                        </div>
           </div>
           {material.assignmentType === "Announcement" ? (
             <div>
               <p className="mx-3 text">Announcment : {material.title}</p>
-              <p className="text-xs text-slate-400 text">
-                {" "}
+              <p className="text-xs text-slate-400 text mx-4">
                 {format(material.createdAt)}
               </p>
             </div>
@@ -254,13 +279,12 @@ function Material({
                   )
                 }
               >
-                {material.assignmentType} for this chapter{" "}
+                {material.assignmentType}  has been assigned{" "}
                 <span className="text-xs text-slate-400">
                   ({material.title})
                 </span>
               </p>
               <p className="text-xs text-slate-400 text mx-4 ">
-                {" "}
                 {format(material.createdAt)}
               </p>
             </div>

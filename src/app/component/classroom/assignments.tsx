@@ -29,6 +29,7 @@ import { Dropdown } from "antd";
 import MenuBookOutlinedIcon from "@mui/icons-material/MenuBookOutlined";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import ShareIcon from "@mui/icons-material/Share";
+import QuizIcon from '@mui/icons-material/Quiz';
 import {
   EmailIcon,
   EmailShareButton,
@@ -366,6 +367,9 @@ function Assignment({ id }: AssignmentProps) {
                           )}
                           {m.assignmentType === "Polling" && (
                             <PollIcon className="text-white text-xl" />
+                          )}
+                          {m.assignmentType === "Quiz" && (
+                            <QuizIcon className="text-white text-xl" />
                           )}
                         </div>
                       </div>

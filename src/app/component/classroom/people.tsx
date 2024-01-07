@@ -111,6 +111,7 @@ function People({id,code}:PeopleProps) {
   //to send inivitation to students
   const [sendInvitation] =useMutation(SEND_INVITATION,{
     onError(err){
+      console.log(err)
       message.error("Some error occurred")
     },
     onCompleted:()=>{
@@ -157,7 +158,7 @@ function People({id,code}:PeopleProps) {
                     <>
             <div className='flex my-4 items-center mx-4 justify-between' key={admin.id}>
                       <div className='flex items-center'>
-                      <Image src={'/profile-logo.jpg'} width={35} height={35} alt='profile' className='rounded-full'/>
+                      <Image src={ admin.profile ? admin.profile:'/profile-logo.jpg'} width={35} height={35} alt='profile' className='rounded-full'/>
               <p className='mx-5 text text-sm text-slate-900'>{admin.username}</p>
                       </div>
                       {
@@ -199,7 +200,7 @@ function People({id,code}:PeopleProps) {
                     <>
                     <div className='flex my-4 items-center mx-4 justify-between' key={user.id}>
                       <div className='flex items-center'>
-                      <Image src={'/profile-logo.jpg'} width={35} height={35} alt='profile' className='rounded-full'/>
+                      <Image src={user.profile? user.profile : '/profile-logo.jpg'} width={35} height={35} alt='profile' className='rounded-full'/>
               <p className='mx-5 text text-sm text-slate-900'>{user.username}</p>
                       </div>
                       {
@@ -234,7 +235,7 @@ function People({id,code}:PeopleProps) {
                     <>
                     <div className='flex my-4 items-center mx-4 justify-between' key={user.id}>
                       <div className='flex items-center'>
-                      <Image src={'/profile-logo.jpg'} width={35} height={35} alt='profile' className='rounded-full'/>
+                      <Image src={user.profile ? user.profile:'/profile-logo.jpg'} width={35} height={35} alt='profile' className='rounded-full'/>
               <p className='mx-5 text text-sm text-slate-900'>{user.username}</p>
                       </div>
                       {
