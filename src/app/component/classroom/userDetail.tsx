@@ -5,7 +5,11 @@ import { CircularProgress } from '@mui/material'
 import Image from 'next/image'
 import React,{useEffect, useState} from 'react'
 
-function UserDetail({email}:{email:string}) {
+interface UserDetailProps{
+  email:string
+}
+
+function UserDetail({email}:UserDetailProps) {
     const [user,setUser]=useState<UsersProps>({})
     const [loading,setLoading]=useState(true)
     

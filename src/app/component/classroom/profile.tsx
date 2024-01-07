@@ -31,7 +31,12 @@ import LoadinPage from '../common/loadinPage';
 const ASPECT_RATIO = 1;
 const MIN_DIMENSION = 200;
 
-function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,createdClassroom:number}) {
+interface ProfileProps{
+  addedClassroom:number,
+  createdClassroom:number
+}
+
+function Profile({addedClassroom,createdClassroom}:ProfileProps) {
   const token=useAppSelector((state)=>state.authReducer.token)
   const [initalstate, dispatch] = useReducer(reducer, initialState);
   const [crop, setCrop] = useState<any>();
@@ -185,7 +190,7 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
   return (
     <div>
     {
-    loading ? <LoadinPage/> : <>
+    loading ? <div className='w-11/12'><LoadinPage/></div> : <>
     <div className=" mx-5 lg:w-11/12 box_shadow mt-9 lg:mx-auto rounded-lg relative group ">
       <div className='relative h-1/2'>
       <div 

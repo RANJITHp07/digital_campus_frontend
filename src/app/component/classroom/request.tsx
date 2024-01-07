@@ -1,17 +1,17 @@
 'use client'
-import React,{useState} from 'react'
+import React,{useCallback, useState} from 'react'
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { Modal, Tooltip, message } from 'antd';
-import { ADD_REQUEST, ADD_STUDENT, FETCH_REQUEST_DETAILS, REMOVE_REQUEST} from '@/apis/classroom';
+import { ADD_STUDENT, REMOVE_REQUEST} from '@/apis/classroom/mutation';
 import { useMutation, useQuery } from '@apollo/client';
-import { useAppSelector } from '@/redux/store';
 import PersonIcon from '@mui/icons-material/Person';
 import UserDetail from './userDetail';
 import Image from 'next/image'
 import LoadinPage from '../common/loadinPage';
 import { RequestUser } from '@/@types/users';
+import { FETCH_REQUEST_DETAILS } from '@/apis/classroom/query';
 
 interface RequestProps{
   id:string,
@@ -29,7 +29,6 @@ function Request({id,code}:RequestProps) {
   ///to  join into the class
    const [joinStudent]=useMutation(ADD_STUDENT,{
       onError(err){
-        console.log(err)
            message.info(err.graphQLErrors[0].message)
       },
       refetchQueries: [{ query:FETCH_REQUEST_DETAILS ,variables:{id:id}}
@@ -52,8 +51,7 @@ function Request({id,code}:RequestProps) {
 
    const [removeRequest]=useMutation(REMOVE_REQUEST,{
     onError(err){
-      console.log(err)
-      message.info("Some error occured")
+      message.error("Some error occured")
     },
     refetchQueries: [{ query:FETCH_REQUEST_DETAILS ,variables:{id:id}}],
     onCompleted: () => {
@@ -61,28 +59,30 @@ function Request({id,code}:RequestProps) {
     }
    })
 
-   const handleRemoverequest=(p:RequestUser)=>{
-    console.log(p)
-     const {__typename,...data}=p
-      removeRequest({
-        variables:{
-          request:{
-            ...data,
-            code:code
-          }
-        }
-      })
-   }
-
-
-   const handleJoin=async(id:string)=>{
-       await joinStudent({
-        variables:{
-          userId:id,
-          code:code
-        }
-       })
-   }
+   //to remove the request
+   const handleRemoverequest = useCallback((p: RequestUser) => {
+    console.log(p);
+    const { __typename, ...data } = p;
+    removeRequest({
+      variables: {
+        request: {
+          ...data,
+          code: code,
+        },
+      },
+    });
+  }, [removeRequest, code]);
+  
+  //to allow the student to join
+  const handleJoin = useCallback(async (id: string) => {
+    await joinStudent({
+      variables: {
+        userId: id,
+        code: code,
+      },
+    });
+  }, [joinStudent, code]);
+  
 
   return (
     <div className='flex justify-center'>
@@ -100,7 +100,6 @@ function Request({id,code}:RequestProps) {
             data && data.getClassroomDetails.request.map((s:RequestUser)=>{
               return (
                 <>
-                {console.log(s)}
                 <div className='flex items-center justify-between text-slate-500'>
               <p className='mx-5 text  '><PersonIcon/> {s.name}</p>
               <div>

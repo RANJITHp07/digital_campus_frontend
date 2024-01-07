@@ -190,7 +190,7 @@ function Navbar() {
       throw err;
     }
   },
-  [data.getAllTheClassroom, dispatch, filter, name, section]
+  [data, dispatch, filter, name, section]
 );
 
   return (

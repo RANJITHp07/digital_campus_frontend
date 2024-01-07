@@ -1,5 +1,5 @@
 'use client'
-import { FETCH_ASSIGNMENT_DETAILS } from '@/apis/assignment'
+import { FETCH_ASSIGNMENT_DETAILS } from '@/apis/assignment/query'
 import { assignmentClient } from '@/app/providers/ApolloProvider'
 import { useQuery } from '@apollo/client'
 import PollIcon from '@mui/icons-material/Poll';

@@ -11,7 +11,12 @@ import { useAppSelector } from '@/redux/store';
 import { GET_PARTICIPANTS } from '@/apis/classroom/query';
 import { ClassroomParticipants } from '@/@types/classroom';
 
-function People({id,code}:{id:string,code:string}) {
+interface PeopleProps{
+  id:string,
+  code:string
+}
+
+function People({id,code}:PeopleProps) {
 
   const[open,setopen]=useState(false)
   const [open1,setopen1]=useState(false)
