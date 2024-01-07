@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, ChangeEvent, Suspense } from "react";
+import React, { useState, ChangeEvent, Suspense, useCallback, useMemo } from "react";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
@@ -57,7 +57,60 @@ function Assignment({ id }: { id: string }) {
   const [background, setbackground] = useState("");
   const [annocument, setannouncment] = useState("");
 
-  const items: MenuProps["items"] = [
+  //to fetch the details of the classroom
+  const { loading, data } = useQuery(FETCH_CLASSROOM_DETAILS, {
+    variables: { id: id },
+    onCompleted: (data) => {
+      dispatch(
+        changeToCreator(data.getClassroomDetails.admins.includes(token.id))
+      );
+      setbackground(data.getClassroomDetails.backgroundPicture);
+      setbg(data.getClassroomDetails.backgroundPicture);
+      const themeColorKey = data.getClassroomDetails
+        .themeColor as keyof typeof themeText;
+      const textColorClass = themeText[themeColorKey];
+      setText([textColorClass, themeColorKey]);
+    },
+  });
+
+    //to update the classroom
+    const [updateClass] = useMutation(UPDATE_CLASS, {
+      onError(err) {
+        message.error("Some error occured");
+      },
+      onCompleted() {
+        setopen(false);
+      },
+    });
+
+  //to copy the code of the classroom
+  const handleCopyClick = useCallback(() => {
+    navigator.clipboard
+      .writeText(data.getClassroomDetails.classCode)
+      .then(() => {
+        message.info("Copied successfully");
+      })
+      .catch((err) => {
+        console.error("Unable to copy text to clipboard:", err);
+      });
+  }, [data]);
+
+  
+  //to block the students from entering the
+  const handleBlock = useCallback(async () => {
+    await updateClass({
+      variables: {
+        id: id,
+        update: {
+          block: true,
+        },
+      },
+    });
+  }, [id, updateClass]);
+
+
+
+  const items: MenuProps["items"] = useMemo(() => [
     {
       key: "1",
       label: (
@@ -82,22 +135,10 @@ function Assignment({ id }: { id: string }) {
         </p>
       ),
     },
-  ];
+  ], [handleBlock, handleCopyClick, setshare]);
+  
 
-  const { loading, data } = useQuery(FETCH_CLASSROOM_DETAILS, {
-    variables: { id: id },
-    onCompleted: (data) => {
-      dispatch(
-        changeToCreator(data.getClassroomDetails.admins.includes(token.id))
-      );
-      setbackground(data.getClassroomDetails.backgroundPicture);
-      setbg(data.getClassroomDetails.backgroundPicture);
-      const themeColorKey = data.getClassroomDetails
-        .themeColor as keyof typeof themeText;
-      const textColorClass = themeText[themeColorKey];
-      setText([textColorClass, themeColorKey]);
-    },
-  });
+
 
   const { data: allAssignment } = useQuery(FETCH_ASSIGNMENT_DETAILS, {
     client: assignmentClient,
@@ -110,8 +151,7 @@ function Assignment({ id }: { id: string }) {
       { query: FETCH_ASSIGNMENT_DETAILS, variables: { id: id } },
     ],
     onError(err) {
-      console.log(err);
-      message.info("Some error");
+      message.error("Some error");
     },
     onCompleted: () => {
       setannouncment("");
@@ -127,45 +167,29 @@ function Assignment({ id }: { id: string }) {
       assignmentType: "Announcement",
       creator: token.name,
     };
-    console.log(data.getClassroomDetails);
     await createAssignment({
       variables: {
         assignment: assignment,
       },
     });
   };
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleClick();
-      setannouncment("");
-    }
-  };
 
-  //to update the classroom
-  const [updateClass] = useMutation(UPDATE_CLASS, {
-    onError(err) {
-      console.log(err);
-      message.info("Some error occured");
-    },
-    onCompleted() {
-      setopen(false);
-    },
-  });
 
-  //to block the students from entering the
-  async function handleBlock() {
-    await updateClass({
-      variables: {
-        id: id,
-        update: {
-          block: true,
-        },
-      },
-    });
-  }
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Enter") {
+        handleClick();
+        setannouncment("");
+      }
+    },
+    [handleClick]
+  );
+
+
+
 
   //to save the updates
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     try {
       if (file) {
         const imageRef = ref(storage, `images/${file.name + v4()}`);
@@ -190,30 +214,24 @@ function Assignment({ id }: { id: string }) {
         });
       }
     } catch (err: any) {
-      message.info(err);
+      message.info(err.message);
     }
-  };
+  }, [file, id, text, bg, updateClass]);
 
   //to handle the theme selection
-  const handleDivClick = (c: string) => {
-    const updatedThemeColor = Object.fromEntries(
-      Object.entries(color).map(([key]) => [key, key === c])
-    );
-    const colorText = (themeText as any)[c] as string;
-    setText([colorText, c]);
-    setColor(updatedThemeColor);
-  };
+  const handleDivClick = useCallback(
+    (c: string) => {
+      const updatedThemeColor = Object.fromEntries(
+        Object.entries(color).map(([key]) => [key, key === c])
+      );
+      const colorText = (themeText as any)[c] as string;
+      setText([colorText, c]);
+      setColor(updatedThemeColor);
+    },
+    [color, themeText]
+  );
 
-  function handleCopyClick() {
-    navigator.clipboard
-      .writeText(data.getClassroomDetails.classCode)
-      .then(() => {
-        message.info("Copied successfully");
-      })
-      .catch((err) => {
-        console.error("Unable to copy text to clipboard:", err);
-      });
-  }
+
 
   return (
     <div className="xl:mx-24 lg:mx-24 xm:mx-12 md:mx-6 mx-5 h-min-screen">

@@ -30,16 +30,17 @@ import {
   REMOVE_STUDENT,
   UPDATE_CLASSROOM_DETAILS,
 } from "@/apis/classroom/mutation";
+import useFormattedCreator from "@/hook/useFormat";
 
 function Class({
   className,
   creator,
   id,
-  code,
+  classCode:code,
   type,
   bg,
-  subject,
-  section,
+  classSubject:subject,
+  classSection:section,
   profile,
   block,
 }: ClassProps) {
@@ -230,7 +231,7 @@ function Class({
           }
         >
           <Image
-            src={profile === "" ? "/profile-logo.jpg" : profile}
+            src={profile === "" ? "/profile-logo.jpg" : profile as string}
             width={profile === "" ? 120 : 140}
             height={profile === "" ? 120 : 140}
             alt="profile"
@@ -248,11 +249,7 @@ function Class({
       >
         <div>
           <p>
-            {classroom.className.length > 0 &&
-              classroom.className[0].toUpperCase() +
-                classroom.className
-                  .slice(1, classroom.className.length)
-                  .toLowerCase()}
+            {classroom.className && useFormattedCreator(classroom.className)}
           </p>
           <p className="text-xs">{creator}</p>
         </div>

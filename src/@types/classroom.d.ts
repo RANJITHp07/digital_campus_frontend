@@ -16,20 +16,18 @@ export interface ClassroomProps {
   themeColor?: string;
 }
 
-export interface ClassProps {
-  className: string;
-  creator: string;
+export interface ClassProps extends Omit<ClassroomProps, '_id' | 'createdAt'> {
   id: string;
-  code?: string;
   type: boolean;
   bg: string;
-  subject?: string;
-  section?: string;
-  profile: string;
-  block?: boolean;
 }
 
-export type Polling = {
+
+export type PollingProps = {
   number: number;
   question: string;
+};
+
+export type ImprovedPolling = Omit<PollingProps, 'number'> & {
+  id: string;
 };

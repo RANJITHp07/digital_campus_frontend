@@ -186,9 +186,9 @@ const Classroom = () => {
                               )
                             }
                             bg={c.backgroundPicture as string}
-                            subject={c.classSubject}
-                            section={c.classSection}
-                            code={c.classCode}
+                            classSubject={c.classSubject}
+                            classSection={c.classSection}
+                            classCode={c.classCode}
                             profile={c.profile as string}
                           />
                         </div>
@@ -244,9 +244,9 @@ const Classroom = () => {
                               )
                             }
                             bg={c.backgroundPicture as string}
-                            subject={c.classSubject}
-                            section={c.classSection}
-                            code={c.classCode}
+                            classSubject={c.classSubject}
+                            classSection={c.classSection}
+                            classCode={c.classCode}
                             profile={c.profile as string}
                             block={c.blockClassroom}
                           />
@@ -297,9 +297,9 @@ const Classroom = () => {
                             id={c._id as string}
                             type={true}
                             bg={c.backgroundPicture as string}
-                            subject={c.classSubject as string}
-                            section={c.classSection as string}
-                            code={c.classCode}
+                            classSubject={c.classSubject}
+                            classSection={c.classSection}
+                            classCode={c.classCode}
                             profile={c.profile as string}
                           />
                         </div>
@@ -345,7 +345,7 @@ const Classroom = () => {
                             className={c.className}
                             creator={c.creator}
                             id={c._id}
-                            code={c.classCode}
+                            classCode={c.classCode}
                             type={false}
                             bg={c.backgroundPicture}
                             profile={c.profile as string}

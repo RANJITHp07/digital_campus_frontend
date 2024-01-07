@@ -1,5 +1,5 @@
 export interface Question {
-  type: string;
+  type: 'checkbox' | 'radio';
   question: string;
   answers: string[];
   realAnswers: any[];
