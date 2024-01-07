@@ -1,10 +1,9 @@
 "use client";
 import AutoFixNormalIcon from "@mui/icons-material/AutoFixNormal";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
-import { useRouter } from "next/navigation";
 import { format } from "timeago.js";
 import { Dropdown, MenuProps, Modal, message } from "antd";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -16,82 +15,57 @@ import {
 import { assignmentClient } from "@/app/providers/ApolloProvider";
 import AddIcon from "@mui/icons-material/Add";
 import ClearIcon from "@mui/icons-material/Clear";
-import { Polling } from "@/@types/assignment";
+import { Assignment, Polling } from "@/@types/assignment";
 import { CircularProgress } from "@mui/material";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import DoneOutlined from "@mui/icons-material/DoneOutlined";
-import { useAppSelector } from "@/redux/store";
+import { useNavDispatch } from "@/hook/useNavDispatch";
+import useFormattedCreator from "@/hook/useFormat";
+
+interface MaterialProps{
+  material:  any;
+  assignment: Assignment[];
+  setassignment: React.Dispatch<React.SetStateAction<Assignment[]>>
+  ;
+  id: string;
+}
 
 function Material({
   material,
   assignment,
   setassignment,
   id,
-}: {
-  material: any;
-  assignment: any;
-  setassignment: React.Dispatch<any>;
-  id: string;
-}) {
-  const items: MenuProps["items"] = [
-    {
-      key: "1",
-      label: (
-        <p onClick={handleDelete}>
-          <span className="text text-[#3b6a87] my-2">
-            <DeleteOutlineIcon className="text-lg" /> Delete
-          </span>
-        </p>
-      ),
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "2",
-      label: (
-        <p
-          className="text text-[#3b6a87] my-2"
-          onClick={
-            ["Assignment", "Material", "Quiz"].includes(material.assignmentType)
-              ? () => {
-                  router.push(
-                    material.assignmentType === "Quiz"
-                      ? `/classroom/editAssignment/quiz?assignment=${material._id}&classroom=${id}`
-                      : `/classroom/editAssignment?assignment=${material._id}&classroom=${id}`
-                  );
-                }
-              : () => handleEdit()
-          }
-        >
-          <AutoFixNormalIcon className="text-lg" />
-          <span> Edit </span>
-        </p>
-      ),
-    },
-  ];
+}: 
+  MaterialProps
+) {
+
   let options = ["A", "B", "C", "D"];
-  const router = useRouter();
-  const [add, setadd] = useState(false);
-  const token = useAppSelector((state) => state.authReducer.token);
+  const {navigation,appSelector}=useNavDispatch()
+  const [add, setAdd] = useState(false);
+  const token = appSelector((state) => state.authReducer.token);
   const [text, setText] = useState("");
   const [option, setOption] = useState("");
   const [editIndex, setEditIndex] = useState(5);
   const [open, setopen] = useState(false);
-  const [polling, setPolling] = useState<Polling>({
-    __typename: "",
-    title: material.title,
-    polling: {
+  const pollingInitialState: Polling = useMemo(
+    () => ({
       __typename: "",
-      answers: [],
-    },
-    students: [],
-  });
+      title: material.title,
+      polling: {
+        __typename: "",
+        answers: [],
+      },
+      students: [],
+    }),
+    [material.title]
+  );
+
+  const [polling, setPolling] = useState<Polling>(pollingInitialState);
+
   const [pollingQuery, { loading }] = useLazyQuery(EDIT_POLLING, {
     client: assignmentClient,
     onError(err) {
-      console.log(material._id);
-      console.log(err);
+       message.info("Some error occurred")
     },
     onCompleted: (data) => {
       setPolling(data.getOneassignment);
@@ -104,14 +78,13 @@ function Material({
       id: material._id,
     },
     onError(err) {
-      console.log(err);
+      message.info("Some error occurred")
     },
     onCompleted: (data) => {
       const { mainTopic, ...newData } = data.deleteAssignment;
 
       const a = assignment.map((m: any) => {
         if (m._id === mainTopic) {
-          console.log(m);
           return {
             ...m,
             assignments: m.assignments.filter(
@@ -129,7 +102,7 @@ function Material({
   const [updateAssignment] = useMutation(EDIT_ASSIGNMENT, {
     client: assignmentClient,
     onError(err) {
-      console.log(err);
+      message.error("Some error occured")
     },
     onCompleted: () => {
       setopen(false);
@@ -137,33 +110,36 @@ function Material({
   });
 
   //to update the polling
-  const updatePolling = async () => {
+  const updatePolling = useCallback(async () => {
     if (polling.title.trim().length === 0) {
-      message.error("title is important");
+      message.error("Title is important");
       return;
     }
-    const {
-      __typename: type,
-      students,
+
+    const { __typename: type, students, title, polling: { __typename, ...p } } =
+      polling;
+
+    const updatedPolling = {
       title,
-      polling: { __typename, ...p },
-    } = polling;
-    const a = { title, students, polling: { ...p } };
-    const assignment = {
-      ...a,
+      students,
+      polling: { ...p },
+    };
+
+    const updatedAssignment = {
+      ...updatedPolling,
       creator: token.name,
       class_id: [id],
       assignmentType: "Polling",
     };
-    console.log(assignment);
+
     await updateAssignment({
       client: assignmentClient,
       variables: {
         id: material._id,
-        update: assignment,
+        update: updatedAssignment,
       },
     });
-  };
+  }, [polling, token.name, id, material._id, updateAssignment]);
 
   // to open the model to delete
   function handleEdit() {
@@ -198,21 +174,61 @@ function Material({
   };
 
   //to add more options to the polling question
-  const handleAddoptions = () => {
+  const handleAddoptions = useCallback(() => {
     setPolling({
       ...polling,
       polling: { answers: [option, ...polling.polling.answers] },
     });
     if (polling.polling.answers.length >= 3) {
-      setadd(false);
+      setAdd(false);
       return;
     }
-  };
+  }, [option, polling]);
 
   //to delete the entire assignment
-  async function handleDelete() {
+   const handleDelete = useCallback(async () => {
     await deleteAssignment();
-  }
+  }, [deleteAssignment]);
+
+
+  const items: MenuProps["items"] = useMemo(() => [
+    {
+      key: "1",
+      label: (
+        <p onClick={handleDelete}>
+          <span className="text text-[#3b6a87] my-2">
+            <DeleteOutlineIcon className="text-lg" /> Delete
+          </span>
+        </p>
+      ),
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "2",
+      label: (
+        <p
+          className="text text-[#3b6a87] my-2"
+          onClick={
+            ["Assignment", "Material", "Quiz"].includes(material.assignmentType)
+              ? () => {
+                  navigation.push(
+                    material.assignmentType === "Quiz"
+                      ? `/classroom/editAssignment/quiz?assignment=${material._id}&classroom=${id}`
+                      : `/classroom/editAssignment?assignment=${material._id}&classroom=${id}`
+                  );
+                }
+              : () => handleEdit()
+          }
+        >
+          <AutoFixNormalIcon className="text-lg" />
+          <span> Edit </span>
+        </p>
+      ),
+    },
+  ], [handleDelete, handleEdit, material.assignmentType, material._id, navigation, id]);
+ 
   return (
     <div>
       <div className="my-4 flex justify-between items-center">
@@ -225,7 +241,7 @@ function Material({
               <p className="mx-3 text">Announcment : {material.title}</p>
               <p className="text-xs text-slate-400 text">
                 {" "}
-                {format(material.createAt)}
+                {format(material.createdAt)}
               </p>
             </div>
           ) : (
@@ -233,7 +249,7 @@ function Material({
               <p
                 className="mx-3 text cursor-pointer"
                 onClick={() =>
-                  router.push(
+                  navigation.push(
                     `/classroom/submission?assignment=${material._id}&type=${material.assignmentType}`
                   )
                 }
@@ -245,7 +261,7 @@ function Material({
               </p>
               <p className="text-xs text-slate-400 text mx-4 ">
                 {" "}
-                {format(material.createAt)}
+                {format(material.createdAt)}
               </p>
             </div>
           )}
@@ -267,8 +283,7 @@ function Material({
           <input
             type="text"
             defaultValue={
-              polling.title[0].toUpperCase() +
-              polling.title.slice(1, polling.title.length).toLocaleLowerCase()
+              useFormattedCreator(polling.title)
             }
             className="p-2 focus:outline-none rounded-md w-full"
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -282,7 +297,7 @@ function Material({
                 message.error("Maximum four options");
                 return;
               }
-              setadd(true);
+              setAdd(true);
             }}
           />
         </div>
@@ -314,16 +329,16 @@ function Material({
                       <p className="text">{options[index]} .</p>
                       {editIndex !== index ? (
                         <p className="text w-10/12">
-                          {m[0].toUpperCase() +
-                            m.slice(1, m.length).toLocaleLowerCase()}
+                          {
+                            useFormattedCreator(m)
+                          }
                         </p>
                       ) : (
                         <input
                           type="text"
                           className="focus:outline-none"
                           defaultValue={
-                            m[0].toUpperCase() +
-                            m.slice(1, polling.title.length).toLocaleLowerCase()
+                            useFormattedCreator(m)
                           }
                           onChange={(e: ChangeEvent<HTMLInputElement>) =>
                             setText(e.target.value)

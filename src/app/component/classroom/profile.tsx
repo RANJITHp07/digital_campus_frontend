@@ -94,17 +94,14 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
       )
     )
     const dataUrl = previewCanvasRef.current?.toDataURL();
-    console.log(previewCanvasRef)
     const imageRef = ref(storage, `images/${file.name + v4()}`);
     const imageData = dataUrl?.split(',')[1];
     const imageBytes = new Uint8Array(atob(imageData as string).split('').map((char) => char.charCodeAt(0)));
     
     uploadBytes(imageRef, imageBytes).then((snapshot:any) => {
       getDownloadURL(snapshot.ref).then(async(url) => {
-        console.log(token)
         if(token.id){
           const res=await updateProfile(token.id,url)
-          console.log(res.data)
           message.info("Profile updated")
           dispatch({type:'SET_OPEN',value:false})
           dispatch({type:'SET_PROFILE',value:url})

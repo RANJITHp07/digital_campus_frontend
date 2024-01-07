@@ -4,8 +4,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import data from "@emoji-mart/data";
 import Image from "next/image";
-import { AppDispatch, useAppSelector } from "@/redux/store";
-import { useDispatch } from "react-redux";
 import { changeChatState } from "@/redux/features/classroom-slice/reducer";
 import Picker from "@emoji-mart/react";
 import { Socket } from "socket.io-client";
@@ -24,30 +22,32 @@ import dataType from "@/services/data/photoTypes";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../services/config/firebase";
 import { v4 } from "uuid";
-import { CircularProgress } from "@mui/material";
+import { useNavDispatch } from "@/hook/useNavDispatch";
+import { Message } from "@/@types/chat";
 
-function Chat({
-  length,
-  id,
-  classId,
-  socket,
-}: {
-  length: number;
-  id: string;
+
+interface ChatProps{
   classId: string;
   socket: Socket;
-}) {
+
+}
+
+function Chat({
+  classId,
+  socket,
+}: ChatProps) {
+
+  const {dispatch,appSelector}=useNavDispatch()
   const scrollRef = useRef<any>();
   const inputRef = useRef<HTMLInputElement>(null);
-  const dispatch = useDispatch<AppDispatch>();
-  const [message, setmessage] = useState<any[]>([]);
+  const [message, setmessage] = useState<Message[]>([]);
   const [newMessage, setNewmessage] = useState("");
   const [type, settype] = useState("text");
   const [typing, setTyping] = useState(false);
   const [emojii, setemojii] = useState(false);
   const [name, setname] = useState("");
-  const [typingTimeout, settypingTimeout] = useState<any>(null);
-  const token = useAppSelector((state) => state.authReducer.token);
+  const [typingTimeout, settypingTimeout] = useState<NodeJS.Timeout | null>(null);
+  const token = appSelector((state) => state.authReducer.token);
   const [file, setfile] = useState<File | null>(null);
   const [isHovered, setIshovered] = useState(false);
   const [desc, setdesc] = useState("");
@@ -110,7 +110,7 @@ function Chat({
     if (newMessage.trim().length > 0) {
       const m = {
         classId: classId,
-        sender: token.id,
+        sender: token.id as number,
         text: {
           type: type,
           text: newMessage,
@@ -170,11 +170,11 @@ function Chat({
       if (file == null) return;
       const t = {
         classId: classId,
-        sender: token.id,
+        sender: token.id as number,
         text: {
           type: type,
           text: URL.createObjectURL(file),
-          desc: desc.trim().length > 0 && desc,
+          desc: desc.trim().length > 0 ? desc : ''  , 
         },
       };
       setmessage([...message, t]);
@@ -362,7 +362,7 @@ function Chat({
                   )}
 
                   <p className={`text text-end text-xs text-slate-500`}>
-                    {format(m.createdAt)}
+                    {format(m.createdAt as string)}
                   </p>
                 </div>
               </div>

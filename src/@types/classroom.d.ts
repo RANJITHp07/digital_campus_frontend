@@ -23,7 +23,7 @@ export interface ClassProps extends Omit<ClassroomProps, '_id' | 'createdAt'> {
 }
 
 
-export type PollingProps = {
+export type Polling = {
   number: number;
   question: string;
 };
@@ -31,3 +31,11 @@ export type PollingProps = {
 export type ImprovedPolling = Omit<PollingProps, 'number'> & {
   id: string;
 };
+
+export interface ClassroomParticipants {
+    id: string;
+    profile: string;
+    username: string;
+
+}
+

@@ -37,3 +37,31 @@ export interface Quiz {
   type: string;
   realAnswers: string[];
 }
+
+
+export interface AssignmentDetails {
+  _id: string;
+  title: string;
+  assignmentType: string;
+  createdAt:string
+}
+
+export type ThemeKey = '#374151' | '#3b6a87' | '#ef4444' | '#3b82f6' | '#533b87' | '#10b981';
+
+export interface ThemeColor {
+  [key in ThemeKey]: boolean;
+}
+
+export interface ThemeText {
+  [key in ThemeKey]: string;
+}
+
+export interface Assignment {
+  assignments: {
+    title: string;
+    createdAt: string;
+    assignmentType: string;
+    _id: string;
+  }[];
+  _id: string;
+}

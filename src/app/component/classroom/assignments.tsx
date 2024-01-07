@@ -41,14 +41,19 @@ import { useNavDispatch } from "@/hook/useNavDispatch";
 import { UPDATE_CLASS } from "@/apis/classroom/mutation";
 import { CREATE_ASSIGNMENT } from "@/apis/assignment/mutation";
 import useFormattedCreator from "@/hook/useFormat";
+import { AssignmentDetails, ThemeColor, ThemeText } from "@/@types/assignment";
 
-function Assignment({ id }: { id: string }) {
+interface AssignmentProps{
+  id:string
+}
+
+function Assignment({ id }: AssignmentProps) {
   const { dispatch, appSelector } = useNavDispatch();
   const assign = appSelector((state) => state.classroomReducer.creator);
   const token = appSelector((state) => state.authReducer.token);
   const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState<string[]>(["color: #3b6a87;", "#3b6a87"]);
-  const [color, setColor] = useState<any>(themeColor); // choosing theme color
+  const [color, setColor] = useState<ThemeColor>(themeColor); // choosing theme color
   const [detail, setdetail] = useState(false); // detail of the classroom
   const [share, setshare] = useState(false); // to open and close sharing model
   const [open, setopen] = useState(false);
@@ -224,7 +229,7 @@ function Assignment({ id }: { id: string }) {
       const updatedThemeColor = Object.fromEntries(
         Object.entries(color).map(([key]) => [key, key === c])
       );
-      const colorText = (themeText as any)[c] as string;
+      const colorText = (themeText as any)[c] as string as keyof ThemeText;
       setText([colorText, c]);
       setColor(updatedThemeColor);
     },
@@ -338,7 +343,7 @@ function Assignment({ id }: { id: string }) {
               </div>
 
               {allAssignment &&
-                allAssignment.getAllassignment.map((m: any) => {
+                allAssignment.getAllassignment.map((m: AssignmentDetails) => {
                   return (
                     <div className="border-2 flex my-12 p-4 rounded-lg bg-white">
                       <div className="w-24 flex justify-center items-center">
@@ -505,7 +510,7 @@ function Assignment({ id }: { id: string }) {
                   style={{ backgroundColor: c }}
                   onClick={() => handleDivClick(c)}
                 >
-                  {color[c] && <DoneIcon className="md:text-5xl" />}
+                  {color[c as keyof ThemeColor] && <DoneIcon className="md:text-5xl" />}
                 </div>
               ))}
             </div>

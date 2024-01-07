@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, Suspense, useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import AddIcon from "@mui/icons-material/Add";
 import { Dropdown, MenuProps, Modal, Tooltip, message } from "antd";
@@ -18,32 +18,45 @@ import { FETCH_CLASSROOM_DETAILS } from "@/apis/classroom/query";
 import { useAppSelector } from "@/redux/store";
 import Material from "./material";
 import { FETCH_MAINTOPIC, GROUPED_ASSIGNMENT } from "@/apis/assignment/query";
+import useFormattedCreator from "@/hook/useFormat";
+import { Assignment } from "@/@types/assignment";
 
-function Classwork({ id }: { id: string }) {
+interface ClassworkProps{
+  id:string
+}
+
+
+function Classwork({ id }:ClassworkProps) {
+
+  //redux variables
+  const token = useAppSelector((state) => state.authReducer.token);
+  const creator = useAppSelector((state) => state.classroomReducer.creator);
+
+  //states
   const options = ["A", "B", "C", "D"];
-  const [open, setopen] = useState(false);
-  const [pollingquestion, setpollingquestion] = useState("");
-  const [question, setquestion] = useState({
+  const [open, setOpen] = useState(false);
+  const [pollingQuestion, setPollingQuestion] = useState("");
+  const [question, setQuestion] = useState({
     question1: "",
     question2: "",
   });
-  const token = useAppSelector((state) => state.authReducer.token);
-  const [add, setadd] = useState(false);
-  const [polling, setpolling] = useState<Polling[]>([]);
-  const [assignment, setassignment] = useState<any>([]);
-  const [state, setstate] = useState(false);
-  const [topic, settopic] = useState<any>("Topics");
-  const creator = useAppSelector((state) => state.classroomReducer.creator);
+  const [add, setAdd] = useState(false);
+  const [polling, setPolling] = useState<Polling[]>([]);
+  const [assignment, setAssignment] = useState<Assignment[]>([]);
+  const [state, setState] = useState(false);
+  const [topic, setTopic] = useState<string>("Topics");
+
+
   const { data, loading } = useQuery(GROUPED_ASSIGNMENT, {
     client: assignmentClient,
     variables: {
       id: id,
     },
     onError(err) {
-      console.log(err);
+      message.error("Some error occured")
     },
     onCompleted: (data) => {
-      setassignment(data.getgroupedAssignment);
+      setAssignment(data.getgroupedAssignment);
     },
   });
 
@@ -54,11 +67,11 @@ function Classwork({ id }: { id: string }) {
   });
 
   //handle topic
-  const handleTopic = (m: string) => {
-    settopic(m);
-    setstate(false);
-    setassignment((prev: any) => prev.filter((p: any) => p._id === m));
-  };
+  const handleTopic = useCallback((m: string) => {
+    setTopic(m);
+    setState(false);
+    setAssignment((prev: Assignment[]) => prev.filter((p: Assignment) => p._id === m));
+  }, []);
 
   const { data: mainTopic } = useQuery(FETCH_MAINTOPIC, {
     client: assignmentClient,
@@ -66,39 +79,43 @@ function Classwork({ id }: { id: string }) {
       id: id,
     },
     onError(err) {
-      console.log(err);
+      message.error("Some error occurred")
     },
   });
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleChange();
-    }
-  };
+ 
 
-  const handleChange = () => {
+  const handleChange = useCallback(() => {
     if (polling.length >= 4) {
       message.info("Maximum 4 options");
       return;
     }
-    if (pollingquestion.trim().length > 0) {
-      setpolling([
+    if (pollingQuestion.trim().length > 0) {
+      setPolling([
         ...polling,
-        { number: polling.length + 1, question: pollingquestion },
+        { number: polling.length + 1, question: pollingQuestion },
       ]);
-      setpollingquestion("");
+      setPollingQuestion("");
     }
-  };
+  }, [polling, pollingQuestion]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        handleChange();
+      }
+    },
+    [handleChange]
+  );
 
   //to handle the polling
   const [createAssignment] = useMutation(CREATE_ASSIGNMENT, {
     onError(err) {
-      console.log(err);
       message.info("Some error occurred");
     },
     onCompleted: (data) => {
-      setopen(false);
-      const a = assignment.map((assignment: any) => {
+      setOpen(false);
+      const a = assignment.map((assignment: Assignment) => {
         if (assignment._id === null) {
           return {
             ...assignment,
@@ -107,18 +124,18 @@ function Classwork({ id }: { id: string }) {
         }
         return assignment;
       });
-      setassignment(a);
+      setAssignment(a);
       message.info("Polling created");
     },
   });
 
-  const hanldeSubmitPolling = async () => {
+  const hanldeSubmitPolling = useCallback(async () => {
     if (question.question2.trim().length === 0) {
       message.info("Enter the question");
       return;
     }
     if (polling.length < 2) {
-      message.info("Atleast two answers required");
+      message.info("At least two answers required");
       return;
     }
     const poll = polling.map((m) => 0);
@@ -140,10 +157,10 @@ function Classwork({ id }: { id: string }) {
         assignment: assignments,
       },
     });
-  };
+  }, [polling, question, token.name, id, createAssignment, getClassroom]);
 
   //items of the assignment menu
-  const items: MenuProps["items"] = [
+  const items: MenuProps["items"] = useMemo(()=>[
     {
       key: "1",
       label: (
@@ -188,12 +205,12 @@ function Classwork({ id }: { id: string }) {
     {
       key: "5",
       label: (
-        <p className="text text-[#3b6a87] my-2" onClick={() => setopen(true)}>
+        <p className="text text-[#3b6a87] my-2" onClick={() => setOpen(true)}>
           <PollIcon className="text-lg" /> Polling
         </p>
       ),
     },
-  ];
+  ],[id]);
 
   return (
     <div className="flex justify-center">
@@ -228,8 +245,8 @@ function Classwork({ id }: { id: string }) {
                   <ArrowDropDownIcon
                     className="text-[#3b6a87] cursor-pointer"
                     onClick={() => {
-                      setassignment(data.getgroupedAssignment);
-                      setstate(true);
+                      setAssignment(data.getgroupedAssignment);
+                      setState(true);
                     }}
                   />
                 </div>
@@ -238,9 +255,9 @@ function Classwork({ id }: { id: string }) {
                     <p
                       className="my-3 cursor-pointer text text-slate-500"
                       onClick={() => {
-                        setstate(false);
-                        settopic("Topics");
-                        setassignment(data.getgroupedAssignment);
+                        setState(false);
+                        setTopic("Topics");
+                        setAssignment(data.getgroupedAssignment);
                       }}
                     >
                       All topics
@@ -266,7 +283,7 @@ function Classwork({ id }: { id: string }) {
                 )}
 
                 {assignment.length > 0 ? (
-                  assignment.map((a: any) => {
+                  assignment.map((a: Assignment) => {
                     return (
                       <div className="my-9">
                         <div className="flex justify-between items-center">
@@ -278,19 +295,21 @@ function Classwork({ id }: { id: string }) {
                           <hr className="border-1 rounded-full border-[#3b6a87] mb-6 mt-3" />
                         )}
 
-                        {a.assignments.map((a: any, index: number) => {
+                        <Suspense fallback={<div>Loading...</div>}>
+                        {a.assignments.map((a: Omit<Assignment['assignments'][0], '_id'>, index: number) => {
                           return (
                             <>
                               <Material
                                 material={a}
                                 assignment={assignment}
-                                setassignment={setassignment}
+                                setassignment={setAssignment}
                                 id={id}
                               />
                               <hr />
                             </>
                           );
                         })}
+                        </Suspense>
                       </div>
                     );
                   })
@@ -316,10 +335,10 @@ function Classwork({ id }: { id: string }) {
             open={open}
             footer={null}
             onCancel={() => {
-              setopen(false);
-              setadd(false);
-              setpolling([]);
-              setquestion({
+              setOpen(false);
+              setAdd(false);
+              setPolling([]);
+             setQuestion({
                 question1: "",
                 question2: "",
               });
@@ -332,27 +351,26 @@ function Classwork({ id }: { id: string }) {
                 placeholder="Ask a polling question"
                 value={question.question1}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setquestion({
+                  setQuestion({
                     question1: e.target.value,
                     question2: e.target.value,
                   });
-                  setadd(false);
+                  setAdd(false);
                 }}
               />
               <Tooltip placement="topRight" title={"add the polling answers"}>
                 <AddIcon
                   className="m-1 text-slate-400 cursor-pointer"
                   onClick={() => {
-                    setadd(true);
-                    setquestion({ ...question, question1: "" });
+                    setAdd(true);
+                    setQuestion({ ...question, question1: "" });
                   }}
                 />
               </Tooltip>
             </div>
             {add && question.question2.trim().length > 0 && (
               <p className="text mt-5 mb-2">
-                {question.question2[0].toUpperCase() +
-                  question.question2.slice(1, question.question2.length)}
+                {useFormattedCreator(question.question2)}
               </p>
             )}
             {polling.map((p, index) => {
@@ -374,9 +392,9 @@ function Classwork({ id }: { id: string }) {
                   type="text"
                   placeholder={`Option ${options[polling.length]}`}
                   className="border-b-2 w-full text border-slate-500 focus:outline-none"
-                  value={pollingquestion}
+                  value={pollingQuestion}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setpollingquestion(e.target.value)
+                    setPollingQuestion(e.target.value)
                   }
                   onKeyDown={handleKeyDown}
                 />
