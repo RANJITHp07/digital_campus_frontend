@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { emailVerification, userSignup } from '@/apis/user';
+import { emailVerification, userSignup } from '@/apis/user/user';
 import { message } from 'antd';
 import { CircularProgress } from '@mui/material';
 import { closeModal, setResend } from '@/redux/features/user-auth-slice/reducer';

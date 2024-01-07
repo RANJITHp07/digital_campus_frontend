@@ -1,6 +1,6 @@
 'use client'
 import { UsersProps } from '@/@types/users'
-import { getUser } from '@/apis/user'
+import { getUser } from '@/apis/user/user'
 import { CircularProgress } from '@mui/material'
 import Image from 'next/image'
 import React,{useEffect, useState} from 'react'

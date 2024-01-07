@@ -3,7 +3,7 @@ import { CircularProgress } from '@mui/material';
 import { message } from 'antd';
 import Image from 'next/image';
 import { signInnWithGooogle } from '@/services/config/firebase';
-import { SendEmail, getUser, userSignup } from '@/apis/user';
+import { SendEmail, getUser, userSignup } from '@/apis/user/user';
 import { openModal, setEmail } from '@/redux/features/user-auth-slice/reducer';
 import { useForm} from 'react-hook-form';
 import { UserForm } from '@/@types/users';

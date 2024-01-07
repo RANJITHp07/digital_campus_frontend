@@ -3,7 +3,7 @@ import React,{useState,useEffect,ChangeEvent, useReducer, useRef} from 'react'
 import Image from 'next/image'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { useAppSelector } from '@/redux/store';
-import { getUser, resetPassword, updateDetails, updateProfile } from '@/apis/user';
+import { getUser, resetPassword, updateDetails, updateProfile } from '@/apis/user/user';
 import { Modal, message } from 'antd';
 import {
   ref,

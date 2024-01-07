@@ -1,4 +1,4 @@
-import { SendEmail, getUser, userLogin } from "@/apis/user";
+import { SendEmail, getUser, userLogin } from "@/apis/user/user";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { message } from "antd";
 

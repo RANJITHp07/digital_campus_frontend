@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { changeChatState } from '@/redux/features/classroom-slice/reducer';
 import Picker from '@emoji-mart/react'
 import { Socket } from 'socket.io-client';
-import { getMessage } from '@/apis/chat';
+import { getMessage } from '@/apis/chat/chat';
 import {format} from "timeago.js"
 import { Modal} from 'antd';
 import FileCopyIcon from '@mui/icons-material/FileCopyOutlined';
