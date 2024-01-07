@@ -1,16 +1,21 @@
-'use client'
+"use client";
 import React from "react";
-import { ApolloClient, createHttpLink, InMemoryCache, ApolloProvider } from "@apollo/client";
-import { setContext } from '@apollo/client/link/context'; // Correct import
+import {
+  ApolloClient,
+  createHttpLink,
+  InMemoryCache,
+  ApolloProvider,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 import Cookies from "js-cookie";
 
 const authLink = setContext(() => {
-  const accessToken = Cookies.get('accessToken') as string;
-  const cleanedJwt = accessToken.replace(/"/g, '');
+  const accessToken = Cookies.get("accessToken") as string;
+  const cleanedJwt = accessToken.replace(/"/g, "");
   return {
     headers: {
-      Authorization: cleanedJwt as string
+      Authorization: cleanedJwt as string,
     },
   };
 });
@@ -43,9 +48,7 @@ export const submissionClient = new ApolloClient({
 });
 
 const ApolloWrapper = ({ children }: { children: React.ReactNode }) => (
-  <ApolloProvider client={classClient}>
-    {children}
-  </ApolloProvider>
+  <ApolloProvider client={classClient}>{children}</ApolloProvider>
 );
 
 export default ApolloWrapper;
