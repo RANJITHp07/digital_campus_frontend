@@ -1,5 +1,11 @@
 "use client";
-import React, { ChangeEvent, Suspense, useState } from "react";
+import React, {
+  ChangeEvent,
+  Suspense,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import Image from "next/image";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import type { MenuProps } from "antd";
@@ -19,7 +25,11 @@ import PersonRemoveAlt1 from "@mui/icons-material/PersonRemoveAlt1";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred";
 import EditIcon from "@mui/icons-material/Edit";
 import { changeAssignment } from "@/redux/features/classroom-slice/reducer";
-import { DELETE_CLASS, REMOVE_STUDENT, UPDATE_CLASSROOM_DETAILS } from "@/apis/classroom/mutation";
+import {
+  DELETE_CLASS,
+  REMOVE_STUDENT,
+  UPDATE_CLASSROOM_DETAILS,
+} from "@/apis/classroom/mutation";
 
 function Class({
   className,
@@ -47,49 +57,52 @@ function Class({
   });
 
   //items of the class menu
-  const items: MenuProps["items"] = [
-    {
-      key: "1",
-      label: (
-        <p
-          className="text-[#3b6a87] "
-          onClick={!type ? removeStudent : deleteClass}
-        >
-          {!type ? (
-            <span>
-              <PersonRemoveAlt1 className="text-sm" /> Unenroll
-            </span>
-          ) : (
-            <span>
-              <DeleteOutlineIcon className="text-sm" /> Delete
-            </span>
-          )}
-        </p>
-      ),
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "3",
-      label: (
-        <p
-          className="text-[#3b6a87]"
-          onClick={type ? handleEdit : () => setReport(true)}
-        >
-          {type ? (
-            <span>
-              <EditIcon className="text-sm" /> Edit
-            </span>
-          ) : (
-            <span>
-              <ReportGmailerrorredIcon className="text-sm" /> Report Abuse
-            </span>
-          )}
-        </p>
-      ),
-    },
-  ];
+  const items: MenuProps["items"] = useMemo(
+    () => [
+      {
+        key: "1",
+        label: (
+          <p
+            className="text-[#3b6a87] "
+            onClick={!type ? removeStudent : deleteClass}
+          >
+            {!type ? (
+              <span>
+                <PersonRemoveAlt1 className="text-sm" /> Unenroll
+              </span>
+            ) : (
+              <span>
+                <DeleteOutlineIcon className="text-sm" /> Delete
+              </span>
+            )}
+          </p>
+        ),
+      },
+      {
+        type: "divider",
+      },
+      {
+        key: "3",
+        label: (
+          <p
+            className="text-[#3b6a87]"
+            onClick={type ? handleEdit : () => setReport(true)}
+          >
+            {type ? (
+              <span>
+                <EditIcon className="text-sm" /> Edit
+              </span>
+            ) : (
+              <span>
+                <ReportGmailerrorredIcon className="text-sm" /> Report Abuse
+              </span>
+            )}
+          </p>
+        ),
+      },
+    ],
+    [type, removeStudent, deleteClass, handleEdit, setReport]
+  );
 
   //setOpen
   async function handleEdit() {
@@ -160,18 +173,21 @@ function Class({
     },
   });
 
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const { profile, ...updatedClassroom } = classroom;
-    await updateClassroom({
-      variables: {
-        id: id,
-        update: updatedClassroom,
-      },
-    });
-  };
+  const handleUpdate = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const { profile, ...updatedClassroom } = classroom;
+      updateClassroom({
+        variables: {
+          id: id,
+          update: updatedClassroom,
+        },
+      });
+    },
+    [classroom, id, updateClassroom]
+  );
 
-  const handleReport = async () => {
+  const handleReport = useCallback(async () => {
     const update = {
       reported: true,
       reason: {
@@ -190,7 +206,7 @@ function Class({
     setReport(false);
     setTitle("");
     setDescription("");
-  };
+  }, [id, title, description, token.name, updateClassroom]);
 
   return (
     <div className="w-72 box_shadow rounded-lg mx-auto md:mx-5 lg:mx-8 h-72 my-8 relative cursor-pointer">
