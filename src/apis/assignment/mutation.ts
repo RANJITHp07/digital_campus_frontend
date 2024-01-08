@@ -73,7 +73,7 @@ export const EDIT_QUIZ_DETAILS = gql`
 `;
 
 export const EDIT_POLLING = gql`
-  query getOneassignment($id: String!) {
+  query getOneassignment($id: ID!) {
     getOneassignment(id: $id) {
       title
       polling {
