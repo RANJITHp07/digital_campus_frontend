@@ -6,7 +6,7 @@ import {
   AccordionBody,
 } from "@material-tailwind/react";
 import { useQuery } from "@apollo/client";
-import { GET_REPORTED_CLASSROOMS } from "@/apis/classroom";
+import { GET_REPORTED_CLASSROOMS } from "@/apis/classroom/query";
  
 export function Reported() {
   const [open, setOpen] = useState(1);

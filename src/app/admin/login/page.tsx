@@ -1,5 +1,5 @@
 'use client'
-import { createAdmin } from '@/apis/admin'
+import { createAdmin } from '@/apis//user/admin'
 import { message } from 'antd'
 import React,{ChangeEvent, useState} from 'react'
 import Cookies from 'js-cookie'
