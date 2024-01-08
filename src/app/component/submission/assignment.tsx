@@ -14,7 +14,7 @@ const TABLE_HEAD = ["Name", "Attachment", "Mark","Status" ];
 
 function DefaultTable({id,name}:{id:string,name:string}) {
   
-  const token=useAppSelector((state)=>state.authReducer.token)
+  const token=useAppSelector((state)=>state.authReducer.token);
   const [grade,setGrade]=useState<string | null>(null)
   const {data}=useQuery(GET_ASSIGNMENT,{
     client:submissionClient,
