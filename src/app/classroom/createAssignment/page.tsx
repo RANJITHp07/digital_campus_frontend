@@ -190,7 +190,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
          creator:token.name
       }
 
-      if(type !=='Material' ){
+      if(type !=='Material' && point!=='ungraded' ){
         assignment.points=point
       }
       

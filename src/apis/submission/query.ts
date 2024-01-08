@@ -13,6 +13,8 @@ export const GET_POLLING = gql`
 export const GET_ASSIGNMENT = gql`
   query getAllSubmission($id: String) {
     getAllSubmission(id: $id) {
+      quizAnswers
+      user_id
       username
       attachment {
         content

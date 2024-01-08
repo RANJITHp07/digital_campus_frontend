@@ -5,6 +5,11 @@ import { useAppSelector } from '@/redux/store';
 import { useMutation } from '@apollo/client';
 import { message } from 'antd';
 import React, { useState } from 'react';
+import { Doughnut } from 'react-chartjs-2';
+// import { Chart , ArcElement, Tooltip, Legend } from "chart.js";
+
+// const arcElement = Chart.registry.elements.get('arc')
+
 
 interface PollingProps {
   details: any ,creator?:boolean,polling?:any,admin?:boolean
@@ -12,8 +17,27 @@ interface PollingProps {
 
 function Polling({ details,creator,polling,admin
  }: PollingProps) {
-  console.log(details)
-  const data=["A","B","C","D"]
+    const data=["A","B","C","D"]
+  const percentages = details.polling.answers.map((answer:string, index:number) => {
+    return (parseInt(polling.polling[index]) / details.students.length) * 100;
+  });
+
+  // Chart data
+  const chartData = {
+    labels: data,
+    datasets: [
+      {
+        data: percentages,
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50'], // You can customize the colors
+      },
+    ],
+  };
+
+  // Chart options
+  const chartOptions = {
+    maintainAspectRatio: false,
+    responsive: true,
+  };
   const [comment,setcomment]=useState([])
   const token=useAppSelector((state)=>state.authReducer.token)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -76,6 +100,9 @@ function Polling({ details,creator,polling,admin
           
         </div>
       ))}
+      {/* <div className="my-5 mx-6">
+      <Doughnut data={chartData} options={chartOptions} />
+    </div> */}
   {
     !creator && admin  && 
     <button className='text-white bg-[#3b6a87] p-3 w-11/12 lg:w-3/4 my-5 mx-3 text-center text rounded-md' onClick={handleSubmission}>Submit</button>

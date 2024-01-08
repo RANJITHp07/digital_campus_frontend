@@ -65,15 +65,17 @@ function Material({assignment}:{assignment:any,admin:boolean}) {
     }
     if(file){
       const imageRef = ref(storage, `images/${file.name + v4()}`);
-      uploadBytes(imageRef, file).then((snapshot) => {
-        getDownloadURL(snapshot.ref).then(async(url) => {
+      await uploadBytes(imageRef, file).then(async(snapshot:any) => {
+        await getDownloadURL(snapshot.ref).then(async(url) => {
             submission.attachment={
-              type:'photo',
+             type:'phot',
                content:url
             }
            })
           })
     }
+
+    console.log(submission)
 
      await createSubmission({
       client:submissionClient,

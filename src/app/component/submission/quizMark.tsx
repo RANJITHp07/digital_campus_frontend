@@ -9,13 +9,12 @@ import { Card, Typography } from "@material-tailwind/react";
 import { message } from "antd";
 import { useState } from "react";
 
-const TABLE_HEAD = ["Name", "Attachment", "Mark","Status" ];
+const TABLE_HEAD = ["Name", "Answered", "Mark","Status" ];
 
 
-function DefaultTable({id,name}:{id:string,name:string}) {
+function QuizMark({id,data:material}:{id:string,data:any}) {
   
   const token=useAppSelector((state)=>state.authReducer.token)
-  const [grade,setGrade]=useState<string | null>(null)
   const {data}=useQuery(GET_ASSIGNMENT,{
     client:submissionClient,
     onError(err){
@@ -26,45 +25,11 @@ function DefaultTable({id,name}:{id:string,name:string}) {
       }
   })
 
-  const handleKeyPress = (event: any,id:string) => {
-    if (event.key === "Enter") {
-      handleEditClick(id);
-    }
-  };
-
-  const [updateGrade]=useMutation(UPDATE_GRADE,{
-    onError(err){
-        console.log(err)
-       },
-       onCompleted:()=>{
-         message.info("Successfully changed")
-       }
-  })
-
-  const handleEditClick = async(user_id:string) => {
-    console.log({
-      assignmentId:id,
-      userId:id,
-      grade: parseInt(grade as string) 
-    })
-      await  updateGrade({
-       client:submissionClient,
-       variables:{
-       update:{
-         assignment_id:id,
-         userId:user_id,
-         grade: parseInt(grade as string) 
-       }
-       }
-      })
-     
-  };
-
   return (
     <div className='flex justify-center'>
         <div className=' w-full md:w-11/12 my-9'>
       <div className='flex justify-between items-center'>
-                <p className='text-3xl text text-[#3b6a87] mx-4'>{useFormattedCreator(name)}</p>
+                <p className='text-3xl text text-[#3b6a87] mx-4'>{useFormattedCreator(material.title)}</p>
                 </div>
                 <hr className='border-1 rounded-full border-[#3b6a87] mb-6 mt-3'/>  
     <Card className="h-full w-full">
@@ -88,7 +53,7 @@ function DefaultTable({id,name}:{id:string,name:string}) {
           </tr>
         </thead>
         <tbody>
-          {data && data.getAllSubmission.map(({user_id, username, attachment, submission }:{user_id:string,username:string,attachment:any,submission:any}, index:number) => {
+          {data && data.getAllSubmission.map(({user_id, username, quizAnswers, submission }:{user_id:string,username:string,quizAnswers:any,submission:any}, index:number) => {
             const isLast = index === data && data.getAllSubmissionlength - 1;
             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
@@ -109,8 +74,7 @@ function DefaultTable({id,name}:{id:string,name:string}) {
                     color="blue-gray"
                     className="text my-3 text-[#3b6a87]"
                   >
-                   <a href={attachment.content!=='' && attachment.content}
-target="_blank">{ attachment.content!=='' ? "attachment":"no attachment"}</a>
+                   {quizAnswers.length}
                   </Typography>
                 </td>
                 <td className={classes}>
@@ -119,9 +83,8 @@ target="_blank">{ attachment.content!=='' ? "attachment":"no attachment"}</a>
                     color="blue-gray"
                     className="text my-3 text-[#3b6a87]"
                   >
-                    <div className='flex'>
-                    <input className='border-b-2 w-9  focus:outline-none ' defaultValue={submission.grade ? submission.grade : ''}  onChange={(e:any)=>setGrade(e.target.value)} onKeyDown={(e:any)=>handleKeyPress(e,user_id)}/><p>/100</p>
-                    </div>
+                   {submission.grade}/
+                   {material.quiz.length}
                   </Typography>
                 </td>
                 <td className={classes}>
@@ -146,4 +109,4 @@ target="_blank">{ attachment.content!=='' ? "attachment":"no attachment"}</a>
   );
 }
 
-export default DefaultTable
+export default QuizMark

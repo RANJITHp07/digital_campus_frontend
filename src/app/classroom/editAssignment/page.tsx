@@ -310,7 +310,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                    <p className='text text-slate-700'>Points</p>
                    <div className='bg-slate-100 p-2 flex justify-between items-center'>
                   {
-                    pointstate ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 ' defaultValue={details.points} 
+                    pointstate ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 ' defaultValue={ typeof details.points==='number' ? details.points : 'ungraded'} 
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       const isValidKey = /^[0-9]$/.test(e.key);
                       if (!isValidKey) {

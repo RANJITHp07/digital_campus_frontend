@@ -54,7 +54,7 @@ function Submission({id}:{id:string}) {
           </tr>
         </thead>
         <tbody>
-          {data && data.getAllassignment.map(({ title, assignmentType, dueDate,mainTopic }:{title:string,assignmentType:string,dueDate:{day:string | null},mainTopic:string}, index:number) => {
+          {data && data.getAllassignment.map(({_id, title, assignmentType, dueDate,mainTopic }:{_id:string,title:string,assignmentType:string,dueDate:{day:string | null},mainTopic:string}, index:number) => {
             const isLast = index === data && data.getAllSubmissionlength - 1;
             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
             if(["Quiz","Assignment","Polling"].includes(assignmentType))
@@ -66,7 +66,7 @@ function Submission({id}:{id:string}) {
                     color="blue-gray"
                     className="text my-3 text-[#3b6a87]"
                   >
-                    <p className='cursor-pointer hover:underline'>{title.length>30 ? (title.slice(0,30)+"..."): title }</p>
+                    <a href={`/classroom/submitted?assignment=${_id}&type=${assignmentType}`} className='cursor-pointer hover:underline'>{title.length>30 ? (title.slice(0,30)+"..."): title }</a>
                   </Typography>
                 </td>
                 <td className={classes}>
