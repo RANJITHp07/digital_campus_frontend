@@ -29,7 +29,7 @@ export const assignmentlink = createHttpLink({
 });
 
 export const submissionlink = createHttpLink({
-  uri: "http://localhost:4000/submission",
+  uri: "https://www.digitalcampus.shop/submission",
 });
 
 export const classClient = new ApolloClient({
