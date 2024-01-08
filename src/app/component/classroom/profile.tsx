@@ -3,7 +3,7 @@ import React,{useState,useEffect,ChangeEvent, useReducer, useRef} from 'react'
 import Image from 'next/image'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { useAppSelector } from '@/redux/store';
-import { getUser, resetPassword, updateDetails, updateProfile } from '@/apis/user';
+import { getUser, resetPassword, updateDetails, updateProfile } from '@/apis/user/user';
 import { Modal, message } from 'antd';
 import {
   ref,
@@ -31,7 +31,12 @@ import LoadinPage from '../common/loadinPage';
 const ASPECT_RATIO = 1;
 const MIN_DIMENSION = 200;
 
-function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,createdClassroom:number}) {
+interface ProfileProps{
+  addedClassroom:number,
+  createdClassroom:number
+}
+
+function Profile({addedClassroom,createdClassroom}:ProfileProps) {
   const token=useAppSelector((state)=>state.authReducer.token)
   const [initalstate, dispatch] = useReducer(reducer, initialState);
   const [crop, setCrop] = useState<any>();
@@ -94,17 +99,14 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
       )
     )
     const dataUrl = previewCanvasRef.current?.toDataURL();
-    console.log(previewCanvasRef)
     const imageRef = ref(storage, `images/${file.name + v4()}`);
     const imageData = dataUrl?.split(',')[1];
     const imageBytes = new Uint8Array(atob(imageData as string).split('').map((char) => char.charCodeAt(0)));
     
     uploadBytes(imageRef, imageBytes).then((snapshot:any) => {
       getDownloadURL(snapshot.ref).then(async(url) => {
-        console.log(token)
         if(token.id){
           const res=await updateProfile(token.id,url)
-          console.log(res.data)
           message.info("Profile updated")
           dispatch({type:'SET_OPEN',value:false})
           dispatch({type:'SET_PROFILE',value:url})
@@ -188,7 +190,7 @@ function Profile({addedClassroom,createdClassroom}:{addedClassroom:number,create
   return (
     <div>
     {
-    loading ? <LoadinPage/> : <>
+    loading ? <div className='w-11/12'><LoadinPage/></div> : <>
     <div className=" mx-5 lg:w-11/12 box_shadow mt-9 lg:mx-auto rounded-lg relative group ">
       <div className='relative h-1/2'>
       <div 

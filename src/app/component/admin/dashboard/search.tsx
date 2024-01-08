@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Users from './users'
 import { Pagination } from 'antd';
 import { UsersProps } from '@/@types/users';
-import { paginationUser, searchUser} from '@/apis/user';
+import { paginationUser, searchUser} from '@/apis/user/user';
 
 function Search() {
    const[pagination,setpagination]=useState(1)

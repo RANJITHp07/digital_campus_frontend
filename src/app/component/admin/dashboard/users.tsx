@@ -5,7 +5,7 @@ import {Modal, message,Pagination, Popconfirm} from 'antd'
 import type { MenuProps } from 'antd';
 import { Dropdown } from 'antd';
 import Image from 'next/image'
-import { updateUser } from '@/apis/user';
+import { updateUser } from '@/apis/user/user';
 import { UsersProps } from '@/@types/users';
 import { Socket,io } from 'socket.io-client';
 

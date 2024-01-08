@@ -3,19 +3,21 @@ import React,{ChangeEvent, useState} from 'react'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { useQuery } from '@apollo/client';
-import { FETCH_MAINTOPIC } from '@/apis/assignment';
+import { FETCH_MAINTOPIC } from '@/apis/assignment/query';
 import { assignmentClient } from '@/app/providers/ApolloProvider';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import { DatePicker, TimePicker, message } from 'antd';
 import { Dayjs } from 'dayjs';
 
-function Title({id,settitle,topic,settopic,settimer,setdate}:
-  {id:string,settitle:React.Dispatch<React.SetStateAction<string>>,
+interface TitleProps{
+  id:string,settitle:React.Dispatch<React.SetStateAction<string>>,
   topic:string | null,
   settopic:React.Dispatch<React.SetStateAction<string| null>>
   settimer:React.Dispatch<React.SetStateAction<string[]>>
   setdate:React.Dispatch<React.SetStateAction<string>>
-}) {
+}
+
+function Title({id,settitle,topic,settopic,settimer,setdate}:TitleProps) {
 
    const [open,setopen]=useState(false)
    const [modal,setmodal]=useState(false)

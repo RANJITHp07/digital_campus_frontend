@@ -4,6 +4,13 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { Quiz } from '@/@types/assignment';
 import LoadinPage from '../common/loadinPage';
 import Image from 'next/image';
+import { useMutation } from '@apollo/client';
+import { CREATE_SUBMISSION } from '@/apis/submission/mutation';
+import { message } from 'antd';
+import { useAppSelector } from '@/redux/store';
+import { useSearchParams } from 'next/navigation';
+import { submissionClient } from '@/app/providers/ApolloProvider';
+import { useRouter } from 'next/navigation';
 
 interface QuizSubmissionProps{
     title:string,
@@ -15,10 +22,16 @@ interface QuizSubmissionProps{
 }
 
 function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
+    const router=useRouter()
+    const searchParams = useSearchParams()
+    const id = searchParams.get('assignment') as string
     const [answers,setAnswers]=useState<any>({})
     const [timeRemaining, setTimeRemaining] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading,setIsLoading]=useState(true)
+    const [mark,setmark]=useState(0);
+    const [open,setopen]=useState(false)
+    const token=useAppSelector((state)=>state.authReducer.token)
 
     
 
@@ -97,9 +110,45 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
         }
     };
 
+    const [createSubmission]=useMutation(CREATE_SUBMISSION,{
+        onError(err){
+          console.log(err)
+        },
+        onCompleted:(data)=>{
+           message.info("Successfully earned "+ data.createSubmission.marks + "points")
+           setmark(data.createSubmission.marks);
+           setopen(true)
+           
+        }
+      })
 
-    const handleSubmit=()=>{
-         console.log(answers)
+
+    const handleSubmit=async()=>{
+         const minKey = Math.min(...Object.keys(answers).map(Number));
+const maxKey = Math.max(...Object.keys(answers).map(Number));
+for (let i = minKey + 1; i < maxKey; i++) {
+    if (!(i in answers)) {
+        answers[i] = [];
+    }
+  }
+   console.log( Object.values(answers))
+   const submission:any={
+    assignment_id:id,
+    username:token.name,
+    user_id:token.id,
+    quizAnswers:Object.values(answers)
+  }
+
+  console.log(submission)
+    
+  await createSubmission({
+    client:submissionClient,
+    variables:{
+      submission
+      }
+    }
+   )
+    
     }
     
   return (
@@ -126,6 +175,15 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
     <Image src={'/timer.gif'} width={ 300} height={300} alt='photo' className='mx-auto opacity-60'/>
     </div>
     </div>
+        :
+        ( open ? <div className="mx-auto w-11/12 box_shadow my-8 rounded-md  ">
+        <div className='bg-[#3b6a87] p-4 rounded-t-md flex justify-between items-center'>
+<p className='text-white text text-xl'>Quiz</p>
+<p className='text-white text text-xl'>Marks : {mark}</p>
+</div>
+<p className='p-5 text-xl text'>Quiz completed successfully!!!!!</p>
+
+</div>
         :
         <>
         <div className=" w-11/12 mx-auto mt-8  box_shadow rounded-md relative">
@@ -163,11 +221,13 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
         <p className='text'>{a}</p>
         </div>
                     </>
+                
                 )
             })
         }
          </div>
                     </>
+                
                 )
             })
         }
@@ -177,6 +237,7 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
         <button className='p-2 bg-[#3b6a87]  text text-white rounded-md mb-4' onClick={handleSubmit}>Submit</button>
     </div>
     </>
+        )
 }
     </div>
   )

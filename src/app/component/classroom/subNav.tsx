@@ -1,18 +1,19 @@
 'use client'
-import React,{useState} from 'react'
+import React,{useMemo, useState} from 'react'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { Dropdown, Tooltip} from 'antd';
 import type { MenuProps } from 'antd';
-import { AppDispatch, useAppSelector } from '@/redux/store';
-import { useDispatch } from 'react-redux';
 import { changeAssignment, changeChatState } from '@/redux/features/classroom-slice/reducer';
 import ForumIcon from '@mui/icons-material/Forum';
 import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
-import { useRouter } from 'next/navigation';
 import { useNavDispatch } from '@/hook/useNavDispatch';
 
-function SubNav({id}:{id:string}) {
+interface SubNavProps{
+  id:string
+}
+
+function SubNav({id}:SubNavProps) {
 
     const {navigation,dispatch,appSelector}=useNavDispatch()
     const [border,setBorder]=useState('stream')
@@ -24,33 +25,34 @@ function SubNav({id}:{id:string}) {
       dispatch(changeAssignment(type))
     }
 
-    const items: MenuProps['items'] = [
-        {
-          label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('stream')}>Stream</p>,
-          key: '0',
-        },
-        {
-            label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('classwork')}>Classwork</p>,
-            key: '1',
-        },
-          {
-            label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('people')}>People</p>,
-            key: '2',
-          },
-          {
-            label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('grades')}>Grades</p>,
-            key: '3',
-          },
-          {
-            label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('request')}>Request</p>,
-            key: '4',
-          },
-          {
-            label: <p className='text text-[#3b6a87]' onClick={()=>handleSectionClick('submission')}>Submission</p>,
-            key: '5',
-          }
-       
-      ];
+    const items: MenuProps['items'] = useMemo(() => [
+      {
+        label: <p className='text text-[#3b6a87]' onClick={() => handleSectionClick('stream')}>Stream</p>,
+        key: '0',
+      },
+      {
+        label: <p className='text text-[#3b6a87]' onClick={() => handleSectionClick('classwork')}>Classwork</p>,
+        key: '1',
+      },
+      {
+        label: <p className='text text-[#3b6a87]' onClick={() => handleSectionClick('people')}>People</p>,
+        key: '2',
+      },
+      {
+        label: <p className='text text-[#3b6a87]' onClick={() => handleSectionClick('grades')}>Grades</p>,
+        key: '3',
+      },
+      {
+        label: <p className='text text-[#3b6a87]' onClick={() => handleSectionClick('request')}>Request</p>,
+        key: '4',
+      },
+      {
+        label: <p className='text text-[#3b6a87]' onClick={() => handleSectionClick('submission')}>Submission</p>,
+        key: '5',
+      }
+    ], [handleSectionClick]);
+
+    
   return (
     <div>
         <div className='w-full'>

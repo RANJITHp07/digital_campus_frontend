@@ -1,4 +1,5 @@
 'use client'
+import Api from '@/services/api';
 import axios from 'axios';
 import Image from 'next/image';
 import React, { useState } from 'react';
@@ -32,7 +33,7 @@ function Payment() {
         }
 
         
-            const response = await axios.post('http://localhost:6003/v1/api/payment/subscription', {
+            const response = await Api.post('/v1/api/payment/subscription', {
               planName: '6months',
               interval: 6,
               amount: 900,
@@ -49,7 +50,7 @@ function Payment() {
             name:"6 months subscription",
             description:"6 months plan in digital ocean",
             subscription_id:data.data.id,
-            callback_url:'http://localhost:6003/v1/api/payment/verification'
+            callback_url:'https://www.digitalcampus.shop/v1/api/payment/verification'
         };
 
         const paymentObject = new (window as any).Razorpay(options);

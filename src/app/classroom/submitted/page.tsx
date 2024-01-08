@@ -1,6 +1,6 @@
 'use client'
-import { ASSIGNMENT_DETAILS } from '@/apis/assignment'
-import { GET_POLLING } from '@/apis/submission'
+import { ASSIGNMENT_DETAILS } from '@/apis/assignment/query'
+import { GET_POLLING } from '@/apis/submission/query'
 import Navbar from '@/app/component/common/navbar'
 import SidePanel from '@/app/component/common/sidePanel'
 import Polling from '@/app/component/submission/polling'
@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation'
 import React from 'react'
 import PollIcon from '@mui/icons-material/Poll';
 import  DefaultTable  from '@/app/component/submission/assignment'
+import QuizMark from '@/app/component/submission/quizMark'
 
 
 function Submitted() {
@@ -55,9 +56,12 @@ function Submitted() {
           <hr/>
           <div className='lg:flex'>
         {data && polling && (
-          <div className='my-6 mx-3 w-full'>
+          <div className='my-6 mx-3 w-11/12'>
             {type === 'Polling' && <Polling details={data && data.getOneassignment} creator={true} polling={polling && polling.getPolling.polling} />}
-             {type==='Assignment' && <DefaultTable id={id as string}/>}
+             {type==='Assignment' && <DefaultTable id={id as string} name={data && data.getOneassignment.title}/>}
+             {
+              type==='Quiz' && <QuizMark id={id as string} data={data && data.getOneassignment}/>
+             }
           </div>
         )}
       </div>

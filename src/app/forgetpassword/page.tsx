@@ -1,5 +1,5 @@
 'use client'
-import { updatePassword } from '@/apis/user';
+import { updatePassword } from '@/apis/user/user';
 import { useAppSelector } from '@/redux/store';
 import { message } from 'antd';
 import React,{ChangeEvent, useState} from 'react'

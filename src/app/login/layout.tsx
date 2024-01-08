@@ -1,22 +1,18 @@
-import type { Metadata } from 'next'
-
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Login',
-  description: '  This is a learning mangment system',
-}
+  title: "Login",
+  description: "  This is a learning mangment system",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-
-      <body>
-        {children}
-        </body>
+      <body>{children}</body>
     </html>
-  )
+  );
 }

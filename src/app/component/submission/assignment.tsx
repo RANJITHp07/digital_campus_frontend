@@ -1,17 +1,24 @@
-import { GET_ASSIGNMENT } from "@/apis/submission";
+'use client'
+import { UPDATE_GRADE } from "@/apis/submission/mutation";
+import { GET_ASSIGNMENT } from "@/apis/submission/query";
 import { submissionClient } from "@/app/providers/ApolloProvider";
-import { useQuery } from "@apollo/client";
+import useFormattedCreator from "@/hook/useFormat";
+import { useAppSelector } from "@/redux/store";
+import { useMutation, useQuery } from "@apollo/client";
 import { Card, Typography } from "@material-tailwind/react";
+import { message } from "antd";
+import { useState } from "react";
 
 const TABLE_HEAD = ["Name", "Attachment", "Mark","Status" ];
 
 
-function DefaultTable({id}:{id:string}) {
+function DefaultTable({id,name}:{id:string,name:string}) {
   
+  const token=useAppSelector((state)=>state.authReducer.token)
+  const [grade,setGrade]=useState<string | null>(null)
   const {data}=useQuery(GET_ASSIGNMENT,{
     client:submissionClient,
     onError(err){
-      console.log(id)
       console.log(err)
     },
       variables:{
@@ -19,14 +26,47 @@ function DefaultTable({id}:{id:string}) {
       }
   })
 
-  data && console.log(data)
-  const handleEditClick = (event:any) => {
-    event.preventDefault();
-    // Add your edit logic here
-    console.log("Edit clicked");
+  const handleKeyPress = (event: any,id:string) => {
+    if (event.key === "Enter") {
+      handleEditClick(id);
+    }
+  };
+
+  const [updateGrade]=useMutation(UPDATE_GRADE,{
+    onError(err){
+        console.log(err)
+       },
+       onCompleted:()=>{
+         message.info("Successfully changed")
+       }
+  })
+
+  const handleEditClick = async(user_id:string) => {
+    console.log({
+      assignmentId:id,
+      userId:id,
+      grade: parseInt(grade as string) 
+    })
+      await  updateGrade({
+       client:submissionClient,
+       variables:{
+       update:{
+         assignment_id:id,
+         userId:user_id,
+         grade: parseInt(grade as string) 
+       }
+       }
+      })
+     
   };
 
   return (
+    <div className='flex justify-center'>
+        <div className=' w-full md:w-11/12 my-9'>
+      <div className='flex justify-between items-center'>
+                <p className='text-3xl text text-[#3b6a87] mx-4'>{useFormattedCreator(name)}</p>
+                </div>
+                <hr className='border-1 rounded-full border-[#3b6a87] mb-6 mt-3'/>  
     <Card className="h-full w-full">
       <table className="w-full min-w-max table-auto text-left">
         <thead>
@@ -48,7 +88,7 @@ function DefaultTable({id}:{id:string}) {
           </tr>
         </thead>
         <tbody>
-          {data && data.getAllSubmission.map(({ username, attachment, submission }:{username:string,attachment:any,submission:any}, index:number) => {
+          {data && data.getAllSubmission.map(({user_id, username, attachment, submission }:{user_id:string,username:string,attachment:any,submission:any}, index:number) => {
             const isLast = index === data && data.getAllSubmissionlength - 1;
             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
@@ -58,7 +98,7 @@ function DefaultTable({id}:{id:string}) {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="text my-3 text-[#3b6a87]"
                   >
                     {username}
                   </Typography>
@@ -67,20 +107,20 @@ function DefaultTable({id}:{id:string}) {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="text my-3 text-[#3b6a87]"
                   >
-                   <a href="https://firebasestorage.googleapis.com/v0/b/jobee-e1745.appspot.com/o/images%2Fbgprofile.png5a9ba803-9291-4081-9fce-94494b96ccf1?alt=media&token=c2ea3459-3cbd-42c0-aafb-a62fff419b1c"
-target="_blank">{ "attachment"}</a>
+                   <a href={attachment.content!=='' && attachment.content}
+target="_blank">{ attachment.content!=='' ? "attachment":"no attachment"}</a>
                   </Typography>
                 </td>
                 <td className={classes}>
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="text my-3 text-[#3b6a87]"
                   >
                     <div className='flex'>
-                    <input className='border-b-2 w-9 focus:ouline-none' defaultValue={75}/><p>/100</p>
+                    <input className='border-b-2 w-9  focus:outline-none ' defaultValue={submission.grade ? submission.grade : ''}  onChange={(e:any)=>setGrade(e.target.value)} onKeyDown={(e:any)=>handleKeyPress(e,user_id)}/><p>/100</p>
                     </div>
                   </Typography>
                 </td>
@@ -90,8 +130,7 @@ target="_blank">{ "attachment"}</a>
                     href="#"
                     variant="small"
                     color="blue-gray"
-                    className="font-medium"
-                    onClick={handleEditClick}
+                    className={`text my-3 ${submission.status=='Late submitted' ? "text-red-500" : "text-green-500"}`}
                   >
                     {submission.status}
                   </Typography>
@@ -102,6 +141,8 @@ target="_blank">{ "attachment"}</a>
         </tbody>
       </table>
     </Card>
+    </div>
+    </div>
   );
 }
 
