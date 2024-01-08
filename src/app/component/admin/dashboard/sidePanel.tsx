@@ -30,11 +30,11 @@ function SidePanel() {
         <p className='text-xl  text-[#3b6a87]' onClick={()=>navigation.push('/admin/dashboard/reported')}>Reported</p>
         </div>
         <hr/>
-        <div className='flex items-center cursor-pointer hover:bg-slate-200 hover:rounded-r-full'>
+        {/* <div className='flex items-center cursor-pointer hover:bg-slate-200 hover:rounded-r-full'>
         <PaidRoundedIcon className=" my-4 mr-7 text-[#3b6a87]"/>
         <p className='text-xl  text-[#3b6a87]'>Payments</p>
         </div>
-        <hr/>
+        <hr/> */}
         <div className='flex items-center cursor-pointer hover:bg-slate-200 hover:rounded-r-full'
          onClick={()=>{
           Cookies.remove("accessToken")

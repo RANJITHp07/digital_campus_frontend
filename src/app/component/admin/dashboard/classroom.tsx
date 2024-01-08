@@ -1,8 +1,9 @@
 'use client'
 import React, { ChangeEvent,useState } from 'react'
-import { GET_CLASSROOMS, UPDATE_CLASSROOM_DETAILS } from '../../../../apis/classroom'
+import {  UPDATE_CLASSROOM_DETAILS } from '../../../../apis/classroom/mutation'
 import { useMutation, useQuery } from '@apollo/client'
 import { Pagination, message } from 'antd'
+import { GET_CLASSROOMS } from '@/apis/classroom/query'
 
 function Classroom() {
    
