@@ -6,6 +6,10 @@ export const FETCH_ASSIGNMENT_DETAILS = gql`
       _id
       title
       assignmentType
+      dueDate{
+       day
+      }
+      mainTopic
     }
   }
 `;

@@ -12,7 +12,7 @@ export const CREATE_ASSIGNMENT = gql`
 `;
 
 export const EDIT_ASSIGNMENT = gql`
-  mutation updateAssignment($id: String!, $update: AssignmentInput) {
+  mutation updateAssignment($id: ID!, $update: AssignmentInput) {
     updateAssignment(id: $id, update: $update) {
       title
     }
@@ -42,6 +42,7 @@ export const EDIT_ASSIGNMENT_DETAILS = gql`
       }
       mainTopic
       creator
+      points
       class_id
       students
       dueDate {

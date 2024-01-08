@@ -5,11 +5,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import UploadIcon from '@mui/icons-material/Upload';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
-import { FETCH_CLASSROOM_QUERY, GET_PARTICIPANTS } from '@/apis/classroom';
+import { FETCH_CLASSROOM_QUERY, GET_PARTICIPANTS } from '@/apis/classroom/query';
 import { useAppSelector } from '@/redux/store';
 import { useMutation, useQuery } from '@apollo/client';
 import { useSearchParams } from 'next/navigation'
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { DatePicker, Modal, TimePicker, message } from 'antd';
 import {
@@ -19,10 +19,11 @@ import {
 } from "firebase/storage";
 import { storage } from "../../../services/config/firebase"
 import { v4 } from "uuid";
-import { CREATE_ASSIGNMENT, FETCH_MAINTOPIC } from '@/apis/assignment';
+import { CREATE_ASSIGNMENT } from '@/apis/assignment/mutation';
 import ListIcon from '@mui/icons-material/List';
 import { assignmentClient } from '@/app/providers/ApolloProvider';
 import CloseIcon from '@mui/icons-material/Close';
+import { FETCH_MAINTOPIC } from '@/apis/assignment/query';
 // import { CREATE_ASSIGNMENT } from '@/apis/assignment';
 
 
@@ -141,15 +142,23 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
 
   }
 
-  const handleDateChange = (date: any, dateString: any) => {
+  const handleDateChange = (value: Dayjs | null, dateString: string) => {
+    if (value === null) {
+      return;
+    }
     const selectedDate = new Date(dateString);
     const currentDate = new Date();
+
+    selectedDate.setHours(0, 0, 0, 0);
+  currentDate.setHours(0, 0, 0, 0);
+
     if (selectedDate < currentDate) {
-      message.info("Selected date is before the current date");
-    } else {
+      message.error("Selected date is before the current date");
+      return
+    } 
       setdate(dateString);
       handleState('state4',!state.state4)
-    }
+    
   };
   
 

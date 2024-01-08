@@ -1,5 +1,5 @@
 'use client'
-import { EDIT_QUIZ_DETAILS, FETCH_MAINTOPIC } from '@/apis/assignment'
+import {FETCH_MAINTOPIC } from '@/apis/assignment/query'
 import { assignmentClient } from '@/app/providers/ApolloProvider'
 import { useQuery } from '@apollo/client'
 import { useSearchParams } from 'next/navigation'
@@ -10,6 +10,7 @@ import { DatePicker, Dropdown, MenuProps, TimePicker } from 'antd'
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import TuneIcon from '@mui/icons-material/Tune';
+import { EDIT_QUIZ_DETAILS } from '@/apis/assignment/mutation'
 
 function EditQuiz() {
     const searchParams = useSearchParams()

@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 
 export const metadata: Metadata = {
-  title: 'Create assignment',
+  title: 'Submit assignment',
   description: 'This is a learning mangment system',
 }
 

@@ -1,12 +1,17 @@
 'use client'
-import { CREATE_SUBMISSION } from '@/apis/submission';
+import { CREATE_SUBMISSION } from '@/apis/submission/mutation';
 import { submissionClient } from '@/app/providers/ApolloProvider';
 import { useAppSelector } from '@/redux/store';
 import { useMutation } from '@apollo/client';
 import { message } from 'antd';
 import React, { useState } from 'react';
 
-function Polling({ details,creator,polling }: { details: any ,creator?:boolean,polling?:any}) {
+interface PollingProps {
+  details: any ,creator?:boolean,polling?:any,admin?:boolean
+}
+
+function Polling({ details,creator,polling,admin
+ }: PollingProps) {
   console.log(details)
   const data=["A","B","C","D"]
   const [comment,setcomment]=useState([])
@@ -28,7 +33,6 @@ function Polling({ details,creator,polling }: { details: any ,creator?:boolean,p
     }
   })
 
-  console.log(details)
   const handleSubmission=async()=>{
     const submission={
       assignment_id:details._id,
@@ -73,9 +77,10 @@ function Polling({ details,creator,polling }: { details: any ,creator?:boolean,p
         </div>
       ))}
   {
-    !creator  && 
+    !creator && admin  && 
     <button className='text-white bg-[#3b6a87] p-3 w-11/12 lg:w-3/4 my-5 mx-3 text-center text rounded-md' onClick={handleSubmission}>Submit</button>
   }
+
     </div>
   );
 }

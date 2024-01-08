@@ -5,11 +5,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import UploadIcon from '@mui/icons-material/Upload';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
-import { FETCH_CLASSROOM_QUERY, GET_PARTICIPANTS } from '@/apis/classroom';
+import { FETCH_CLASSROOM_QUERY, GET_PARTICIPANTS } from '@/apis/classroom/query';
 import { useAppSelector } from '@/redux/store';
 import { useMutation, useQuery } from '@apollo/client';
 import { useSearchParams } from 'next/navigation'
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useRouter } from 'next/navigation';
 import { DatePicker, Modal, TimePicker, message } from 'antd';
 import {
@@ -19,9 +19,13 @@ import {
 } from "firebase/storage";
 import { storage } from "../../../services/config/firebase"
 import { v4 } from "uuid";
-import { ASSIGNMENT_DETAILS, CREATE_ASSIGNMENT, EDIT_ASSIGNMENT, EDIT_ASSIGNMENT_DETAILS, FETCH_MAINTOPIC } from '@/apis/assignment';
+import {EDIT_ASSIGNMENT, EDIT_ASSIGNMENT_DETAILS} from '@/apis/assignment/mutation';
 import { assignmentClient } from '@/app/providers/ApolloProvider';
 import CloseIcon from '@mui/icons-material/Close';
+import { FETCH_MAINTOPIC } from '@/apis/assignment/query';
+import { ClassroomParticipants, ClassroomProps } from '@/@types/classroom';
+import { EditAssignment } from '@/@types/assignment';
+import useFormattedCreator from '@/hook/useFormat';
 // import { CREATE_ASSIGNMENT } from '@/apis/assignment';
 
 
@@ -42,11 +46,11 @@ function CreateAssignment() {
 
 
     // details of the assignment
-    const [point,setpoint]=useState<string | number>(100)
+    const [link,setLink]=useState<string | null>(null)
     const [pointstate,setpointstate]=useState(true)
     const [modal,setmodal]=useState(false)
     const[file,setfile]=useState<File | null>(null)
-    const [details,setdetails]=useState<any>({})
+    const [details,setDetails]=useState<any>({})
     const [studentChecked,setStudentchecked]=useState<string[]>([])
     const [name,setname]=useState('')
     const [state,setstate]=useState({
@@ -61,14 +65,14 @@ function CreateAssignment() {
   const {data} = useQuery(FETCH_CLASSROOM_QUERY, { // to edit assignment details
     variables: { id: token.id },
     onCompleted:(data)=>{
-       data.getCreatorClassroom.map((m:any)=>{
+       data.getCreatorClassroom.map((m:ClassroomProps)=>{
          if(m._id===classId) {
-          setname(m.className)
+          setname(m.className as string)
          }
        })
     },
     onError(err){
-      console.log(err)
+      message.error("Some error occurred")
     }
   }
   );
@@ -85,11 +89,12 @@ const {data:assignment}=useQuery(EDIT_ASSIGNMENT_DETAILS,{
     id:id
   },
   onError(err){
-    console.log(err)
+    message.error("Some error occurred")
   },
   onCompleted:(data)=>{
+    console.log(data)
     setStudentchecked(data.getOneassignment.students)
-    setdetails(data.getOneassignment)
+    setDetails(data.getOneassignment)
   }
 })
 
@@ -108,7 +113,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
     id:id
   },
   onError(err){
-    console.log(err)
+    message.error("Some error occurred")
   },
 })
 
@@ -129,8 +134,21 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
   }
 
   // handle the date change
-  const handleDateChange = (date:any,dateString:any) => {
-   setdetails({...details,dueDate:{
+  const handleDateChange = (value: Dayjs | null, dateString: string) => {
+    if (value === null) {
+      return;
+    }
+    const selectedDate = new Date(dateString);
+    const currentDate = new Date();
+
+    selectedDate.setHours(0, 0, 0, 0);
+  currentDate.setHours(0, 0, 0, 0);
+
+    if (selectedDate < currentDate) {
+      message.error("Selected date is before the current date");
+      return
+    } 
+   setDetails({...details,dueDate:{
     day:dateString,
     time:details.dueDate.time || ''
    }})
@@ -153,24 +171,30 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
     const { __typename, ...detailsWithoutTypename } = details;
     const {__typename:type,...date}=details.dueDate
 
-    const attachment = {
-      type: detailsWithoutTypename.attachment.type,
-      content: detailsWithoutTypename.attachment.content,
-    };
-
-
-
-    const assignment={ ...detailsWithoutTypename,dueDate:date, attachment }
-    console.log(assignment)
+    const assignment={ ...detailsWithoutTypename,dueDate:{...date,timer:[]} }
+    let attachment
+    if(detailsWithoutTypename.attachment){
+       attachment = {
+        type: detailsWithoutTypename.attachment.type,
+        content: detailsWithoutTypename.attachment.content,
+      };
+      assignment.attachment = attachment;
+    }
+    const assignmentWithoutNulls = Object.fromEntries(
+      Object.entries(assignment).filter(([key, value]) => value !== null)
+    );
+    
     
     await updateAssignment({
       variables: {
         id: id,
-        update: assignment,
+        update: assignmentWithoutNulls,
       },
     });
     
   }
+
+ 
 
   return (
     <div>
@@ -183,15 +207,26 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
             <div className='w-full xm:w-[45rem] lg:w-3/4 xl:w-3/4 xm:mt-12'>
             <div className='mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[25rem] box_shadow p-5'>
               <input type="text" className="w-full bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text my-4 text-slate-600" value={details.title} placeholder='Title of the assignment' 
-              onChange={(e:ChangeEvent<HTMLInputElement>)=>setdetails({...details,title:e.target.value})}/>
-              <textarea  className="w-full h-3/4 bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text" value={details.instruction} placeholder='Instruction (optional)'
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setdetails({...details,instruction:e.target.value})}/>
+              onChange={(e:ChangeEvent<HTMLInputElement>)=>setDetails({...details,title:e.target.value})}/>
+              <textarea  className="w-full h-3/4 bg-slate-200 focus:outline-none p-3 rounded-lg border-2 text text-slate-600" value={details.instruction} placeholder='Instruction (optional)'
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setDetails({...details,instruction:e.target.value})}/>
               
             </div>
             <div className=' mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[8rem] box_shadow my-5 px-3'>
               <div className='flex items-center'>
-              <p className="text p-2 text-sm">{ details.attachment && details.attachment.type[0].toUpperCase() + details.attachment.type.slice(1,details.attachment.type.length)} has been attached with the assignment</p>
-              <a href={details.attachment && details.attachment.content}  target="_blank" rel="noopener noreferrer" className='text-xs text text-blue-600 underline'>Click here</a>
+                {
+                  file ? 
+                  <p className="text p-2 text-sm">Edit the assignment attachment to {file.name}</p>
+                  :
+                  (link ?
+                    <p className="text p-2 text-sm">Link has been attached with the assignment </p>
+                     :
+                     <p className="text p-2 text-sm">{ details.attachment ? useFormattedCreator(details.attachment.type) + "has been attached with the assignment" : "No attachments"}</p>
+
+                  )
+                }
+              { !file && details.attachment && !link &&  <a href={details.attachment && details.attachment.content}  target="_blank" rel="noopener noreferrer" className='text-xs text text-blue-600 underline'>Click here</a> }
+              {link && <a href={link}  target="_blank" rel="noopener noreferrer" className='text-xs text text-blue-600 underline'>Click here</a>}
               </div>
               <div className='flex justify-center items-center'>
                 <div>
@@ -201,19 +236,24 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                 <div className='mx-16'>
                <label htmlFor='file'><div className='flex justify-center items-center p-2 border-2 rounded-full  cursor-pointer'><UploadIcon className='text-blue-400 text-3xl'/></div></label> 
                 <p className='text-xs text text-center'>Upload</p>
-                <input type='file' className='hidden' id='file' name='file' onChange={(e:any) =>setfile(e.target.files[0])}/>
+                <input type='file' className='hidden' id='file' name='file' onChange={(e:ChangeEvent<HTMLInputElement>) => e.target.files &&  setfile(e.target.files[0])}/>
                 </div>
                  <div >
                 <div className='flex justify-center items-center p-2 border-2 rounded-full cursor-pointer' onClick={()=>setmodal(true)}><InsertLinkIcon className='text-3xl'/></div>
                 <p className='text-xs text text-center'>Link</p>
                 </div>
-                 <Modal title='Enter the link' open={modal} footer={null} onCancel={()=>setmodal(false)}>
+                 <Modal title={<p className='font-normal text'>Enter the link</p>} open={modal} footer={null} onCancel={()=>setmodal(false)}>
                  <input
               id="link"
               type="text"
               placeholder="Enter the link"
-              className=" block p-3 w-full md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setdetails({...details,attachment:{type:"link",content:e.target.value}})}
+              className=" block p-3 w-full md:p-2 lg:p-3 border-2 placeholder:text rounded-md shadow-sm focus:outline-none sm:text-sm"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                {
+                  setDetails({...details,attachment:{type:"link",content:e.target.value}})
+                  setLink(e.target.value)
+                }
+                }
             />
             <div className="flex justify-end mt-2">
               <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text " onClick={()=>setmodal(false)}>OK</button>
@@ -246,9 +286,9 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                        state.state3 && 
                        <div className='absolute bg-white box_shadow  rounded-md w-44'>
                       {
-                        students && students.getAllClassroomparticipants.user.map((u:any)=>{
+                        students && students.getAllClassroomparticipants.user.map((u:ClassroomParticipants)=>{
                            return (
-                            <div key={u._id}>
+                            <div key={u.id}>
                             <div className={`flex my-1 items-center  p-2`}>
                               <input type='checkbox' className='w-4 h-4 mx-1 cursor-pointer'  checked={studentChecked.includes(u.id)} onChange={()=>handleStudentchecked(u.id)}/>
                               <p className='text text-slate-700 '>{u.username[0].toUpperCase() + u.username.slice(1,name.length).toLowerCase()}</p>
@@ -264,13 +304,32 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                    </div>
                 </div>
                 {
-                 data &&  data.getOneassignment && 
+                 assignment &&  assignment.getOneassignment.assignmentType==='Assignment' && 
                  <>
                 <div className='w-1/2 my-5 pr-2'>
                    <p className='text text-slate-700'>Points</p>
-                <div className='bg-slate-100 p-2 flex justify-between items-center'>
+                   <div className='bg-slate-100 p-2 flex justify-between items-center'>
                   {
-                    pointstate ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 'defaultValue={point}/>
+                    pointstate ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 ' defaultValue={details.points} 
+                    onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                      const isValidKey = /^[0-9]$/.test(e.key);
+                      if (!isValidKey) {
+                        e.preventDefault();
+                      }
+                    }}
+                    onChange={(e:ChangeEvent<HTMLInputElement>)=>
+                      {
+                        if( parseInt(e.target.value)>0 && parseInt(e.target.value)<101){
+                          setDetails({...details,points:e.target.value})
+                           
+                        }else{
+                          message.info("Mark between 1 to 100")
+                        }
+                        
+                      }
+                      }
+                    
+                    />
                     :<p className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 '>ungraded</p>
                   }
                   
@@ -280,9 +339,9 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                     state.state2 && <div className='absolute bg-white box_shadow  cursor-pointer rounded-md p-3'>
                     <p className='text' onClick={()=>{
                       handleState('state2',false);
-                      setpoint('ungraded')
-                      setpointstate(false)
-                    }}>Ungraded</p>
+                      pointstate ? setDetails({...details,points:'ungraded'}): setDetails({...details,points:100})
+                      setpointstate(!pointstate)
+                    }}>{pointstate ? "Ungraded" : "Points"}</p>
                   </div>
 
                 }
@@ -297,9 +356,13 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                   state.state4 && 
                   <div  className='absolute bg-white box_shadow  rounded-md w-56'>
                     <p className='text m-3'>Due Date</p>
-                    <hr/>
-                    <DatePicker className=' p-2 m-2 border-2 w-11/12' onChange={handleDateChange} />
-                    <TimePicker className=' p-2 m-2 border-2 w-11/12' defaultValue={dayjs('23:59', 'HH:mm')} format={'HH:mm'} onChange={(value,time)=>setdetails({...details,dueDate:{...details.dueDate,time:time}})} />
+                    <DatePicker
+  className='p-2 m-2 border-2 w-11/12'
+  defaultValue={(details.dueDate && details.dueDate.day) ? dayjs(details.dueDate.day) : undefined}
+  onChange={handleDateChange}
+/>
+
+                    <TimePicker className=' p-2 m-2 border-2 w-11/12' defaultValue={(details.dueDate && details.dueDate.time) && dayjs('23:59', 'HH:mm')} format={'HH:mm'} onChange={(value,time)=>setDetails({...details,dueDate:{...details.dueDate,time:time}})} />
                 </div>
                 }
                 
@@ -310,7 +373,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                    <p className='text text-slate-700'>Topic</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
                   
-                    <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/2 'defaultValue={details.mainTopic ? details.mainTopic : "No topic"} onChange={(e:ChangeEvent<HTMLInputElement>)=>setdetails({...details,mainTopic:e.target.value})}/>
+                    <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/2 'defaultValue={details.mainTopic ? details.mainTopic : "No topic"} onChange={(e:ChangeEvent<HTMLInputElement>)=>setDetails({...details,mainTopic:e.target.value})}/>
                    
                   
                   <ArrowDropDownIcon className='cursor-pointer' onClick={()=>handleState('state5',!state.state5)}/>
@@ -325,7 +388,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                       <p className='my-2 px-3 cursor-pointer text text-slate-500 ' onClick={()=>
                       {
                         handleState('state5',!state.state5)
-                        setdetails({...details,mainTopic:m})
+                        setDetails({...details,mainTopic:m})
                       }
                       
                       

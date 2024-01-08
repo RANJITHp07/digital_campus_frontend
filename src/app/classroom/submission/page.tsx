@@ -5,9 +5,10 @@ import SidePanel from '@/app/component/common/sidePanel'
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useMutation, useQuery } from '@apollo/client'
-import { ASSIGNMENT_DETAILS } from '@/apis/assignment'
+import { ASSIGNMENT_DETAILS } from '@/apis/assignment/query'
 import { assignmentClient } from '@/app/providers/ApolloProvider'
 import PollIcon from '@mui/icons-material/Poll';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import SecurityIcon from '@mui/icons-material/Security';
 import GroupIcon from '@mui/icons-material/Group';
 import Image from 'next/image'
@@ -16,10 +17,12 @@ import { useAppSelector } from '@/redux/store'
 import Material from '@/app/component/submission/material'
 import {format} from "timeago.js"
 import {pdfjs,Document,Page} from 'react-pdf'
-import { CREATE_COMMENT, GET_ALLCOMMENTS } from '@/apis/comment'
+import {  GET_ALLCOMMENTS } from '@/apis/comment/query'
 import { Comment } from '@/@types/assignment'
 import QuizSubmission from '@/app/component/submission/quiz'
 import LoadinPage from '@/app/component/common/loadinPage'
+import { CREATE_COMMENT } from '@/apis/comment/mutation'
+import { message } from 'antd'
 
 function Submission() {
 
@@ -30,6 +33,7 @@ function Submission() {
     const [text,settext]=useState('')
     const [comment,setcomment]=useState<Comment[]>([])   
     const [numPages, setNumPages] = useState(null);
+    const [creator,setcreator]=useState(false)
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.js',
       import.meta.url,
@@ -62,7 +66,12 @@ function Submission() {
         id:id
       },
       onError(err){
-        console.log(err)
+        message.error("Some error occured")
+      },
+      onCompleted:(data)=>{
+        if(data.getOneassignment.students.includes(token.id)){
+          setcreator(true)
+        }
       }
     })
 
@@ -111,28 +120,36 @@ function Submission() {
               <SidePanel/>
         </div>
         <div className='w-full'>
-        <div className='text-3lg text  mx-4 my-5 flex items-center'>
-          <div className='flex bg-[#3b6a87] w-9 h-9 text-white rounded-full justify-center items-center'><PollIcon/></div>
+        <div className='text-lg text  mx-4 my-5 flex items-center'>
+          <div className='flex bg-[#3b6a87] w-9 h-9 text-white rounded-full justify-center items-center'>
+            {type==='Assignment'?
+             <AssignmentIcon/>
+            :
+              <PollIcon/>
+           }  
+            </div>
           <p className='text-[#3b6a87] mx-3'>{type}</p>
           </div>
           <hr/>
+          {
+            loading ? 
+            <div className='w-11/12 mx-auto'>
+          <LoadinPage/>
+         </div>
+          :
           <div className='lg:flex'>
             {
                 data && 
-                <div className='my-6 mx-3 w-full'>
+                <div className='my-6 mx-3 w-3/4'>
                 
           {
-            type==='Polling' && <Polling details={data && data.getOneassignment}/>
+            type==='Polling' && <Polling admin={creator} details={data && data.getOneassignment}/>
           }
           {
-            (type==='Assignment' || type==='Material' ) && <Material assignment={data && data.getOneassignment}/>
+            (type==='Assignment' || type==='Material' ) && <Material admin={creator} assignment={data && data.getOneassignment}/>
           }
-          {/* {
-            type!=='Material' && 
-            <button className='text-white bg-[#3b6a87] p-3 w-11/12 lg:w-3/4 my-5 mx-3 text-center text rounded-md'>Submit</button>
-          } */}
         
-        <div className='box_shadow p-3 mx-3 w-11/12 lg:w-3/4 rounded-md'>
+        <div className={`box_shadow p-3 mx-3 w-11/12 lg:w-3/4 rounded-md ${creator && "my-9"}`}>
           <div className={`flex items-center ${comment.length>0 && 'mb-6'}`}>
             <GroupIcon className='text-slate-400 mr-3'/>
           <input placeholder='Add comment to the class' className='placeholder:text focus:outline-none w-full text text-slate-500'
@@ -162,8 +179,9 @@ function Submission() {
                 </div>
             }
             </div>
-            
+}
         </div>
+        
         </div>
         
         </>

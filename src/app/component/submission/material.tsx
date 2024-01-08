@@ -2,7 +2,7 @@
 import React ,{ChangeEvent, useState}from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import { useMutation } from '@apollo/client';
-import { CREATE_SUBMISSION } from '@/apis/submission';
+import { CREATE_SUBMISSION } from '@/apis/submission/mutation';
 import { useAppSelector } from '@/redux/store';
 import {
   ref,
@@ -14,7 +14,7 @@ import { v4 } from "uuid";
 import { submissionClient } from '@/app/providers/ApolloProvider';
 import { message } from 'antd';
 
-function Material({assignment}:{assignment:any}) {
+function Material({assignment}:{assignment:any,admin:boolean}) {
   const [file,setfile]=useState<File | null>(null)
  const token=useAppSelector((state)=>state.authReducer.token)
 
@@ -63,7 +63,6 @@ function Material({assignment}:{assignment:any}) {
         }
       }
     }
-    console.log(file)
     if(file){
       const imageRef = ref(storage, `images/${file.name + v4()}`);
       uploadBytes(imageRef, file).then((snapshot) => {
@@ -76,7 +75,6 @@ function Material({assignment}:{assignment:any}) {
           })
     }
 
-     console.log(submission)
      await createSubmission({
       client:submissionClient,
       variables:{
@@ -93,7 +91,7 @@ function Material({assignment}:{assignment:any}) {
         <div>
         {
           assignment.assignmentType==='Assignment' &&
-        <a href={assignment.attachment ? assignment.attachment.content : ''} target='_blank' className="float-right p-2 text-white bg-[#3b6a87] text rounded-md  hidden lg:block">Attachement</a>
+        <a href={assignment.attachment ? assignment.attachment.content : ''} target='_blank' className="absolute right-3 p-2 text-white bg-[#3b6a87] text rounded-md  hidden lg:block">Attachement</a>
        }
         <p className='text text-2xl text-[#3b6a87] mx-6 '>
             {assignment.title.toUpperCase()}

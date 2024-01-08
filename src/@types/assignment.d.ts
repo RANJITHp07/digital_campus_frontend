@@ -65,3 +65,22 @@ export interface Assignment {
   }[];
   _id: string;
 }
+
+export interface EditAssignment  extends AssignmentDetails{
+  instruction: string;
+  attachment: {
+    content: string;
+    type: string;
+  };
+  mainTopic: string;
+  creator: string;
+  points: number;
+  class_id: string; 
+  students: string[]; 
+  dueDate: {
+    day: string;
+    time: string;
+  };
+}
+
+

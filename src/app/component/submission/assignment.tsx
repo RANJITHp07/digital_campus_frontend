@@ -1,4 +1,4 @@
-import { GET_ASSIGNMENT } from "@/apis/submission";
+import { GET_ASSIGNMENT } from "@/apis/submission/query";
 import { submissionClient } from "@/app/providers/ApolloProvider";
 import { useQuery } from "@apollo/client";
 import { Card, Typography } from "@material-tailwind/react";

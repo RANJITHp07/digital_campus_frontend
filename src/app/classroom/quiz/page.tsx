@@ -6,14 +6,14 @@ import { Dropdown, message } from 'antd';
 import TuneIcon from '@mui/icons-material/Tune';
 import EditIcon from '@mui/icons-material/Edit';
 import { useMutation, useQuery } from '@apollo/client';
-import { CREATE_ASSIGNMENT } from '@/apis/assignment';
+import { CREATE_ASSIGNMENT } from '@/apis/assignment/mutation';
 import { useAppSelector } from '@/redux/store';
 import { useSearchParams } from 'next/navigation';
 import { assignmentClient } from '@/app/providers/ApolloProvider';
 import { useRouter } from 'next/navigation';
 import CloseIcon from '@mui/icons-material/Close';
 import { Question } from '@/@types/assignment';
-import { FETCH_CLASSROOM_DETAILS } from '@/apis/classroom';
+import { FETCH_CLASSROOM_DETAILS } from '@/apis/classroom/query';
 import Title from '@/app/component/classroom/quiztitle';
 
 
@@ -107,7 +107,7 @@ function Quiz() {
           return
         }
         const q={
-            type:type as string,
+            type:type as "checkbox" | "radio",
             question:question,
             answers:options,
             realAnswers:answer,
@@ -186,7 +186,7 @@ function Quiz() {
         }
         const a= questions.map((m,index)=>{
           if(i===index){
-             return {...m,edit:false,question:editquestion,answers:editoptions,realAnswers:editAnswer,type:edittype as string}
+             return {...m,edit:false,question:editquestion,answers:editoptions,realAnswers:editAnswer,type:edittype as "checkbox"|"radio"}
           }
           return m
        })
@@ -218,7 +218,7 @@ function Quiz() {
 
         let q=questions.map(({ edit, ...rest }) => rest)
         if(question.trim().length>0 && options.length>0){
-          q = [...q, { question: question, answers: options,realAnswers:answer, type: type as string }];
+          q = [...q, { question: question, answers: options,realAnswers:answer, type: type as "checkbox"| "radio"}];
         }
         let assignment:any={
           title:title,

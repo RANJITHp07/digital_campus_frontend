@@ -1,6 +1,6 @@
 'use client'
-import { ASSIGNMENT_DETAILS } from '@/apis/assignment'
-import { GET_POLLING } from '@/apis/submission'
+import { ASSIGNMENT_DETAILS } from '@/apis/assignment/query'
+import { GET_POLLING } from '@/apis/submission/query'
 import Navbar from '@/app/component/common/navbar'
 import SidePanel from '@/app/component/common/sidePanel'
 import Polling from '@/app/component/submission/polling'
