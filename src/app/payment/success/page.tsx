@@ -1,16 +1,19 @@
+import Navbar from '@/app/component/common/navbar'
+import Link from 'next/link'
 import React from 'react'
 
 function Success() {
   return (
-    <div className="flex justify-center">
-        <div className="box_shadow flex justify-center my-24 w-1/2 p-9 rounded-md">
-            <div>
-        <img src={'https://i.pngimg.me/thumb/f/720/m2H7i8N4K9H7d3A0.jpg'} className="w-36 h-32 mx-auto"/>
-        <p className='text text-xl my-3 text-center'>Payment success full</p>
-        <a href={'/classroom'} className='text text-blue-300 my-3 text-center block'>Go to home page</a>
+    <div>
+        <Navbar/>
+        <div  className="w-full h-[30rem] bg-cover "
+        style={{
+            backgroundImage: `url(${'/payment.png'})`,
+          }}>
         </div>
+        <div className='flex justify-center w-full'>
+            <Link href={'/classroom'} className='text text-white bg-[#1462c1] my-5 p-2 text rounded-full px-5 '>Go to the classroom</Link>
         </div>
-        
     </div>
   )
 }
