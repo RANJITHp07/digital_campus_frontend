@@ -53,9 +53,11 @@ function Classwork({ id }:ClassworkProps) {
       id: id,
     },
     onError(err) {
+      console.log(err)
       message.error("Some error occured")
     },
     onCompleted: (data) => {
+      console.log(data)
       setAssignment(data.getgroupedAssignment);
     },
   });

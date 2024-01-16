@@ -15,8 +15,8 @@ export const FETCH_ASSIGNMENT_DETAILS = gql`
 `;
 
 export const FETCH_MAINTOPIC = gql`
-  query getdistinctmainTopic {
-    getdistinctmainTopic {
+  query getdistinctmainTopic($id: ID!) {
+    getdistinctmainTopic(id: $id) {
       mainTopic
     }
   }

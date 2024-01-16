@@ -19,7 +19,9 @@ function Polling({ details,creator,polling,admin
  }: PollingProps) {
     const data=["A","B","C","D"]
   const percentages = details.polling.answers.map((answer:string, index:number) => {
-    return (parseInt(polling.polling[index]) / details.students.length) * 100;
+    if(creator){
+      return (parseInt(polling.polling[index]) / details.students.length) * 100;
+    }
   });
 
   // Chart data

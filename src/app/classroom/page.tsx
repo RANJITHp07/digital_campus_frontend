@@ -41,7 +41,7 @@ const Classroom = () => {
   const [addedClasroom, setAddedClasroom] = useState(0);
   const [createdClasroom, setCreatedClasroom] = useState(0);
   const [pagination, setPagination] = useState(1);
-  const [event, setEvent] = useState<Event[]>([]);
+  const [event, setEvent] = useState<Event[] | null >(null);
   const socket = useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -89,6 +89,7 @@ const Classroom = () => {
       category: category,
     },
     onError(err) {
+      
       console.log(err);
     },
   });
@@ -99,14 +100,16 @@ const Classroom = () => {
     variables: {
       id: token.id,
     },
-    onCompleted: (data) => {
-      const events = useMemo(() => {
+    onError(err){
+      console.log(err)
+    },
+    onCompleted:(data) => {
     let result: { [key: string]: { name: string } } = {};
     allClassroom?.getAllTheClassroom.forEach((m: any) => {
       result[m._id] = { name: m.className };
     });
-
-    return (due_dates?.getDueDates || []).map((d: Event) => ({
+    if(Object.keys(result).length !== 0 && result.constructor === Object){
+    const events =(data.getDueDates || []).map((d: Event) => ({
       start: moment(`${d.dueDate.day}T00:00:00`).toDate(),
       end: moment(`${d.dueDate.day}T${d.dueDate.time}`).toDate(),
       title: (
@@ -128,8 +131,12 @@ const Classroom = () => {
         </Popover>
       ),
     }));
-  }, [due_dates, allClassroom]);
-  setEvent(event)
+  
+  console.log(events)
+  setEvent(events)
+    }else{
+      setEvent([])
+    }
     },
   });
 
@@ -149,11 +156,12 @@ const Classroom = () => {
         <div className="border-r-2 z-50 hidden xm:block  min-h-screen ">
           <SidePanel />
         </div>
-        {type === "calendar" && (
+        {type === "calendar" && ( event ? (
           <div className="w-full text-[#3b6a87]">
-            <BasicCalendar events={event} />
+            <BasicCalendar events={ event} />
           </div>
-        )}
+        ): <div><LoadinPage /></div>)
+      }
         <div className={`${type !== "calendar" && "w-full"}`}>
           {type === "home" && !categoryType && (
             <div

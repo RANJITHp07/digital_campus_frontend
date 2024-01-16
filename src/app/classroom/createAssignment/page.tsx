@@ -72,13 +72,12 @@ function CreateAssignment() {
     onCompleted:(data)=>{
        data.getCreatorClassroom.map((m:any)=>{
          if(m._id===id) {
-          console.log(m.className)
           setname(m.className)
          }
        })
     },
     onError(err){
-      console.log(err)
+      message.error("Some error occurred")
     }
   }
   );
@@ -108,7 +107,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
     id:id
   },
   onError(err){
-    console.log(err)
+    message.error("Some error occurred")
   },
 })
 
@@ -166,7 +165,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
   const [createAssignment]=useMutation(CREATE_ASSIGNMENT,
     {
       onError(err){
-        console.log(err.message)
+        message.error("Some error occurred")
         
       },
       onCompleted:()=>{

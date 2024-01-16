@@ -112,7 +112,7 @@ function Chat({
         classId: classId,
         sender: token.id as number,
         text: {
-          type: type,
+          type: 'text',
           text: newMessage,
         },
       };
