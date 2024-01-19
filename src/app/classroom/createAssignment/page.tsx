@@ -237,7 +237,6 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                 type:type,
                 content:url
               }
-              console.log(assignment)
               await createAssignment({
                 client:assignmentClient,
                 variables:{
@@ -281,7 +280,23 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setinstruction(e.target.value)}/>
             </div>
             <div className=' mx-3 md:mx-8 xl:mx-24 rounded-lg border-2 h-[8rem] box_shadow my-5 px-3'>
-              <p className="text p-2">Attach {file && file.name}</p>
+            <p className="text p-2">
+            {file ? (
+  <span>
+    Attach <span className='text-blue-500'>{file.name}</span>
+  </span>
+) : (
+  link ? (
+    <span>
+      Link <span className='text-blue-500'>{link}</span>
+    </span>
+  ) : (
+    <span>Attach</span>
+  )
+)}
+
+            </p>
+
               <div className='flex justify-center items-center'>
                 <div>
                 <div className='flex justify-center items-center p-2 border-2 rounded-full cursor-pointer' onClick={()=>router.push('https://www.youtube.com/')}><YouTubeIcon className="text-red-500 text-3xl"/></div>
@@ -302,7 +317,9 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
               type="text"
               placeholder="Enter the link"
               className=" block p-3 w-full md:p-2 lg:p-3 border-2 border-gray-400 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setlink(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                { setfile(null)
+                  setlink(e.target.value)}}
             />
             <div className="flex justify-end mt-2">
               <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text " onClick={()=>setmodal(false)}>OK</button>
@@ -377,7 +394,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                    <p className='text text-slate-700'>Points</p>
                 <div className='bg-slate-100 p-2 flex justify-between items-center'>
                   {
-                    pointstate ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 ' value={point} 
+                    pointstate ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 '  value={Number.isNaN(point)? 0 : point} 
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       const isValidKey = /^[0-9]$/.test(e.key);
                       if (!isValidKey) {
@@ -386,10 +403,10 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                     }}
                     onChange={(e:ChangeEvent<HTMLInputElement>)=>
                       {
-                        if( parseInt(e.target.value)>0 && parseInt(e.target.value)<101){
-                          setpoint(parseInt(e.target.value) )
-                        }else{
+                        if( parseInt(e.target.value)>100 && !Number.isNaN(point) ){
                           message.info("Mark between 1 to 100")
+                        }else{
+                          setpoint(parseInt(e.target.value) )
                         }
                         
                       }

@@ -45,14 +45,14 @@ function Payment() {
             });
           
             const data = response.data;
-            console.log(data.data);
+            console.log(data);
           
         const options = {
             key:"rzp_test_h3vLvQM9ENsdGj" , 
             name:"6 months subscription",
             description:"6 months plan in digital ocean",
             subscription_id:data.data.id,
-            callback_url:'http://localhost:4000/v1/api/payment/verification'
+            // callback_url:'http://localhost:4000/v1/api/payment/verification'
         };
 
         const paymentObject = new (window as any).Razorpay(options);

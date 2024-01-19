@@ -39,7 +39,9 @@ export const classClient = new ApolloClient({
 
 export const assignmentClient = new ApolloClient({
   link: authLink.concat(assignmentlink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    addTypename: false
+  }),
 });
 
 export const submissionClient = new ApolloClient({

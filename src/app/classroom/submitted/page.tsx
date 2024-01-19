@@ -37,8 +37,9 @@ function Submitted() {
     },
     onError(err){
       console.log(err)
-    }
+    },
   })
+
 
   return (
     <div>
@@ -57,7 +58,7 @@ function Submitted() {
           <div className='lg:flex'>
         {data && polling && (
           <div className='my-6 mx-3 w-11/12'>
-            {type === 'Polling' && <Polling details={data && data.getOneassignment} creator={true} polling={polling && polling.getPolling.polling} />}
+            {/* {type === 'Polling' && <Polling details={data && data.getOneassignment} creator={true} polling={polling.getPolling && polling.getPolling.polling} />} */}
              {type==='Assignment' && <DefaultTable id={id as string} name={data && data.getOneassignment.title}/>}
              {
               type==='Quiz' && <QuizMark id={id as string} data={data && data.getOneassignment}/>

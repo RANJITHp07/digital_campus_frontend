@@ -47,7 +47,6 @@ function CreateAssignment() {
 
     // details of the assignment
     const [link,setLink]=useState<string | null>(null)
-    const [pointstate,setpointstate]=useState(true)
     const [modal,setmodal]=useState(false)
     const[file,setfile]=useState<File | null>(null)
     const [details,setDetails]=useState<any>({})
@@ -89,10 +88,10 @@ const {data:assignment}=useQuery(EDIT_ASSIGNMENT_DETAILS,{
     id:id
   },
   onError(err){
+    console.log(err)
     message.error("Some error occurred")
   },
   onCompleted:(data)=>{
-    console.log(data)
     setStudentchecked(data.getOneassignment.students)
     setDetails(data.getOneassignment)
   }
@@ -159,7 +158,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
   const [updateAssignment]=useMutation(EDIT_ASSIGNMENT,{
     client:assignmentClient,
     onError(err){
-      console.log(err)
+      message.error("Some error occurred")
     },
     onCompleted:()=>{
       message.info("Updated successfully");
@@ -178,19 +177,57 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
         type: detailsWithoutTypename.attachment.type,
         content: detailsWithoutTypename.attachment.content,
       };
-      assignment.attachment = attachment;
+      if(file){
+        const imageRef = ref(storage, `images/${file.name + v4()}`);
+      uploadBytes(imageRef, file).then((snapshot) => {
+        getDownloadURL(snapshot.ref).then(async(url) => {
+          const fileType=file.type
+          let type;
+
+          if (fileType.startsWith('image/')) {
+            type='photo'
+          } else if (fileType.startsWith('video/')) {
+            type='vedio'
+          } else if (fileType === 'application/pdf') {
+             type='pdf'
+          } else if (fileType.startsWith('audio/')) {
+            type='audio'
+          } else {
+            message.error('Only audio,vedio,photo and pdf allowed')
+            return;
+          }
+          assignment.attachment = {
+            type: type,
+            content: url,
+          };
+          const assignmentWithoutNulls = Object.fromEntries(
+            Object.entries(assignment).filter(([key, value]) => value !== null)
+          );
+          console.log(assignmentWithoutNulls)
+          await updateAssignment({
+            variables: {
+              id: id,
+              update: assignmentWithoutNulls,
+            },
+          });
+        });
+      });
+      }else{
+        assignment.attachment = attachment;
+        const assignmentWithoutNulls = Object.fromEntries(
+          Object.entries(assignment).filter(([key, value]) => value !== null)
+        );
+        console.log(assignmentWithoutNulls)
+        await updateAssignment({
+          variables: {
+            id: id,
+            update: assignmentWithoutNulls,
+          },
+        });
+      }
+
     }
-    const assignmentWithoutNulls = Object.fromEntries(
-      Object.entries(assignment).filter(([key, value]) => value !== null)
-    );
-    
-    
-    await updateAssignment({
-      variables: {
-        id: id,
-        update: assignmentWithoutNulls,
-      },
-    });
+
     
   }
 
@@ -216,17 +253,17 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
               <div className='flex items-center'>
                 {
                   file ? 
-                  <p className="text p-2 text-sm">Edit the assignment attachment to {file.name}</p>
+                  <p className="text p-2 text-sm">Edited the assignment attachment to <span  className="text-blue-500">{file.name}</span></p>
                   :
                   (link ?
-                    <p className="text p-2 text-sm">Link has been attached with the assignment </p>
+                    <p className="text p-2 text-sm">Link has been updated </p>
                      :
-                     <p className="text p-2 text-sm">{ details.attachment ? useFormattedCreator(details.attachment.type) + "has been attached with the assignment" : "No attachments"}</p>
+                     <p className="text p-2 text-sm">{ details.attachment ? useFormattedCreator(details.attachment.type) + " has been attached  with the assignment" : "No attachments"}</p>
 
                   )
                 }
               { !file && details.attachment && !link &&  <a href={details.attachment && details.attachment.content}  target="_blank" rel="noopener noreferrer" className='text-xs text text-blue-600 underline'>Click here</a> }
-              {link && <a href={link}  target="_blank" rel="noopener noreferrer" className='text-xs text text-blue-600 underline'>Click here</a>}
+              {link && !file && <a href={link}  target="_blank" rel="noopener noreferrer" className='text-xs text text-blue-600 underline'>Click here</a>}
               </div>
               <div className='flex justify-center items-center'>
                 <div>
@@ -250,13 +287,17 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
               className=" block p-3 w-full md:p-2 lg:p-3 border-2 placeholder:text rounded-md shadow-sm focus:outline-none sm:text-sm"
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 {
-                  setDetails({...details,attachment:{type:"link",content:e.target.value}})
                   setLink(e.target.value)
                 }
                 }
             />
             <div className="flex justify-end mt-2">
-              <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text " onClick={()=>setmodal(false)}>OK</button>
+              <button type='submit' className="bg-slate-300 p-2 border-2 text-slate-700 rounded-md px-4 text " onClick={()=>
+                {
+                  setDetails({...details,attachment:{type:"link",content:link}})
+                  setmodal(false)
+                }
+               }>OK</button>
           </div>
                  </Modal>
               </div>
@@ -310,7 +351,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                    <p className='text text-slate-700'>Points</p>
                    <div className='bg-slate-100 p-2 flex justify-between items-center'>
                   {
-                    pointstate ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 ' defaultValue={ typeof details.points==='number' ? details.points : 'ungraded'} 
+                    details && details.points ? <input type='text' className='text bg-slate-100 focus:outline-none  text-slate-700 w-1/4 ' defaultValue={ details.points } 
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       const isValidKey = /^[0-9]$/.test(e.key);
                       if (!isValidKey) {
@@ -320,7 +361,7 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                     onChange={(e:ChangeEvent<HTMLInputElement>)=>
                       {
                         if( parseInt(e.target.value)>0 && parseInt(e.target.value)<101){
-                          setDetails({...details,points:e.target.value})
+                          setDetails({...details,points:parseInt(e.target.value)})
                            
                         }else{
                           message.info("Mark between 1 to 100")
@@ -339,9 +380,8 @@ const {data:mainTopic}=useQuery(FETCH_MAINTOPIC,{
                     state.state2 && <div className='absolute bg-white box_shadow  cursor-pointer rounded-md p-3'>
                     <p className='text' onClick={()=>{
                       handleState('state2',false);
-                      pointstate ? setDetails({...details,points:'ungraded'}): setDetails({...details,points:100})
-                      setpointstate(!pointstate)
-                    }}>{pointstate ? "Ungraded" : "Points"}</p>
+                      details.points ? setDetails((prev:any)=>({...prev,points:null})): setDetails((prev:any)=>({...prev,points:100}))
+                    }}>{details.points ? "Ungraded" : "Points"}</p>
                   </div>
 
                 }
