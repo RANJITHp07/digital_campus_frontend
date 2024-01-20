@@ -3,12 +3,10 @@ import { CREATE_SUBMISSION } from '@/apis/submission/mutation';
 import { submissionClient } from '@/app/providers/ApolloProvider';
 import { useAppSelector } from '@/redux/store';
 import { useMutation } from '@apollo/client';
+import Category from '@mui/icons-material/Category';
 import { message } from 'antd';
 import React, { useState } from 'react';
-import { Doughnut } from 'react-chartjs-2';
-// import { Chart , ArcElement, Tooltip, Legend } from "chart.js";
-
-// const arcElement = Chart.registry.elements.get('arc')
+import { PieChart, Pie, Legend, Cell } from "recharts";
 
 
 interface PollingProps {
@@ -18,28 +16,19 @@ interface PollingProps {
 function Polling({ details,creator,polling,admin
  }: PollingProps) {
     const data=["A","B","C","D"]
-  const percentages = details.polling.answers.map((answer:string, index:number) => {
-    if(creator){
-      return (parseInt(polling.polling[index]) / details.students.length) * 100;
+    const COLORS = ["#B3E0FF", "#66B2FF", "#3399FF", "#0066CC"];
+    let  percentages=[]
+    if (creator) {
+       percentages = details.polling.answers.map((answer:string, index:number) => {
+        return {
+          category: answer,
+          value: 25
+        };
+      });
     }
-  });
+    
 
-  // Chart data
-  const chartData = {
-    labels: data,
-    datasets: [
-      {
-        data: percentages,
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50'], // You can customize the colors
-      },
-    ],
-  };
-
-  // Chart options
-  const chartOptions = {
-    maintainAspectRatio: false,
-    responsive: true,
-  };
+ 
   const [comment,setcomment]=useState([])
   const token=useAppSelector((state)=>state.authReducer.token)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -77,7 +66,9 @@ function Polling({ details,creator,polling,admin
 
   return (
     <div>
-      <p className='text text-2xl text-[#3b6a87] mx-6'>
+      <div className="flex justify-between">
+        <div className={`${creator ? 'w-1/2' : 'w-full'}`}>
+        <p className='text text-2xl text-[#3b6a87] mx-6 overflow-hidden'>
         Question : {details.title[0].toUpperCase() + details.title.slice(1, details.title.length).toLowerCase()}
       </p>
       {details.polling.answers.map((m: string,index:number) => (
@@ -95,16 +86,35 @@ function Polling({ details,creator,polling,admin
           <p className='text text-slate-600'>{data[index]}. </p>
           }
           <p className='text text-slate-600'>{m} </p>
-          {
-            creator && 
-            <p className='text text-slate-600 '>- {parseInt(polling.polling[index])/details.students.length * 100} %</p>
-          }
           
         </div>
+        
       ))}
-      {/* <div className="my-5 mx-6">
-      <Doughnut data={chartData} options={chartOptions} />
-    </div> */}
+      </div>
+      { creator && 
+      <div className="my-5 mx-6">
+        <Legend />
+      <PieChart width={700} height={500}>
+        
+        <Pie
+          data={percentages}
+          dataKey="value"
+          nameKey="category"
+          cx="50%"
+          cy="35%"
+          outerRadius={150}
+          fill="#8884d8"
+          label
+        >
+          {percentages.map((dataPoint:any, index:number) => (
+  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
+))}
+        </Pie>
+        
+      </PieChart>
+    </div>
+ }
+    </div>
   {
     !creator && admin  && 
     <button className='text-white bg-[#3b6a87] p-3 w-11/12 lg:w-3/4 my-5 mx-3 text-center text rounded-md' onClick={handleSubmission}>Submit</button>

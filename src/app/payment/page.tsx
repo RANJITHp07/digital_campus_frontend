@@ -35,7 +35,7 @@ function Payment() {
         }
 
         
-            const response = await axios.post('http://localhost:4000/v1/api/payment/subscription', {
+            const response = await axios.post('http://localhost:8000/v1/api/payment/subscription', {
               planName: '6months',
               interval: 6,
               amount: 900,
@@ -51,8 +51,8 @@ function Payment() {
             key:"rzp_test_h3vLvQM9ENsdGj" , 
             name:"6 months subscription",
             description:"6 months plan in digital ocean",
-            subscription_id:data.data.id,
-            // callback_url:'http://localhost:4000/v1/api/payment/verification'
+            subscription_id:data.id,
+            callback_url:'http://localhost:8000/v1/api/payment/verification'
         };
 
         const paymentObject = new (window as any).Razorpay(options);

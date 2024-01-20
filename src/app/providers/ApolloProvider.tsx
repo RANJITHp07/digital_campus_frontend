@@ -7,7 +7,6 @@ import {
   ApolloProvider,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-
 import Cookies from "js-cookie";
 
 const authLink = setContext(() => {
@@ -29,7 +28,7 @@ export const assignmentlink = createHttpLink({
 });
 
 export const submissionlink = createHttpLink({
-  uri: "https://www.digitalcampus.shop/submission",
+  uri: "http://localhost:5000/submission",
 });
 
 export const classClient = new ApolloClient({
@@ -45,7 +44,7 @@ export const assignmentClient = new ApolloClient({
 });
 
 export const submissionClient = new ApolloClient({
-  link: submissionlink,
+  link: authLink.concat(submissionlink),
   cache: new InMemoryCache(),
 });
 
