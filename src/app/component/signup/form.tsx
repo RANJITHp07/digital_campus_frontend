@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useCallback } from "react";
 import { CircularProgress } from "@mui/material";
 import { message } from "antd";
 import Image from "next/image";
@@ -37,7 +37,7 @@ const Form: React.FC<FormProps> = ({ page }) => {
   });
 
   //to handle the normal signup
-  const handleSignup = (data: UserForm) => {
+  const handleSignup = useCallback((data: UserForm) => {
     try {
       const user = {
         firstName: data.firstName as string,
@@ -51,7 +51,7 @@ const Form: React.FC<FormProps> = ({ page }) => {
     } catch (err: any) {
       message.info(err.response.data.message);
     }
-  };
+  }, [dispatch]);
 
   //to handle the forget password
   const handleForgetPassword = async () => {
