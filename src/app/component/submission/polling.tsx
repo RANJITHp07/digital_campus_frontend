@@ -16,6 +16,7 @@ interface PollingProps {
 function Polling({ details,creator,polling,admin
  }: PollingProps) {
     const data=["A","B","C","D"]
+
     const COLORS = ["#B3E0FF", "#66B2FF", "#3399FF", "#0066CC"];
     let  percentages=[]
     if (creator) {
@@ -27,6 +28,7 @@ function Polling({ details,creator,polling,admin
       });
     }
     
+
 
  
   const [comment,setcomment]=useState([])
