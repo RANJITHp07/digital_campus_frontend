@@ -196,7 +196,7 @@ const Form: React.FC<FormProps> = ({ page }) => {
           </div>
         )}
 
-        <div className="flex">
+        <div className="md:flex">
           <div className={` ${!page ? "w-full" : "md:w-1/2 md:mr-3"}`}>
             <label className="text-xs font-medium text-gray-400">
               {!errors.password && "password"}

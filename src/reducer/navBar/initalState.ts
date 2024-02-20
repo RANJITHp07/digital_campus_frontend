@@ -6,7 +6,7 @@ export interface NavbarState {
     category: string;
     state: boolean;
     text: string;
-    filter: any[]; // Update this type based on the actual type of filter data
+    filter: any[]; 
     open: boolean;
     open1: boolean;
     open2: boolean;

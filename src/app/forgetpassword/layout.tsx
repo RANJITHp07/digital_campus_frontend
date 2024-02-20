@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import AuthenticatedForgetPasswordProvider from '../providers/AuthneticateForgetPassword'
 
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ export default function RootLayout({
     <html lang="en">
 
       <body>
+        <AuthenticatedForgetPasswordProvider>
         {children}
+        </AuthenticatedForgetPasswordProvider>
         </body>
     </html>
   )

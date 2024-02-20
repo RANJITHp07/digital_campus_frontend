@@ -165,12 +165,11 @@ function Class({
   //to update the classroom
   const [updateClassroom] = useMutation(UPDATE_CLASSROOM_DETAILS, {
     onError(err) {
-      console.log(classroom);
       console.log(err);
     },
     onCompleted: () => {
       setOpen(false);
-      message.info("Updated");
+      message.info("Submitted");
     },
   });
 
@@ -240,18 +239,18 @@ function Class({
         </div>
       </div>
       <div
-        className="flex justify-end mx-2"
+        className="flex justify-end mx-2 "
         onClick={
           block
             ? () => message.info("Blocked the classroom by admin")
             : () => navigation.push(`/classroom/${id}?code=${code}`)
         }
       >
-        <div>
+        <div  className="">
           <p>
-            {classroom.className && useFormattedCreator(classroom.className)}
+            {classroom.className && ( classroom.className.length>20 ? useFormattedCreator(classroom.className).slice(0,12)+ '...' : useFormattedCreator(classroom.className) )}
           </p>
-          <p className="text-xs">{creator}</p>
+          <p className="text-xs ">{creator}</p>
         </div>
       </div>
       <div className="absolute bottom-0 w-full">

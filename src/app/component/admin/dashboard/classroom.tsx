@@ -1,95 +1,75 @@
 'use client'
-import React, { ChangeEvent,useState } from 'react'
-import {  UPDATE_CLASSROOM_DETAILS } from '../../../../apis/classroom/mutation'
-import { useMutation, useQuery } from '@apollo/client'
-import { Pagination, message } from 'antd'
-import { GET_CLASSROOMS } from '@/apis/classroom/query'
+import { Classroom } from '@/@types/classroom';
+import { UPDATE_CLASSROOM_DETAILS } from '@/apis/classroom/mutation';
+import { useMutation } from '@apollo/client';
+import { Typography } from '@material-tailwind/react';
+import { message } from 'antd';
+import React, { useState } from 'react'
 
-function Classroom() {
-   
-    const {data}=useQuery(GET_CLASSROOMS,{
-        onCompleted:(data)=>{
-             setclassroom(data.getclassroom)
-        }
-    })
-    const [pagination,setpagination]=useState(1)
-    const [blocked,setblocked]=useState<any>({})
-    const [text,settext]=useState('');
-    const[classroom,setclassroom]=useState([])
-    
-   const handleChange=(e:ChangeEvent<HTMLInputElement>)=>{  //users to get the user
-    try{      
-     if(e.target.value.length!=0 && data.getclassroom.length>0){
-      settext(e.target.value)
-      const newusers = data.getclassroom.filter((value:any) => {
-        return value.className.toLowerCase().includes(e.target.value.toLowerCase());
-      });
-      setclassroom(newusers)
-     }
-     else if(data.getclassroom.length===0){
-        setclassroom(data.getclassroom)
-     }
-     else{
-      settext('')
-     }
-  }
-  catch(err){
-      throw err
-    }
-   }
+const classes = "p-4 border-b border-blue-gray-50";
 
-    //to update the classroom
- const [updateClassroom]=useMutation(UPDATE_CLASSROOM_DETAILS,{
-   onError(err){
-       console.log(err)
-   },
-  })
+function AllClassroom({props,index}: {props:Classroom ,index:number}) {
 
-  const handleBlock=async(id:string,block:boolean)=>{
+   const [blocked,setBlocked]=useState(props.blockClassroom)
+
+      //to update the classroom
+ const [updateClassroom]=useMutation(UPDATE_CLASSROOM_DETAILS)
+
+  const handleBlock=async()=>{
      try{
        await updateClassroom({
          variables:{
-            id:id,
+            id:props._id,
             update:{
-               blockClassroom:!block
+               blockClassroom:!blocked
             }
+         },
+         onCompleted:()=>{
+          setBlocked(!blocked)
+          message.info(`${!blocked ? 'Blocked' : 'Unblocked'} successfully`);
          }
        })
-       message.info("Blocked the classroom")
+       
      }catch(err){
       throw err
      }
   }
 
-  return (
-    <div>
-       <div className="mt-5 mx-4 mb-9 flex rounded-lg">
-        <input type="text" className='border-2 w-11/12 p-2  px-5 rounded-lg'  placeholder="Search using email" onChange={handleChange} />
-        <button className=" bg-blue-700 text-white p-2 px-5 rounded-md  ml-3">Search</button>
-    </div>
-     {
-         (data && classroom.length!=0) ? classroom.map((m:any)=>{
-            return (
-               <div className='box_shadow w-full my-5 p-3 flex justify-between items-center rounded-md'>
-                  <div>
-                  <p>Name of the classroom: {m.className}</p>
-                <p>Code of the classroom: {m.classCode}</p>
-                <p>Person who created classroom: {m.creator}</p>
-                  </div>
-                  <div>
-                  <button className=" bg-green-700 text-white p-2 px-5 rounded-md  ml-3" onClick={()=>handleBlock(m._id,m.blockClassroom)}>{m.blockClassroom? "Blocked" :"Block"}</button>
-                  </div>
-                
-               </div>
-            )
-        }):
-        <p className="mx-auto my-8">No such classroom</p>
-     }
-      <Pagination defaultCurrent={1} total={(Math.ceil(data && data.getclassroom.length / 6) * 10)} onChange={(e:number) => {
-              setpagination(e);
-            }}  className='text-center mt-4' />
-    </div>
-  )
+
+    return (
+        <tr key={props._id}>
+          <td className={classes}>
+            <Typography variant="small" color="blue-gray" className="text my-3 text-[#3b6a87]">
+              {index+1}
+            </Typography>
+          </td>
+          <td className={classes}>
+            <Typography variant="small" color="blue-gray" className="text my-3 text-[#3b6a87]">
+              {props.className}
+            </Typography>
+          </td>
+          <td className={classes}>
+            <Typography variant="small" color="blue-gray" className="text my-3 text-[#3b6a87]">
+              {props.classCode}
+            </Typography>
+          </td>
+          <td className={classes}>
+            <Typography variant="small" color="blue-gray" className="text my-3 text-[#3b6a87]">
+            {props.creator}
+            </Typography>
+          </td>
+          <td className={classes}>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="text my-3 "
+              
+            >
+             <p className={`cursor-pointer ${blocked ? "text-red-800" : "text-green-800"}`} onClick={handleBlock}>{!blocked ? "Block" : "Blocked"}</p>
+            </Typography>
+          </td>
+        </tr>
+      );
 }
 
-export default Classroom
+export default AllClassroom

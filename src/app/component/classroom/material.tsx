@@ -52,6 +52,7 @@ function Material({
   const [option, setOption] = useState("");
   const [editIndex, setEditIndex] = useState(5);
   const [open, setopen] = useState(false);
+  const creator=appSelector((state)=>state.classroomReducer.creator)
   const pollingInitialState: Polling = useMemo(
     () => ({
       __typename: "",
@@ -290,10 +291,11 @@ function Material({
             </div>
           )}
         </div>
-
+        {creator && 
         <Dropdown menu={{ items }} placement="bottomLeft" trigger={["click"]}>
-          <MoreVertOutlinedIcon className="m-1 text-slate-700 cursor-pointer" />
+         <MoreVertOutlinedIcon className="m-1 text-slate-700 cursor-pointer" />
         </Dropdown>
+         }
       </div>
       <Modal
         title={

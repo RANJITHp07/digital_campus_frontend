@@ -89,6 +89,7 @@ function Navbar() {
     },
     onError(err) {
       message.error(err.graphQLErrors[0].message);
+      dispatch({ type: "SET_OPEN2", value: false });
     },
     onCompleted: () => {
       dispatch({ type: "SET_OPEN2", value: false });

@@ -39,3 +39,12 @@ export interface ClassroomParticipants {
 
 }
 
+export interface Classroom {
+  _id: string;
+  className: string;
+  classCode: string;
+  creator: string;
+  blockClassroom: boolean;
+}
+
+

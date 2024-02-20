@@ -51,6 +51,7 @@ export async function getUser(email: string) {
     const res = Api.get(userEndpoint.getUser + "/" + email);
     return res;
   } catch (err) {
+    console.log(err)
     throw new Error("Api error" + err);
   }
 }
@@ -87,9 +88,9 @@ export async function updateDetails(
 //update password
 export async function updatePassword(id: number, password: string) {
   try {
-    const res = await Api.put(userEndpoint.userUpdate, {
+    const res = await Api.patch(userEndpoint.forgetPassword, {
       id,
-      update: { password },
+      newPassword:password,
     });
     return res;
   } catch (err) {

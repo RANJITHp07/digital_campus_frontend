@@ -20,11 +20,11 @@ const authLink = setContext(() => {
 });
 
 export const classlink = createHttpLink({
-  uri: "https://www.digitalcampus.shop/classroom",
+  uri: "http://localhost:5000/classroom",
 });
 
 export const assignmentlink = createHttpLink({
-  uri: "https://www.digitalcampus.shop/assignment",
+  uri: "http://localhost:5000/assignment",
 });
 
 export const submissionlink = createHttpLink({

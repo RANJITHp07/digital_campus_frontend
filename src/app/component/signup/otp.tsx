@@ -113,6 +113,8 @@ const Otp: React.FC<OtpProps> = ({ page }) => {
       });
       setCurrentInputIndex(index - 1);
       inputRefs[index - 1].current?.focus();
+    }else{
+      setOtpError(false)
     }
   };
 

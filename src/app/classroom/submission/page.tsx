@@ -33,7 +33,6 @@ function Submission() {
     const [text,settext]=useState('')
     const [comment,setcomment]=useState<Comment[]>([])   
     const [numPages, setNumPages] = useState(null);
-    const [creator,setcreator]=useState(false)
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.js',
       import.meta.url,
@@ -68,11 +67,7 @@ function Submission() {
       onError(err){
         message.error("Some error occured")
       },
-      onCompleted:(data)=>{
-        if(data.getOneassignment.students.includes(token.id)){
-          setcreator(true)
-        }
-      }
+      
     })
 
     const handleKeyPress = async(e:any) => {
@@ -119,7 +114,7 @@ function Submission() {
         <div className='border-r-2 z-50 hidden xm:block  min-h-screen '>
               <SidePanel/>
         </div>
-        <div className='w-full'>
+      <div className='w-full xm:w-10/12'>
         <div className='text-lg text  mx-4 my-5 flex items-center'>
           <div className='flex bg-[#3b6a87] w-9 h-9 text-white rounded-full justify-center items-center'>
             {type==='Assignment'?
@@ -140,16 +135,16 @@ function Submission() {
           <div className='lg:flex'>
             {
                 data && 
-                <div className='my-6 mx-3 w-3/4'>
+                <div className='my-6 mx-3 md:w-3/4'>
                 
           {
-            type==='Polling' && <Polling admin={creator} details={data && data.getOneassignment}/>
+            type==='Polling' && <Polling  details={data && data.getOneassignment}/>
           }
           {
-            (type==='Assignment' || type==='Material' ) && <Material admin={creator} assignment={data && data.getOneassignment}/>
+            (type==='Assignment' || type==='Material' ) && <Material admin={data.getOneassignment.students.includes(token.id)} assignment={data && data.getOneassignment}/>
           }
         
-        <div className={`box_shadow p-3 mx-3 w-11/12 lg:w-3/4 rounded-md ${creator && "my-9"}`}>
+        <div className={`box_shadow p-3 mx-3 w-11/12 lg:w-3/4 rounded-md ${data.getOneassignment.students.includes(token.id) && "my-9"}`}>
           <div className={`flex items-center ${comment.length>0 && 'mb-6'}`}>
             <GroupIcon className='text-slate-400 mr-3'/>
           <input placeholder='Add comment to the class' className='placeholder:text focus:outline-none w-full text text-slate-500'

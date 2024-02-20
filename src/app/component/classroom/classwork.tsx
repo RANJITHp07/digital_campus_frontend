@@ -153,6 +153,7 @@ function Classwork({ id }:ClassworkProps) {
       class_id: id,
       students: getClassroom.getClassroomDetails.students_enrolled,
     };
+    console.log(assignments)
     await createAssignment({
       client: assignmentClient,
       variables: {

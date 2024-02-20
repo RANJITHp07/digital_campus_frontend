@@ -10,7 +10,6 @@ const TABLE_HEAD = ["Assignment", "Type", "DueDate" ,"Topic"];
 
 function Submission({id}:{id:string}) {
 
-    const router=useRouter()
     const {data}=useQuery(FETCH_ASSIGNMENT_DETAILS,{
         client:assignmentClient,
         variables: { id: id },
@@ -32,12 +31,12 @@ function Submission({id}:{id:string}) {
                     className="mx-auto"
                   />
                 }
-
+              {data && data.getAllassignment.length>0 ?
               <Card className="h-full w-full">
       <table className="w-full min-w-max table-auto text-left">
         <thead>
           <tr>
-            {TABLE_HEAD.map((head) => (
+            { TABLE_HEAD.map((head) => (
               <th
                 key={head}
                 className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
@@ -111,7 +110,16 @@ function Submission({id}:{id:string}) {
           })}
         </tbody>
       </table>
-    </Card>   
+    </Card>
+    :
+    <Image
+                    src={"/submission.png"}
+                    width={800}
+                    height={800}
+                    alt="photo"
+                    className="mx-auto"
+                  />
+}   
     </div>           
     </div>
   )

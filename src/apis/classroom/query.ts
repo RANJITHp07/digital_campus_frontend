@@ -125,8 +125,21 @@ export const GET_REPORTED_CLASSROOMS = gql`
 
 // to fetch all reported the classrooms
 export const GET_CLASSROOMS = gql`
-  query getclassrooms {
-    getclassroom {
+  query  getAllUsersClassrooms($page:Int) {
+    getAllUsersClassrooms(page:$page) {
+      _id
+      className
+      classCode
+      creator
+      blockClassroom
+    }
+  }
+`;
+
+// to search all reported the classrooms
+export const SEARCH_CLASSROOMS = gql`
+  query searchClassroom($page:Int!,$text:String!) {
+    searchClassroom(page:$page,text:$text) {
       _id
       className
       classCode
@@ -148,6 +161,7 @@ export const GET_FILTRED_CLASSROOM = gql`
       classSubject
       backgroundPicture
       classCode
+      profile
     }
   }
 `;

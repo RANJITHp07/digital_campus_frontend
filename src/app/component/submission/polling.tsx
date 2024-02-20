@@ -19,7 +19,7 @@ function Polling({ details,creator,polling,admin
 
     const COLORS = ["#B3E0FF", "#66B2FF", "#3399FF", "#0066CC"];
     let  percentages=[]
-    if (creator) {
+    if (admin) {
        percentages = details.polling.answers.map((answer:string, index:number) => {
         return {
           category: answer,
@@ -57,7 +57,6 @@ function Polling({ details,creator,polling,admin
       username:token.name,
       user_id:token.id
     }
-    console.log(submission)
     await createSubmission({
       client:submissionClient,
       variables:{
@@ -68,11 +67,11 @@ function Polling({ details,creator,polling,admin
 
   return (
     <div>
-      <div className="flex justify-between">
-        <div className={`${creator ? 'w-1/2' : 'w-full'}`}>
-        <p className='text text-2xl text-[#3b6a87] mx-6 overflow-hidden'>
-        Question : {details.title[0].toUpperCase() + details.title.slice(1, details.title.length).toLowerCase()}
-      </p>
+      <div className="md:flex justify-between">
+        <div className={`${creator ? 'md:w-1/2' : 'w-full'}`} style={{ maxWidth: '100%', wordWrap: 'break-word' }}>
+        <p className='text text-2xl text-[#3b6a87] mx-6 w-1/2 overflow-wrap-normal'>
+    Question: {details.title[0].toUpperCase() + details.title.slice(1, details.title.length).toLowerCase()}
+  </p>
       {details.polling.answers.map((m: string,index:number) => (
         <div key={m} className='my-5 flex items-center w-full mx-6'>
           {
@@ -93,11 +92,10 @@ function Polling({ details,creator,polling,admin
         
       ))}
       </div>
-      { creator && 
-      <div className="my-5 mx-6">
-        <Legend />
-      <PieChart width={700} height={500}>
-        
+      <div className="flex justify-center ">
+  {admin && 
+    <div className="my-5 mx-9">
+      <PieChart width={700} height={500} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
         <Pie
           data={percentages}
           dataKey="value"
@@ -109,16 +107,18 @@ function Polling({ details,creator,polling,admin
           label
         >
           {percentages.map((dataPoint:any, index:number) => (
-  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
-))}
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
+          ))}
         </Pie>
-        
+        <Legend className="mt-96" />
       </PieChart>
     </div>
- }
+  }
+</div>
+
     </div>
   {
-    !creator && admin  && 
+    creator && 
     <button className='text-white bg-[#3b6a87] p-3 w-11/12 lg:w-3/4 my-5 mx-3 text-center text rounded-md' onClick={handleSubmission}>Submit</button>
   }
 

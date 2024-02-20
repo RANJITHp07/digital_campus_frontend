@@ -132,7 +132,7 @@ const Classroom = () => {
       ),
     }));
   
-  console.log(events)
+    
   setEvent(events)
     }else{
       setEvent([])
@@ -160,7 +160,7 @@ const Classroom = () => {
           <div className="w-full text-[#3b6a87]">
             <BasicCalendar events={ event} />
           </div>
-        ): <div><LoadinPage /></div>)
+        ): <div className="w-3/4 mx-auto"><LoadinPage /></div>)
       }
         <div className={`${type !== "calendar" && "w-full"}`}>
           {type === "home" && !categoryType && (

@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import SummarizeRoundedIcon from '@mui/icons-material/SummarizeRounded';
@@ -7,8 +8,6 @@ import CastForEducationIcon from '@mui/icons-material/CastForEducation';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-
-
 
 
 function SidePanel() {

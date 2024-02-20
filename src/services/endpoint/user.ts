@@ -7,5 +7,6 @@ export const userEndpoint={
     getUser:"/v3/api/auth/user",
     signUp:"/v3/api/auth/user/signup",
     login:"/v3/api/auth/user/login",
-    resetPassword:"/v3/api/auth/user/resetPassword"
+    resetPassword:"/v3/api/auth/user/resetPassword",
+    forgetPassword:"/v3/api/auth/user/forgetPassword"
 }
