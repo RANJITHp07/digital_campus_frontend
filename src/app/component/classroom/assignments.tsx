@@ -259,7 +259,7 @@ function Assignment({ id }: AssignmentProps) {
                   className="bg-white box_shadow p-2 px-3 text-center m-3 rounded-md text-sm text text-[#3b6a127]"
                   onClick={() => setopen(true)}
                 >
-                  <ModeEditOutlinedIcon className="text-md text-[#3b6a127]" />{" "}
+                  <ModeEditOutlinedIcon className="text-sm text-[#3b6a127]" />{" "}
                   Customize
                 </button>
               )}

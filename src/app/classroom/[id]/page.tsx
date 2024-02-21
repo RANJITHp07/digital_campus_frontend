@@ -23,8 +23,6 @@ function Classroom({ params }: { params: { id: string } }) {
  const searchParams = useSearchParams()
  const socket=useRef<Socket | null>()
  const code= searchParams.get('code') as string
- const [id,setid]=useState('')
- const [length,setlength]=useState(0)
 
 
 
@@ -65,9 +63,7 @@ function Classroom({ params }: { params: { id: string } }) {
                 {
                  assign==='submission' && <Submission id={params.id}/>
                 }
-                {/* {
-                 assign==='stream' && <Assignment id={params.id}/>
-                } */}
+              
             </div>
         </div>
         </div>

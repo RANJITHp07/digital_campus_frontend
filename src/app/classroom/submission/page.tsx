@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react'
 import Navbar from '@/app/component/common/navbar'
 import SidePanel from '@/app/component/common/sidePanel'
 import React from 'react'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useSearchParams } from 'next/navigation'
 import { useMutation, useQuery } from '@apollo/client'
 import { ASSIGNMENT_DETAILS } from '@/apis/assignment/query'
 import { assignmentClient } from '@/app/providers/ApolloProvider'
 import PollIcon from '@mui/icons-material/Poll';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import SecurityIcon from '@mui/icons-material/Security';
 import GroupIcon from '@mui/icons-material/Group';
 import Image from 'next/image'
 import Polling from '@/app/component/submission/polling'
@@ -31,6 +31,7 @@ function Submission() {
     const id=search.get('assignment')
     const type=search.get('type')
     const [text,settext]=useState('')
+    const [open,setOpen]=useState(1)
     const [comment,setcomment]=useState<Comment[]>([])   
     const [numPages, setNumPages] = useState(null);
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -50,10 +51,11 @@ function Submission() {
       variables:{
         id:id
       },
+      onError(err){
+         console.log(err)
+      },
       onCompleted:(data)=>{
-        console.log(data)
         const {__typename,...comment}=data.getAllcomments
-        console.log(comment)
         setcomment(comment.publicMessages);
       }
     })
@@ -138,13 +140,13 @@ function Submission() {
                 <div className='my-6 mx-3 md:w-3/4'>
                 
           {
-            type==='Polling' && <Polling  details={data && data.getOneassignment}/>
+            type==='Polling' && <Polling creator={true}  details={data && data.getOneassignment} admin={data.getOneassignment.students.includes(token.id)}/>
           }
           {
             (type==='Assignment' || type==='Material' ) && <Material admin={data.getOneassignment.students.includes(token.id)} assignment={data && data.getOneassignment}/>
           }
         
-        <div className={`box_shadow p-3 mx-3 w-11/12 lg:w-3/4 rounded-md ${data.getOneassignment.students.includes(token.id) && "my-9"}`}>
+        <div className={`box_shadow p-3 mx-3 w-11/12 lg:w-3/4 rounded-md ${!data.getOneassignment.students.includes(token.id) && "my-3"}`}>
           <div className={`flex items-center ${comment.length>0 && 'mb-6'}`}>
             <GroupIcon className='text-slate-400 mr-3'/>
           <input placeholder='Add comment to the class' className='placeholder:text focus:outline-none w-full text text-slate-500'
@@ -154,7 +156,7 @@ function Submission() {
           />
           </div>
           {
-            comment.map((m)=>{
+            comment.slice(0,open).map((m)=>{
                 return (
                   <div className='border-2 p-3 rounded-md my-3'>
           <div className='flex items-end '>
@@ -168,6 +170,13 @@ function Submission() {
                 )
             })
           }
+          {
+            comment.length>0 && 
+            <div className='flex justify-end'>
+            <ExpandMoreIcon className='cursor-pointer text-slate-500' onClick={()=>open===1 ? setOpen(comment.length): setOpen(1)}/> 
+          </div>
+          }
+          
           
           
         </div>
@@ -186,7 +195,7 @@ function Submission() {
          <div className='w-11/12 mx-auto'>
           <LoadinPage/>
          </div>
-          : <QuizSubmission quiz={data && data.getOneassignment.quiz} title={data && data.getOneassignment.title} dueDate={data && data.getOneassignment.dueDate}/>
+          : <QuizSubmission admin={data.getOneassignment.students.includes(token.id)} quiz={data && data.getOneassignment.quiz} title={data && data.getOneassignment.title} dueDate={data && data.getOneassignment.dueDate}/>
       )
       
 

@@ -45,7 +45,7 @@ function AllClassroom({props,index}: {props:Classroom ,index:number}) {
           </td>
           <td className={classes}>
             <Typography variant="small" color="blue-gray" className="text my-3 text-[#3b6a87]">
-              {props.className}
+              {props.className.slice(0,22)}
             </Typography>
           </td>
           <td className={classes}>

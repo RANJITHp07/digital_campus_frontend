@@ -60,8 +60,8 @@ function Submitted() {
           <div className='lg:flex'>
         {data && polling && (
           <div className='my-6 mx-3 w-11/12'>
-            {type === 'Polling' && <Polling admin={true} details={data && data.getOneassignment} creator={data.getOneassignment.students.includes(token.id)} polling={polling.getPolling && polling.getPolling.polling} />}
-             {type==='Assignment' && <DefaultTable id={id as string} name={data && data.getOneassignment.title}/>}
+            {type === 'Polling' && <Polling  details={data && data.getOneassignment} creator={data.getOneassignment.students.includes(token.id)} polling={polling.getPolling && polling.getPolling.polling} />}
+             {type==='Assignment' && <DefaultTable id={id as string} name={data && data.getOneassignment.title} marks={data && data.getOneassignment.points}/>}
              {
               type==='Quiz' && <QuizMark id={id as string} data={data && data.getOneassignment}/>
              }

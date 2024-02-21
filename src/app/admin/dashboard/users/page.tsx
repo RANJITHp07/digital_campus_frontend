@@ -17,7 +17,7 @@ async function Users() {
         </div>
         <hr/>
         <div className='flex '>
-            <div className='w-60 border-r-2 bg-white hidden lg:block  min-h-screen'>
+            <div className='w-72 border-r-2 bg-white hidden lg:block  min-h-screen'>
                 <SidePanel/>
             </div>
             <div className='w-full  mx-auto'>

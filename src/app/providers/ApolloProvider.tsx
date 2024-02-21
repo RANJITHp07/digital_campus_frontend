@@ -20,15 +20,15 @@ const authLink = setContext(() => {
 });
 
 export const classlink = createHttpLink({
-  uri: "http://localhost:5000/classroom",
+  uri: "https://www.digitalcampus.shop/classroom",
 });
 
 export const assignmentlink = createHttpLink({
-  uri: "http://localhost:5000/assignment",
+  uri: "https://www.digitalcampus.shop/assignment",
 });
 
 export const submissionlink = createHttpLink({
-  uri: "https://www.digitalcampus.shop/submission",
+  uri: "http://localhost:5000/submission",
 });
 
 export const classClient = new ApolloClient({

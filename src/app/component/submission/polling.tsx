@@ -19,11 +19,13 @@ function Polling({ details,creator,polling,admin
 
     const COLORS = ["#B3E0FF", "#66B2FF", "#3399FF", "#0066CC"];
     let  percentages=[]
-    if (admin) {
+    if (!creator) {
+       console.log(polling)
        percentages = details.polling.answers.map((answer:string, index:number) => {
         return {
           category: answer,
-          value: 25
+          value: Math.floor(polling.polling[index]/details.students.length)*10
+          
         };
       });
     }
@@ -75,7 +77,7 @@ function Polling({ details,creator,polling,admin
       {details.polling.answers.map((m: string,index:number) => (
         <div key={m} className='my-5 flex items-center w-full mx-6'>
           {
-            !creator ?
+            creator ?
             <input
             type="radio"
             className="transform scale-150 mr-3 text-[#3b6a87] cursor-pointer accent-[#3b6a87]"
@@ -93,7 +95,7 @@ function Polling({ details,creator,polling,admin
       ))}
       </div>
       <div className="flex justify-center ">
-  {admin && 
+  {!creator && 
     <div className="my-5 mx-9">
       <PieChart width={700} height={500} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
         <Pie
@@ -118,7 +120,7 @@ function Polling({ details,creator,polling,admin
 
     </div>
   {
-    creator && 
+    admin && 
     <button className='text-white bg-[#3b6a87] p-3 w-11/12 lg:w-3/4 my-5 mx-3 text-center text rounded-md' onClick={handleSubmission}>Submit</button>
   }
 

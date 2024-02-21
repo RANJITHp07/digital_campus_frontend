@@ -18,14 +18,16 @@ interface QuizSubmissionProps{
     dueDate:{
         day:string,
         timer:string[]
-    }
+    },
+    admin:boolean
 }
 
-function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
+function QuizSubmission({quiz,title,dueDate,admin}:QuizSubmissionProps) {
     const router=useRouter()
     const searchParams = useSearchParams()
     const id = searchParams.get('assignment') as string
     const [answers,setAnswers]=useState<any>({})
+    const [time,setTime]=useState('')
     const [timeRemaining, setTimeRemaining] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading,setIsLoading]=useState(true)
@@ -42,6 +44,11 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
           const currentDate = new Date(currentIST);
 
           const quizDate = new Date(dueDate.day);
+          if(currentDate<quizDate){
+            setTime( 'Quiz not yet started')
+          }else if(currentDate>quizDate){
+            setTime( 'Quiz time over')
+          }
     // Check if the due date is the same as the current date
     const isSameDate = currentDate.getFullYear() === quizDate.getFullYear() &&
                        currentDate.getMonth() === quizDate.getMonth() &&
@@ -58,6 +65,13 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
           });
 
           const isOpen = currentDate >= openingTimesUTC[0] && currentDate <= openingTimesUTC[1];
+          console.log( currentDate)
+          if(currentDate >= openingTimesUTC[0]){
+            setTime( 'Quiz not yet started')
+          }else if(currentDate <= openingTimesUTC[1]){
+            setTime('Quiz Time over')
+          }
+          console.log(openingTimesUTC)
           setIsOpen(isOpen);
     
           if (isOpen) {
@@ -72,12 +86,18 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
         };
         setIsLoading(false)
         }
-        const interval = setInterval(checkOpeningHours, 1000);
+        
 
     
     // Initial check when the component mounts
-    checkOpeningHours();
-    return () => clearInterval(interval);
+    if(admin){
+        const interval = setInterval(checkOpeningHours, 1000);
+        checkOpeningHours();
+        return () => clearInterval(interval);
+    }else{
+        setIsLoading(false)
+       setIsOpen(true)
+    }
 
   }, []);
     
@@ -112,7 +132,7 @@ function QuizSubmission({quiz,title,dueDate}:QuizSubmissionProps) {
 
     const [createSubmission]=useMutation(CREATE_SUBMISSION,{
         onError(err){
-          console.log(err)
+            message.info(err.graphQLErrors[0].message)
         },
         onCompleted:(data)=>{
            message.info("Successfully earned "+ data.createSubmission.marks + "points")
@@ -131,7 +151,6 @@ for (let i = minKey + 1; i < maxKey; i++) {
         answers[i] = [];
     }
   }
-   console.log( Object.values(answers))
    const submission:any={
     assignment_id:id,
     username:token.name,
@@ -139,7 +158,6 @@ for (let i = minKey + 1; i < maxKey; i++) {
     quizAnswers:Object.values(answers)
   }
 
-  console.log(submission)
     
   await createSubmission({
     client:submissionClient,
@@ -154,11 +172,11 @@ for (let i = minKey + 1; i < maxKey; i++) {
   return (
     <div >
         {
-           isLoading ? <LoadinPage/> : !isOpen ? <div>
+           isLoading ? <LoadinPage/> : (!isOpen) ? <div>
                 <div className="mx-auto w-11/12 box_shadow my-8 rounded-md  ">
                 <div className='bg-[#3b6a87] p-4 rounded-t-md flex justify-between items-center'>
       <p className='text-white text text-xl'>Quiz</p>
-      <p className='text text-red-300 mx-5'>Quiz not yet started</p>
+      <p className='text text-red-300 mx-5'>{time}</p>
     </div>
     <div className='p-5'>
         <p className='text-slate-500 mb-4  text-2xl '>{title[0].toUpperCase() + title.slice(1,title.length).toLowerCase()}</p>
@@ -189,7 +207,10 @@ for (let i = minKey + 1; i < maxKey; i++) {
         <div className=" w-11/12 mx-auto mt-8  box_shadow rounded-md relative">
         <div className='bg-[#3b6a87] p-4 rounded-t-md flex justify-between items-center'>
       <p className='text-white text text-xl'>Quiz</p>
-      <p className='text text-white'>{timeRemaining}</p>
+      {
+        admin && <p className='text text-white'>{timeRemaining}</p>
+      }
+      
     </div>
     <div className='p-5'>
         <p className='text-slate-500 mb-4  text-2xl '>{title[0].toUpperCase() + title.slice(1,title.length).toLowerCase()}</p>
@@ -232,10 +253,13 @@ for (let i = minKey + 1; i < maxKey; i++) {
             })
         }
     </div>
-     
-    <div className='flex justify-end w-11/12 mx-auto'>
+     {
+        admin && 
+        <div className='flex justify-end w-11/12 mx-auto'>
         <button className='p-2 bg-[#3b6a87]  text text-white rounded-md mb-4' onClick={handleSubmit}>Submit</button>
     </div>
+     }
+    
     </>
         )
 }

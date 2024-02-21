@@ -13,11 +13,12 @@ async function Dashboard() {
 
   return (
     <div>
-        <div className='bg-white box_shadow'>
+        <div className='bg-white '>
             <Navbar/>
         </div>
+        <hr/>
         <div className='flex '>
-            <div className='w-60 border-r-2 bg-white hidden lg:block  h-screen'>
+            <div className='w-72 border-r-2 bg-white hidden lg:block  h-screen'>
                 <SidePanel/>
             </div>
             <div className='lg:w-3/4 w-full  mx-auto'>

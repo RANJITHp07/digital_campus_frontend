@@ -8,14 +8,17 @@ import { useMutation, useQuery } from "@apollo/client";
 import { Card, Typography } from "@material-tailwind/react";
 import { message } from "antd";
 import { useState } from "react";
+import Image from 'next/image'
+import { Pagination } from 'antd';
 
 const TABLE_HEAD = ["Name", "Attachment", "Mark","Status" ];
 
 
-function DefaultTable({id,name}:{id:string,name:string}) {
+function DefaultTable({id,name,marks}:{id:string,name:string,marks:number}) {
   
   const token=useAppSelector((state)=>state.authReducer.token);
   const [grade,setGrade]=useState<string | null>(null)
+  const [pagination,setPagination]=useState(1)
   const {data}=useQuery(GET_ASSIGNMENT,{
     client:submissionClient,
     onError(err){
@@ -23,7 +26,7 @@ function DefaultTable({id,name}:{id:string,name:string}) {
     },
       variables:{
         id:id
-      }
+      },
   })
 
   const handleKeyPress = (event: any,id:string) => {
@@ -61,6 +64,7 @@ function DefaultTable({id,name}:{id:string,name:string}) {
   };
 
   return (
+    <div>
     <div className='flex justify-center'>
         <div className=' w-full md:w-11/12 my-9'>
       <div className='flex justify-between items-center'>
@@ -88,60 +92,78 @@ function DefaultTable({id,name}:{id:string,name:string}) {
           </tr>
         </thead>
         <tbody>
-          {data && data.getAllSubmission.map(({user_id, username, attachment, submission }:{user_id:string,username:string,attachment:any,submission:any}, index:number) => {
-            const isLast = index === data && data.getAllSubmissionlength - 1;
-            const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
+  {data && data.getAllSubmission.length > 0 ? (
+    data.getAllSubmission.slice(pagination * 7 - 7, pagination * 7).map(({ user_id, username, attachment, submission }: { user_id: string, username: string, attachment: any, submission: any }, index: number) => {
+      const isLast = index === data.getAllSubmission.length - 1;
+      const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
-            return (
-              <tr key={username}>
-                <td className={classes}>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="text my-3 text-[#3b6a87]"
-                  >
-                    {username}
-                  </Typography>
-                </td>
-                <td className={classes}>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="text my-3 text-[#3b6a87]"
-                  >
-                   <a href={attachment.content!=='' && attachment.content}
-target="_blank">{ attachment.content!=='' ? "attachment":"no attachment"}</a>
-                  </Typography>
-                </td>
-                <td className={classes}>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="text my-3 text-[#3b6a87]"
-                  >
-                    <div className='flex'>
-                    <input className='border-b-2 w-9  focus:outline-none ' defaultValue={submission.grade ? submission.grade : ''}  onChange={(e:any)=>setGrade(e.target.value)} onKeyDown={(e:any)=>handleKeyPress(e,user_id)}/><p>/100</p>
-                    </div>
-                  </Typography>
-                </td>
-                <td className={classes}>
-                  <Typography
-                    as="a"
-                    href="#"
-                    variant="small"
-                    color="blue-gray"
-                    className={`text my-3 ${submission.status=='Late submitted' ? "text-red-500" : "text-green-500"}`}
-                  >
-                    {submission.status}
-                  </Typography>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
+      return (
+        <tr key={username}>
+          <td className={classes}>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="text my-3 text-[#3b6a87]"
+            >
+              {username}
+            </Typography>
+          </td>
+          <td className={classes}>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="text my-3 text-[#3b6a87]"
+            >
+              <a href={attachment.content !== '' && attachment.content} target="_blank">{attachment.content !== '' ? "attachment" : "no attachment"}</a>
+            </Typography>
+          </td>
+          <td className={classes}>
+            <Typography
+              variant="small"
+              color="blue-gray"
+              className="text my-3 text-[#3b6a87]"
+            >
+              <div className='flex'>
+                <input className='border-b-2 w-9  focus:outline-none ' defaultValue={submission.grade ? submission.grade : ''} onChange={(e: any) => setGrade(e.target.value)} onKeyDown={(e: any) => handleKeyPress(e, user_id)} /><p>/{marks}</p>
+              </div>
+            </Typography>
+          </td>
+          <td className={classes}>
+            <Typography
+              as="a"
+              href="#"
+              variant="small"
+              color="blue-gray"
+              className={`text my-3 ${submission.status == 'Late submitted' ? "text-red-500" : "text-green-500"}`}
+            >
+              {submission.status}
+            </Typography>
+          </td>
+        </tr>
+      );
+    })
+  ) : (
+    <tr>
+      <td colSpan={4}>
+        <Image
+          src={"/submission.png"}
+          width={800}
+          height={800}
+          alt="photo"
+          className="mx-auto"
+        />
+      </td>
+    </tr>
+  )}
+</tbody>
+
       </table>
     </Card>
     </div>
+    </div>
+    <Pagination defaultCurrent={1} total={(Math.ceil(data && data.getAllSubmission.length  / 7) * 10)} onChange={(e:number) => {
+              setPagination(e);
+            }} className='text-center mt-32 mb-5'/>
     </div>
   );
 }

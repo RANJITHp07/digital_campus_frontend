@@ -14,14 +14,14 @@ function SidePanel() {
   const navigation=useRouter()
   return (
     <div className='bg-white mx-2 py-3'>
-      <div className='flex items-center cursor-pointer hover:bg-slate-200 '>
+      {/* <div className='flex items-center cursor-pointer hover:bg-slate-200 '>
         <HomeRoundedIcon className=" my-3 mr-7 text-[#3b6a87]"/>
            <p className='text-lg text-[#3b6a87]' onClick={()=>navigation.push('/admin/dashboard')}>Home</p>
-        </div>
-        <hr className='my-2'/>
+        </div> */}
+        {/* <hr className='my-2'/> */}
         <div className='flex items-center cursor-pointer hover:bg-slate-200 '>
         <PeopleAltIcon className=" my-3 mr-7 text-[#3b6a87]"/>
-           <p className='text-lg text-[#3b6a87]' onClick={()=>navigation.push('/admin/dashboard')}>Users</p>
+           <p className='text-lg text-[#3b6a87]' onClick={()=>navigation.push('/admin/dashboard/users')}>Users</p>
         </div>
         <hr className='my-2'/>
         <div className='flex items-center cursor-pointer hover:bg-slate-200 '>
@@ -31,13 +31,13 @@ function SidePanel() {
         <hr className='my-2'/>
         <div className='flex items-center cursor-pointer hover:bg-slate-200 '>
         <SummarizeRoundedIcon className=" my-3 mr-7 text-[#3b6a87]"/>
-        <p className='text-lg  text-[#3b6a87]' onClick={()=>navigation.push('/admin/dashboard/classroom')}>ReportHub</p>
+        <p className='text-lg  text-[#3b6a87]' onClick={()=>navigation.push('/admin/dashboard/reported')}>ReportHub</p>
         </div>
-        <hr className='my-2'/>
-        <div className='flex items-center cursor-pointer hover:bg-slate-200 '>
+        {/* <hr className='my-2'/> */}
+        {/* <div className='flex items-center cursor-pointer hover:bg-slate-200 '>
         <PaidRoundedIcon className=" my-3 mr-7 text-[#3b6a87]"/>
         <p className='text-lg  text-[#3b6a87]'>Payments</p>
-        </div>
+        </div> */}
         <hr className='my-2'/>
         <div className='flex items-center cursor-pointer hover:bg-slate-200 '
          onClick={()=>{

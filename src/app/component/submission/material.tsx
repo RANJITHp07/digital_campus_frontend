@@ -13,12 +13,25 @@ import { storage } from "../../../services/config/firebase"
 import { v4 } from "uuid";
 import { submissionClient } from '@/app/providers/ApolloProvider';
 import { message } from 'antd';
+import Image from 'next/image';
+import { pdfjs, Document, Page } from "react-pdf";
 
-function Material({assignment}:{assignment:any,admin:boolean}) {
+function Material({assignment,admin}:{assignment:any,admin:boolean}) {
   const [file,setfile]=useState<File | null>(null)
  const token=useAppSelector((state)=>state.authReducer.token)
+ const [numPages, setNumPages] = useState(null);
+
+ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.js",
+  import.meta.url
+).toString();
+
+ const onDocumentLoadSuccess = ({ numPages }: { numPages: any }) => {
+   setNumPages(numPages);
+ };
 
   const [createSubmission]=useMutation(CREATE_SUBMISSION,{
+    client:submissionClient,
     onError(err){
       console.log(err)
     },
@@ -74,8 +87,7 @@ function Material({assignment}:{assignment:any,admin:boolean}) {
            })
           })
     }
-
-    console.log(submission)
+  
 
      await createSubmission({
       client:submissionClient,
@@ -100,7 +112,42 @@ function Material({assignment}:{assignment:any,admin:boolean}) {
             <span className=" text-[#3b6a87] text rounded-md text-xs  mx-2 underline  lg:hidden">{ assignment.assignmentType==='Assignment' && "Attachement" }</span>
           </p>
           {   assignment.assignmentType!=='Assignment' &&
-              <a className=" p-2  text-[#3b6a87] mx-6 border-2  my-7 text rounded-md  ">Attachement a {assignment.attachment && assignment.attachment.type}</a>
+              <a className=" p-2  text-[#3b6a87] mx-6   mt-7 text rounded-md " href={assignment.attachment && assignment.attachment.content} target='_blank'>
+                {  assignment.attachment.type==='audio' && 
+                  <audio controls className="w-[20rem]">
+                  <source src={assignment.attachment && assignment.attachment.content} type="audio/mp3" />
+                </audio>
+                }
+                {
+                   assignment.attachment.type==='photo' &&
+                   <Image
+                        src={assignment.attachment && assignment.attachment.content}
+                        width={300}
+                        height={300}
+                        alt="profile"
+                        className="text-center w-[19rem] cursor-pointer mx-5  object-contain"
+                      /> 
+                }
+                {
+                  assignment.attachment.type==='pdf' &&
+                  <Document
+                  file={assignment.attachment && assignment.attachment.content}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                >
+                  <Page
+                    pageNumber={1}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                    height={200}
+                    width={300}
+                  />
+                </Document>
+                }
+                {
+                   assignment.attachment.type==='vedio' &&
+                   <video src={assignment.attachment.content} controls className="w-[19rem]" />
+                }
+                </a>
           }
           <p className='text text-sm mb-3 mt-1 text-[#3b6a87] mx-6'>
             {assignment.instruction}
@@ -138,7 +185,7 @@ function Material({assignment}:{assignment:any,admin:boolean}) {
         }
 
           {
-            assignment.assignmentType!=='Material' && 
+            assignment.assignmentType!=='Material' && admin && 
             <button className='text-white bg-[#3b6a87] p-3 w-11/12 lg:w-3/4 my-5 mx-3 text-center text rounded-md' onClick={handleSubmission}>Submit</button>
           }
     </div>

@@ -19,7 +19,7 @@ function Create() {
          const res=await createAdmin(email,password) 
          Cookies.set('accessToken', JSON.stringify(res.data.token));
         message.info(res.data.message)
-        navigation.push('/admin/dashboard')
+        navigation.push('/admin/dashboard/users')
       }else{
         message.info("Enter both the input fields")
       }

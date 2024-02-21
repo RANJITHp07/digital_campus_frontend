@@ -62,6 +62,7 @@ export const ASSIGNMENT_DETAILS = gql`
         type
         question
       }
+      points
       createdAt
     }
   }

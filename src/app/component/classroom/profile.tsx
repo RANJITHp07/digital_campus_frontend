@@ -234,7 +234,7 @@ function Profile({addedClassroom,createdClassroom}:ProfileProps) {
         <p className="text-[#3b6a87]  my-2  "><SaveAsIcon  className='text-md'/> Created classrooms: {createdClassroom}</p>
       </div>
       <div className="flex md:justify-end items-end m-2 mt-5 md:m-2 lg:mt-0 md:w-1/2">
-      <a href={'/payment'} className='text text-white bg-[#3b6a87] p-2  mx-3 rounded-md'>Subscription</a>
+      {/* <a href={'/payment'} className='text text-white bg-[#3b6a87] p-2  mx-3 rounded-md'>Subscription</a> */}
         <button className='text text-white bg-[#3b6a87] p-2 rounded-md' onClick={()=> dispatch({type:'SET_MODAL',value:true})}>Reset Password</button>
       </div>
       </div>
